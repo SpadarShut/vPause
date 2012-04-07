@@ -234,16 +234,17 @@ window.addEventListener('load', function(event) {
 
     var plr = window.audioPlayer;
 
-    shortcut.add("Ctrl+End",function(e) {
-        plr.player.paused() ? doPlay() : doPause();
-        //window.alert('sh!')
-    },{
-        'type':'keyup',
-        'disable_in_input':true,
-        'propagate':true
-    });
+    var hotkeys = {
+        hotkey_play : "Ctrl+Alt+p",
+        hotkey_prev : "Ctrl+Alt+left",
+        hotkey_next : "Ctrl+Alt+right",
+        hotkey_vup  : "Ctrl+Alt+up",
+        hotkey_vdown: "Ctrl+Alt+down",
+        hotkey_loop : "Ctrl+Alt+L"
+    };
 
-    
+    setHotkeys(hotkeys);
+
     var hijackTimer = window.setInterval(hijackPlayer, 1000);
     
 	// Execute this when a message is received from the background script.
@@ -254,6 +255,8 @@ window.addEventListener('load', function(event) {
             case 'pauseIt': doPause();
                 break;
             case 'playIt' : doPlay();
+                break;
+            case 'togglePlayIt' : togglePlay();
                 break;
         }
 	};
@@ -278,26 +281,30 @@ window.addEventListener('load', function(event) {
     function togglePlay(){
         if (plr && plr.player){
             if(plr.player.paused()){
-
+                plr.playTrack();
+            }else {
+                plr.pauseTrack();
             }
         }
     }
 
-    var hotkeys = {
-        hotkey_play : "",
-        hotkey_rew : "",
-        hotkey_ff : "",
-        hotkey_vup : "",
-        hotkey_vdown : "",
-        hotkey_loop : ""
-    };
+    function setHotkeys (keys){
+        var type = 'keyup';
+        for ( var key in keys ) {
+            if (key && keys[key]) {
+                (function(key){
+                    shortcut.add(keys[key], function(e) {
+                        mes(key);
+                    },{
+                        'type': type,
+                        'disable_in_input':true,
+                        'propagate':true
+                    });
+                })(key);
+            }
 
-    function listenHotkeyPlay(){    mes('hotkey_play')}
-    function listenHotkeyPrev(){    mes('hotkey_rew')}
-    function listenHotkeyNext(){    mes('hotkey_ff')}
-    function listenHotkeyVUp(){     mes('hotkey_vup')}
-    function listenHotkeyVDown(){   mes('hotkey_vdown')}
-    function listenHotkeyLoop(){    mes('hotkey_loop')}
+        }
+    }
 
     function hijackPlayer (){
         if (plr && !plr.isHijacked){

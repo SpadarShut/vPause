@@ -1,6 +1,6 @@
 window.addEventListener("load", function() {
     var players = [];
-    var lastTrack = null;
+    var lastPlayer = null;
     var pendingAction;
 	var playbackTracker;
 
@@ -16,18 +16,28 @@ window.addEventListener("load", function() {
 	//trackPlayback();
 
 	opera.extension.onmessage = function(event){
-		//window.console.log('ONMESSAGE: '+ event.data);
-        switch(event.data){
-            case 'paused':
-            case 'playing':
-                handlePolling(event);
-				break;
-            case 'justPaused':
-                handlePause(event);
-				break;
-            case 'startedPlaying':
-                handleStartedPlaying(event);
-				break;
+//		window.console.log('ONMESSAGE: '+ event.data);
+        if (typeof event.data == "string" && event.data.indexOf('hotkey_') === 0) {
+            switch (event.data.substring(7)) {
+                case 'play':
+                    tellToTogglePlay();
+                    break;
+            }
+        }
+        else {
+            switch(event.data){
+                case 'paused':
+                case 'playing':
+                    handlePolling(event);
+                    break;
+                case 'justPaused':
+                    handlePause(event);
+                    break;
+                case 'startedPlaying':
+                    handleStartedPlaying(event);
+                    break;
+            }
+
         }
 
 	};
@@ -35,17 +45,19 @@ window.addEventListener("load", function() {
 	function handlePolling(event) {
         players.push(event);
         window.clearTimeout(pendingAction);
+        // Wait for all pages to respond
         pendingAction = setTimeout(function(){
             var nowPlaying = 0;
             players.forEach(function(event,k,l){
                 if(event.data == 'playing'){
                     nowPlaying++;
+                    lastPlayer = event.source; // ??? unnecessary/harmful
                     event.source.postMessage("pauseIt");
                 }
             });
             if(!nowPlaying) {
-                if(lastTrack){
-                    lastTrack.postMessage('playIt');
+                if(lastPlayer){
+                    lastPlayer.postMessage('playIt');
                 }
             }
             players = [];//reset for next click
@@ -57,17 +69,29 @@ window.addEventListener("load", function() {
 	}
 
     function handlePause (event){
-		if(event.source == lastTrack){
-			lastTrack = event.source;
+		if(event.source == lastPlayer){
+			lastPlayer = event.source;
 			button.icon = 'play_btn_18.png'
 		}
     }
 
     function handleStartedPlaying(event){
 		button.icon = 'pause_btn_18.png';
-		lastTrack = event.source;
+		lastPlayer = event.source;
     }
 
+    function tellToPlay (){
+        if (lastPlayer) {
+            lastPlayer.postMessage('playIt');
+        }
+    }
+    function tellToTogglePlay (){
+        window.alert('tglplay');
+        if (lastPlayer) {
+            lastPlayer.postMessage('togglePlayIt');
+        }
+    }
+    
 	// The fn is needed to change button icon back to default one
 	// when a tab with currently playing player instance is closed.
 	// Called every 1000ms when music is playing.
