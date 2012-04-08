@@ -2,11 +2,6 @@
 * close tab while music playin - icon doesn' change
 * */
 window.addEventListener('load', function(event) {
-		// only operate in vkontakte and not in iframes
-    if(window.self != window.top || (window.location.host != 'vkontakte.ru' && window.location.host != 'vk.com')){
-    //    return
-
-    }
 
     /**
      * http://www.openjs.com/scripts/events/keyboard_shortcuts/
@@ -232,34 +227,18 @@ window.addEventListener('load', function(event) {
         }
     }
 
+    var volStep = 5;
     var plr = window.audioPlayer;
+    var hijackTimer;
 
     var hotkeys = {
-        hotkey_play : "Ctrl+Alt+p",
-        hotkey_prev : "Ctrl+Alt+left",
-        hotkey_next : "Ctrl+Alt+right",
-        hotkey_vup  : "Ctrl+Alt+up",
-        hotkey_vdown: "Ctrl+Alt+down",
-        hotkey_loop : "Ctrl+Alt+L"
+        hotkey_tglplay:  "Ctrl+Alt+p",
+        hotkey_prev:     "Ctrl+Alt+left",
+        hotkey_next:     "Ctrl+Alt+right",
+        hotkey_vup:      "Ctrl+Alt+up",
+        hotkey_vdown:    "Ctrl+Alt+down",
+        hotkey_tglloop:  "Ctrl+Alt+r"
     };
-
-    setHotkeys(hotkeys);
-
-    var hijackTimer = window.setInterval(hijackPlayer, 1000);
-    
-	// Execute this when a message is received from the background script.
-	opera.extension.onmessage = function(event) {
-        switch(event.data){
-            case 'wassup?': sendState();
-                break;
-            case 'pauseIt': doPause();
-                break;
-            case 'playIt' : doPlay();
-                break;
-            case 'togglePlayIt' : togglePlay();
-                break;
-        }
-	};
 
     function sendState() {
         if (plr && plr.player){
@@ -282,12 +261,92 @@ window.addEventListener('load', function(event) {
         if (plr && plr.player){
             if(plr.player.paused()){
                 plr.playTrack();
-            }else {
+            } else {
                 plr.pauseTrack();
             }
         }
     }
 
+    function toggleLoop(){
+        plr && plr.toggleRepeat()
+    }
+    function prevTrack(){
+        plr && plr.prevTrack()
+    }
+    function nextTrack(){
+        plr && plr.nextTrack()
+    }
+
+    function volDown(){
+/*        var curVol = parseInt(window.getCookie('audio_vol'));
+        var newVol = curVol - volStep;
+        if (newVol < 0) {
+            newVol = 0;
+        }*/
+        setVol(-volStep);
+    }
+
+    function volUp() {
+/*        var curVol = parseInt(window.getCookie('audio_vol'));
+        var newVol = curVol + volStep;
+        if (newVol > 100) {
+            newVol = 100;
+        }*/
+        setVol(volStep);
+    }
+
+    function setVol(delta) {
+        if (plr){
+            //window.console.log(delta);
+            var volLine = window.ge('audio_volume_line'+plr.id);
+            if (volLine) {
+                var volSliderLeft = window.parseInt(window.ge('audio_vol_slider'+plr.id).style.left);
+                var newPxOffset = Math.round(plr.volW / 100 * (volSliderLeft / (plr.volW * 100) + delta));
+                var volControlX = window.getXY(volLine)[0] + window.pageXOffset + newPxOffset + 3;
+
+                console.log({
+
+                    delta: delta,
+                    "volSliderLeft: ": volSliderLeft,
+                    "volSliderLeft / (plr.volW * 100) + delta: ": volSliderLeft / (plr.volW * 100) + delta,
+                    "newPxOffset: ": newPxOffset,
+                    "window.getXY(volLine)[0]: ": window.getXY(volLine)[0],
+                    "window.pageXOffset: ": window.pageXOffset,
+                    "volControlX: " : volControlX
+                });
+
+                window.ge('gp').style.width = volControlX + "px !important";
+                var mdown = window.document.createEvent("MouseEvents");
+                mdown.initMouseEvent("mousedown", true, true, window,
+                    0, 0, 0, volControlX, 0, false, false, false, false, 0, null);
+
+                var mup = window.document.createEvent("MouseEvents");
+                mup.initMouseEvent("mouseup", true, true, window,
+                    0, 0, 0, volControlX, 0, false, false, false, false, 0, null);
+
+                volLine.dispatchEvent(mdown);
+                volLine.dispatchEvent(mup);
+
+                /*       if(canceled) {
+                 // A handler called preventDefault
+                 alert("canceled");
+                 } else {
+                 // None of the handlers called preventDefault
+                 alert("not canceled");
+                 }*/
+
+            } else {
+
+                var curVol = window.getCookie('audio_vol');
+                var newVol = curVol + delta > 100 ? 100 : (curVol + delta < 0 ? 0 : curVol + delta);
+                window.console.log(newVol);
+                plr.player.setVolume(newVol);
+                window.setCookie('audio_vol', newVol, 365);
+
+            }
+        }
+
+    }
     function setHotkeys (keys){
         var type = 'keyup';
         for ( var key in keys ) {
@@ -331,43 +390,82 @@ window.addEventListener('load', function(event) {
         }
     }
 
-    Function.vPauseAddCallListener = function(func, callbacks) {
-        var successNumber = 0,
-            errorNumber = 0,
-            name = func.name;
-
-        return function() {
-            var args = [].slice.call(arguments);
-            var result, error;
-
-            var props = {
-                args: args,
-                self: this,
-                name: name
-            };
-            callbacks.before && callbacks.before(props);
-
-            try {
-                result = func.apply(this, arguments);
-                props.successNumber = ++successNumber;
-                props.result = result;
-                props.status = 'success';
-                callbacks.success && callbacks.success(props);
-            } catch (e) {
-                props.errorNumber = ++errorNumber;
-                props.error = e;
-                props.status = 'error';
-                callbacks.error && callbacks.error(props);
-            }
-            callbacks.after && callbacks.after(props);
-
-            return result;
-        }
-    };
-
 	function mes(mes){
 		opera.extension.postMessage(mes);
 	}
+
+    function initVK () {
+
+        hijackTimer = window.setInterval(hijackPlayer, 1000);
+
+        // Execute this when a message is received from the background script.
+        opera.extension.onmessage = function(event) {
+            switch (event.data) {
+                case 'wassup?': sendState();
+                    break;
+                case 'pauseIt': doPause();
+                    break;
+                case 'playIt' : doPlay();
+                    break;
+                case 'prev'   : prevTrack();
+                    break;
+                case 'next'   : nextTrack();
+                    break;
+                case 'tglplay': togglePlay();
+                    break;
+                case 'tglloop': toggleLoop();
+                    break;
+                case 'vup': volUp();
+                    break;
+                case 'vdown': volDown();
+                    break;
+            }
+        };
+
+        Function.vPauseAddCallListener = function(func, callbacks) {
+            var successNumber = 0,
+                errorNumber = 0,
+                name = func.name;
+
+            return function() {
+                var args = [].slice.call(arguments);
+                var result, error;
+
+                var props = {
+                    args: args,
+                    self: this,
+                    name: name
+                };
+                callbacks.before && callbacks.before(props);
+
+                try {
+                    result = func.apply(this, arguments);
+                    props.successNumber = ++successNumber;
+                    props.result = result;
+                    props.status = 'success';
+                    callbacks.success && callbacks.success(props);
+                } catch (e) {
+                    props.errorNumber = ++errorNumber;
+                    props.error = e;
+                    props.status = 'error';
+                    callbacks.error && callbacks.error(props);
+                }
+                callbacks.after && callbacks.after(props);
+
+                return result;
+            }
+        };
+
+    }
+
+    function init(){
+        setHotkeys(hotkeys);
+        if(window.self == window.top && (window.location.host == 'vkontakte.ru' || window.location.host == 'vk.com')){
+            initVK();
+        }
+    }
+
+    init();
 /*
 	window.setInterval(function(){
 		if(plr && plr.player && !plr.player.paused()){

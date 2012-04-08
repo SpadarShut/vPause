@@ -18,11 +18,7 @@ window.addEventListener("load", function() {
 	opera.extension.onmessage = function(event){
 //		window.console.log('ONMESSAGE: '+ event.data);
         if (typeof event.data == "string" && event.data.indexOf('hotkey_') === 0) {
-            switch (event.data.substring(7)) {
-                case 'play':
-                    tellToTogglePlay();
-                    break;
-            }
+            tellPlayer( event.data.substring(7));
         }
         else {
             switch(event.data){
@@ -60,7 +56,7 @@ window.addEventListener("load", function() {
                     lastPlayer.postMessage('playIt');
                 }
             }
-            players = [];//reset for next click
+            players = []; //reset for next click
         }, 20)
     }
 
@@ -80,18 +76,29 @@ window.addEventListener("load", function() {
 		lastPlayer = event.source;
     }
 
-    function tellToPlay (){
+    function tellPlayer( msg ){
+        if (msg && lastPlayer) {
+            lastPlayer.postMessage( msg );
+        }
+    }
+
+/*    function tellToPlay (){
         if (lastPlayer) {
             lastPlayer.postMessage('playIt');
         }
     }
     function tellToTogglePlay (){
-        window.alert('tglplay');
         if (lastPlayer) {
-            lastPlayer.postMessage('togglePlayIt');
+            lastPlayer.postMessage('togglePlay');
         }
     }
-    
+
+    function tellToToggleLoop (){
+        if (lastPlayer) {
+            lastPlayer.postMessage('toggleLoop');
+        }
+    }*/
+
 	// The fn is needed to change button icon back to default one
 	// when a tab with currently playing player instance is closed.
 	// Called every 1000ms when music is playing.
