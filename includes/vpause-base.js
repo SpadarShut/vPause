@@ -228,15 +228,16 @@ window.addEventListener('load', function(event) {
     }
 
     var volStep = 5;
+    var disableInInputs = false;
     var plr = window.audioPlayer;
     var hijackTimer;
 
     var hotkeys = {
         hotkey_tglplay:  "Ctrl+Alt+p",
-        hotkey_prev:     "Ctrl+Alt+left",
-        hotkey_next:     "Ctrl+Alt+right",
-        hotkey_vup:      "Ctrl+Alt+up",
-        hotkey_vdown:    "Ctrl+Alt+down",
+        hotkey_prev:     "Ctrl+Shift+left",
+        hotkey_next:     "Ctrl+Shift+right",
+        hotkey_vup:      "Ctrl+Shift+up",
+        hotkey_vdown:    "Ctrl+Shift+down",
         hotkey_tglloop:  "Ctrl+Alt+r"
     };
 
@@ -278,70 +279,57 @@ window.addEventListener('load', function(event) {
     }
 
     function volDown(){
-/*        var curVol = parseInt(window.getCookie('audio_vol'));
-        var newVol = curVol - volStep;
-        if (newVol < 0) {
-            newVol = 0;
-        }*/
         setVol(-volStep);
     }
 
     function volUp() {
-/*        var curVol = parseInt(window.getCookie('audio_vol'));
-        var newVol = curVol + volStep;
-        if (newVol > 100) {
-            newVol = 100;
-        }*/
         setVol(volStep);
     }
 
     function setVol(delta) {
         if (plr){
             //window.console.log(delta);
-            var volLine = window.ge('audio_volume_line'+plr.id);
+            var volLine = window.ge('audio_volume_line'+plr.id) || window.ge('gp_vol_line');
             if (volLine) {
-                var volSliderLeft = window.parseInt(window.ge('audio_vol_slider'+plr.id).style.left);
-                var newPxOffset = Math.round(plr.volW / 100 * (volSliderLeft / (plr.volW * 100) + delta));
-                var volControlX = window.getXY(volLine)[0] + window.pageXOffset + newPxOffset + 3;
+                var slider = window.ge('audio_vol_slider'+plr.id);
 
-                console.log({
+                if(volLine.id == "gp_vol_line") {
+                    slider = window.ge('gp_vol_slider');
+/*
+                    var gp = window.ge('gp_large');
+                    gp.classList.add('vPauseShow');*/
+                }
+                // Simulate click on volume control
+                var volSliderLeft = window.parseInt(slider.style.left);
+                var newPxOffset = Math.round(plr.volW / 100 * (volSliderLeft / (plr.volW * 100) + delta)) + volSliderLeft + 3;
+                var clickX = window.getXY(volLine)[0] + window.pageXOffset + newPxOffset;
 
-                    delta: delta,
-                    "volSliderLeft: ": volSliderLeft,
-                    "volSliderLeft / (plr.volW * 100) + delta: ": volSliderLeft / (plr.volW * 100) + delta,
-                    "newPxOffset: ": newPxOffset,
-                    "window.getXY(volLine)[0]: ": window.getXY(volLine)[0],
-                    "window.pageXOffset: ": window.pageXOffset,
-                    "volControlX: " : volControlX
-                });
-
-                window.ge('gp').style.width = volControlX + "px !important";
                 var mdown = window.document.createEvent("MouseEvents");
                 mdown.initMouseEvent("mousedown", true, true, window,
-                    0, 0, 0, volControlX, 0, false, false, false, false, 0, null);
+                    0, 0, 0, clickX, 0, false, false, false, false, 0, null);
 
                 var mup = window.document.createEvent("MouseEvents");
                 mup.initMouseEvent("mouseup", true, true, window,
-                    0, 0, 0, volControlX, 0, false, false, false, false, 0, null);
+                    0, 0, 0, clickX, 0, false, false, false, false, 0, null);
 
                 volLine.dispatchEvent(mdown);
                 volLine.dispatchEvent(mup);
 
-                /*       if(canceled) {
-                 // A handler called preventDefault
-                 alert("canceled");
-                 } else {
-                 // None of the handlers called preventDefault
-                 alert("not canceled");
-                 }*/
+/*                if (gp) {
+                    gp.classList.remove('vPauseShow');
+                }*/
 
             } else {
+
+                window.console.log('cant change vol');
+/*
 
                 var curVol = window.getCookie('audio_vol');
                 var newVol = curVol + delta > 100 ? 100 : (curVol + delta < 0 ? 0 : curVol + delta);
                 window.console.log(newVol);
                 plr.player.setVolume(newVol);
                 window.setCookie('audio_vol', newVol, 365);
+*/
 
             }
         }
@@ -356,7 +344,7 @@ window.addEventListener('load', function(event) {
                         mes(key);
                     },{
                         'type': type,
-                        'disable_in_input':true,
+                        'disable_in_input': disableInInputs,
                         'propagate':true
                     });
                 })(key);
@@ -371,20 +359,20 @@ window.addEventListener('load', function(event) {
                 success: function(props){
                     var icon = props.args[0];
 					if(icon == 'pauseicon' ){
-                        mes('justPaused');
-                    }
-                    else if(icon == 'icon'){
-						mes('closedPlayer');
+                        mes({type: 'justPaused', info: plr.lastSong});
                     }
                     else if(icon == 'playicon'){
-						mes('startedPlaying');
+                        mes({type: 'startedPlaying', info: plr.lastSong});
+                    }
+                    else if(icon == 'icon'){
+						mes({type: 'stopped'});
                     }
                 }
             });
             plr.isHijacked = true;
             if(plr.player && !plr.player.paused()){
                 // if it's first run, and play already fired:
-				mes('startedPlaying');
+				mes({type: 'startedPlaying', info: plr.lastSong});
             }
             window.clearInterval(hijackTimer);
         }
@@ -395,6 +383,8 @@ window.addEventListener('load', function(event) {
 	}
 
     function initVK () {
+
+
 
         hijackTimer = window.setInterval(hijackPlayer, 1000);
 
@@ -415,9 +405,9 @@ window.addEventListener('load', function(event) {
                     break;
                 case 'tglloop': toggleLoop();
                     break;
-                case 'vup': volUp();
+                case 'vup'    : volUp();
                     break;
-                case 'vdown': volDown();
+                case 'vdown'  : volDown();
                     break;
             }
         };

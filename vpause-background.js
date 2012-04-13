@@ -1,24 +1,37 @@
 window.addEventListener("load", function() {
     var players = [];
     var lastPlayer = null;
+    var btnClickAction;
     var pendingAction;
-	var playbackTracker;
+    var defaultTitle = "Play/Pause Vkontakte";
+    var iconDefault  = "play_btn_18.png";
+    var iconPause    = 'pause_btn_18.png';
 
     var button = opera.contexts.toolbar.createItem({
         disabled: false,
-        title: "Play/Pausse Vkontakte",
-        icon: "play_btn_18.png", // The icon (18x18) to use for the button.
-        onclick: function() {
-            poll()
-        }
+        title: defaultTitle,
+        icon: iconDefault,
+        onclick: buttonClicked
     });
     opera.contexts.toolbar.addItem(button);
-	//trackPlayback();
 
 	opera.extension.onmessage = function(event){
 //		window.console.log('ONMESSAGE: '+ event.data);
         if (typeof event.data == "string" && event.data.indexOf('hotkey_') === 0) {
             tellPlayer( event.data.substring(7));
+        }
+        else if (typeof event.data == 'object'){
+            switch(event.data.type){
+                case 'startedPlaying':
+                    handleStartedPlaying(event);
+                    break;
+                case 'justPaused':
+                    handlePause(event);
+                    break;
+                case 'stopped':
+                    handleStop(event);
+                    break;
+            }
         }
         else {
             switch(event.data){
@@ -26,18 +39,28 @@ window.addEventListener("load", function() {
                 case 'playing':
                     handlePolling(event);
                     break;
-                case 'justPaused':
-                    handlePause(event);
-                    break;
-                case 'startedPlaying':
-                    handleStartedPlaying(event);
-                    break;
             }
-
         }
-
 	};
-    
+
+    function buttonClicked (){
+        if (btnClickAction){
+            window.clearTimeout(btnClickAction);
+            btnClickAction = null;
+            handleDblClick();
+        }
+        else {
+            btnClickAction = window.setTimeout(function(){
+                btnClickAction = null;
+                poll();
+            }, 350)
+        }
+    }
+
+    function handleDblClick () {
+        tellPlayer('next')
+    }
+
 	function handlePolling(event) {
         players.push(event);
         window.clearTimeout(pendingAction);
@@ -64,51 +87,38 @@ window.addEventListener("load", function() {
 		opera.extension.broadcastMessage('wassup?');
 	}
 
-    function handlePause (event){
-		if(event.source == lastPlayer){
-			lastPlayer = event.source;
-			button.icon = 'play_btn_18.png'
-		}
-    }
-
     function handleStartedPlaying(event){
-		button.icon = 'pause_btn_18.png';
-		lastPlayer = event.source;
+        lastPlayer = event.source;
+        changeIcon(iconPause);
+        if (event.data.info) {
+            changeTitle(event.data.info[5] + ' - ' + event.data.info[6] )
+        }
+    }
+    
+    function handlePause (event){
+        if (event.source == lastPlayer){
+            lastPlayer = event.source;
+            changeIcon( iconDefault );
+            //changeTitle(defaultTitle)
+        }
     }
 
+    function handleStop(event) {
+        changeTitle(defaultTitle)
+    }
+    
     function tellPlayer( msg ){
         if (msg && lastPlayer) {
             lastPlayer.postMessage( msg );
         }
     }
 
-/*    function tellToPlay (){
-        if (lastPlayer) {
-            lastPlayer.postMessage('playIt');
-        }
+    function changeTitle(title) {
+        button.title = title;
     }
-    function tellToTogglePlay (){
-        if (lastPlayer) {
-            lastPlayer.postMessage('togglePlay');
-        }
+    function changeIcon(icon) {
+        button.icon = icon;
     }
-
-    function tellToToggleLoop (){
-        if (lastPlayer) {
-            lastPlayer.postMessage('toggleLoop');
-        }
-    }*/
-
-	// The fn is needed to change button icon back to default one
-	// when a tab with currently playing player instance is closed.
-	// Called every 1000ms when music is playing.
-	/*function trackPlayback(){ return
-		window.clearInterval(playbackTracker);
-		playbackTracker = window.setInterval(function(){
-			button.icon = 'play_btn_18.png'
-		},1100);
-		button.icon = 'pause_btn_18.png';
-	}*/
 
 	function enableButton() {
 	/*return;
@@ -120,10 +130,5 @@ window.addEventListener("load", function() {
 		}*/
 		button.disabled = true;
 	}
-	
-	// Enable the button when a tab is ready.
-	/*opera.extension.onconnect = enableButton;*/
-/*	opera.extension.tabs.onfocus = enableButton;
-	opera.extension.tabs.onblur = enableButton;*/
-
+//opera.extension.onconnect = enableButton;
 }, false);
