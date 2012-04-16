@@ -1,0 +1,21 @@
+TODO for vPause
+
+* Handle tab close
+* Change icons for hotkeys
+* Dbl click actions
+* Backend for settings
+  - I18n
+* UI for settings
+
+* Icon animation
+
+
+Settings:
+	- Show time badge
+	  current / left / same as on the page
+	- Double click action
+	  download / next / prev / to start? / toggle time display
+	  
+	  
+DONE:
+x Badge on time update

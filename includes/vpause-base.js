@@ -231,6 +231,7 @@ window.addEventListener('load', function(event) {
     var disableInInputs = false;
     var plr = window.audioPlayer;
     var hijackTimer;
+    var showTimeLeft = 1;
 
     var hotkeys = {
         hotkey_tglplay:  "Ctrl+Alt+p",
@@ -242,23 +243,31 @@ window.addEventListener('load', function(event) {
     };
 
     function sendState() {
+        window.console.log('sendState');
+        var plr = window.audioPlayer;
         if (plr && plr.player){
             var msg =  plr.player.paused() ? 'paused' : 'playing';
+            //window.console.log(msg);
 			mes(msg);
         }
     }
+
     function doPause(){
+        var plr = window.audioPlayer;
         if (plr && plr.player){
             plr.pauseTrack();
         }
     }
+
     function doPlay(){
+        var plr = window.audioPlayer;
         if (plr && plr.player){
             plr.playTrack();
         }
     }
 
     function togglePlay(){
+        var plr = window.audioPlayer;
         if (plr && plr.player){
             if(plr.player.paused()){
                 plr.playTrack();
@@ -269,12 +278,17 @@ window.addEventListener('load', function(event) {
     }
 
     function toggleLoop(){
+        var plr = window.audioPlayer;
         plr && plr.toggleRepeat()
     }
+
     function prevTrack(){
+        var plr = window.audioPlayer;
         plr && plr.prevTrack()
     }
+
     function nextTrack(){
+        var plr = window.audioPlayer;
         plr && plr.nextTrack()
     }
 
@@ -287,6 +301,7 @@ window.addEventListener('load', function(event) {
     }
 
     function setVol(delta) {
+        var plr = window.audioPlayer;
         if (plr){
             //window.console.log(delta);
             var volLine = window.ge('audio_volume_line'+plr.id) || window.ge('gp_vol_line');
@@ -354,8 +369,10 @@ window.addEventListener('load', function(event) {
     }
 
     function hijackPlayer (){
+        var plr = window.audioPlayer;
         if (plr && !plr.isHijacked){
-           plr.setIcon = Function.vPauseAddCallListener( plr.setIcon, {
+            // hook icon changes - basically distilled player events
+            plr.setIcon = Function.vPauseAddCallListener( plr.setIcon, {
                 success: function(props){
                     var icon = props.args[0];
 					if(icon == 'pauseicon' ){
@@ -364,14 +381,38 @@ window.addEventListener('load', function(event) {
                     else if(icon == 'playicon'){
                         mes({type: 'startedPlaying', info: plr.lastSong});
                     }
-                    else if(icon == 'icon'){
-						mes({type: 'stopped'});
-                    }
                 }
             });
+
+            // hook player stop
+            plr.stop = Function.vPauseAddCallListener( plr.stop, {
+                success: function(props) {
+                    mes({type: 'stopped'})
+                }
+            });
+
+            plr.onPlayProgress = Function.vPauseAddCallListener( plr.onPlayProgress, {
+                success: function(props) {
+                    var cur = props.args[0];
+                    var len = props.args[1];
+                    if (Math.abs(len-plr.duration)>1 || isNaN(len)) len = plr.duration;
+                    cur = Math.round(cur);
+                    len = Math.round(len);
+
+                    var t = showTimeLeft ? len - cur : cur;
+                    var res = plr.formatTime(t);
+                    if (showTimeLeft) {res = "-" + res}
+
+                    mes({type: 'playProgress',
+                         info: res})
+                }
+            });
+
+
+
             plr.isHijacked = true;
             if(plr.player && !plr.player.paused()){
-                // if it's first run, and play already fired:
+                // if it's first run and play already fired:
 				mes({type: 'startedPlaying', info: plr.lastSong});
             }
             window.clearInterval(hijackTimer);
@@ -383,9 +424,6 @@ window.addEventListener('load', function(event) {
 	}
 
     function initVK () {
-
-
-
         hijackTimer = window.setInterval(hijackPlayer, 1000);
 
         // Execute this when a message is received from the background script.

@@ -1,22 +1,41 @@
 window.addEventListener("load", function() {
     var players = [];
-    var lastPlayer = null;
-    var btnClickAction;
-    var pendingAction;
-    var defaultTitle = "Play/Pause Vkontakte";
-    var iconDefault  = "play_btn_18.png";
-    var iconPause    = 'pause_btn_18.png';
+    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose;
+    var dblClickTimeout = 300;
+    var defaultTitle = "vPause";
+    var icons = {
+        play:       'btn_play.png',
+        play_dis:   'btn_play_disabled.png',
+        pause:      'btn_pause.png',
+        prev:       'btn_prev.png',
+        next:       'btn_next.png',
+        repeat:     'btn_repeat.png',
+        repeat_dis: 'btn_repeat_disabled.png',
+        vol_0:      'btn_vol_0.png',
+        vol_1:      'btn_vol_1.png',
+        vol_2:      'btn_vol_2.png',
+        vol_3:      'btn_vol_3.png',
+        vol_4:      'btn_vol_4.png'
+    };
 
     var button = opera.contexts.toolbar.createItem({
-        disabled: false,
-        title: defaultTitle,
-        icon: iconDefault,
-        onclick: buttonClicked
+        disabled:   true,
+        title:      defaultTitle,
+        icon:       icons.play,
+        onclick:    buttonClicked,
+        badge: {
+            display: "block",
+            textContent: "",
+            color: "#fff",
+            backgroundColor: "rgba(0,0,0,.3)"
+        }
     });
+
     opera.contexts.toolbar.addItem(button);
 
 	opera.extension.onmessage = function(event){
-//		window.console.log('ONMESSAGE: '+ event.data);
+		//console.log('ONMESSAGE: '+ event.data);
+        //unIdle();
         if (typeof event.data == "string" && event.data.indexOf('hotkey_') === 0) {
             tellPlayer( event.data.substring(7));
         }
@@ -24,6 +43,9 @@ window.addEventListener("load", function() {
             switch(event.data.type){
                 case 'startedPlaying':
                     handleStartedPlaying(event);
+                    break;
+                case 'playProgress':
+                    handlePlayProgress(event);
                     break;
                 case 'justPaused':
                     handlePause(event);
@@ -35,7 +57,7 @@ window.addEventListener("load", function() {
         }
         else {
             switch(event.data){
-                case 'paused':
+                case 'paused' :
                 case 'playing':
                     handlePolling(event);
                     break;
@@ -44,67 +66,98 @@ window.addEventListener("load", function() {
 	};
 
     function buttonClicked (){
+        // Handle double click
         if (btnClickAction){
+            console.log('dbl click');
             window.clearTimeout(btnClickAction);
             btnClickAction = null;
-            handleDblClick();
+            buttonDblClicked();
         }
+        // Handle single click
         else {
+            console.log('single click');
             btnClickAction = window.setTimeout(function(){
                 btnClickAction = null;
                 poll();
-            }, 350)
+            }, dblClickTimeout)
         }
     }
 
-    function handleDblClick () {
+    function buttonDblClicked () {
         tellPlayer('next')
     }
 
-	function handlePolling(event) {
-        players.push(event);
-        window.clearTimeout(pendingAction);
-        // Wait for all pages to respond
-        pendingAction = setTimeout(function(){
-            var nowPlaying = 0;
-            players.forEach(function(event,k,l){
-                if(event.data == 'playing'){
-                    nowPlaying++;
-                    lastPlayer = event.source; // ??? unnecessary/harmful
-                    event.source.postMessage("pauseIt");
-                }
-            });
-            if(!nowPlaying) {
-                if(lastPlayer){
-                    lastPlayer.postMessage('playIt');
-                }
-            }
-            players = []; //reset for next click
-        }, 20)
+    function poll(){
+        opera.extension.broadcastMessage('wassup?');
+        noResponse = window.setTimeout(function(){
+            handlePolling(null)
+        }, dblClickTimeout + 50)
     }
 
-	function poll(){
-		opera.extension.broadcastMessage('wassup?');
-	}
-
-    function handleStartedPlaying(event){
-        lastPlayer = event.source;
-        changeIcon(iconPause);
-        if (event.data.info) {
-            changeTitle(event.data.info[5] + ' - ' + event.data.info[6] )
+	function handlePolling(event) {
+        console.log('handlePolling e.data: ' + !event ? event : event.data);/**/
+        if (event === null) {
+            goIdle();
         }
+        else {
+            window.clearTimeout(pendingAction);
+
+            players.push(event);
+
+            // Wait for all pages to respond
+            pendingAction = setTimeout(function(){
+                var nowPlaying = 0;
+                players.forEach(function(event,k,l){
+                    if(event.data == 'playing'){
+                        nowPlaying++;
+                        lastPlayer = event.source; // ??? unnecessary/harmful
+                        event.source.postMessage('pauseIt');
+                    }
+                });
+                if(!nowPlaying) {
+                    if(lastPlayer){
+                        lastPlayer.postMessage('playIt');
+                    }
+                }
+                players = []; //reset for next click
+            }, 20)
+        }
+    }
+
+    function handleStartedPlaying(event) {
+        lastPlayer = event.source;
+        changeIcon(icons.pause);
+        unIdle();
+        if (event.data.info) {
+            changeTitle(event.data.info[5] + ' - ' + event.data.info[6]  + ' (' + event.data.info[4] +')' )
+        }
+    }
+
+    function handlePlayProgress(event) {
+        button.badge.textContent = event.data.info;
+
+        // Need to monitor when a page is closed while playing to turn off the button.
+        window.clearTimeout(monitorClose);
+        monitorClose = window.setTimeout(function(){
+            goIdle();
+        }, 2000);
+
+        console.log((new Date).getTime())
     }
     
     function handlePause (event){
+        window.clearTimeout(monitorClose);
         if (event.source == lastPlayer){
+            unIdle();
             lastPlayer = event.source;
-            changeIcon( iconDefault );
+            changeIcon( icons.play );
             //changeTitle(defaultTitle)
         }
     }
 
     function handleStop(event) {
-        changeTitle(defaultTitle)
+        window.clearTimeout(monitorClose);
+        goIdle();
     }
     
     function tellPlayer( msg ){
@@ -116,19 +169,32 @@ window.addEventListener("load", function() {
     function changeTitle(title) {
         button.title = title;
     }
-    function changeIcon(icon) {
+
+    function changeIcon(icon, restorePreviousAfter) {
         button.icon = icon;
     }
 
-	function enableButton() {
-	/*return;
-		var tab = opera.extension.tabs.getFocused();
-		if (tab) {
-			button.disabled = false;
-		} else {
-			button.disabled = true;
-		}*/
-		button.disabled = true;
-	}
+    function goIdle () {
+        console.log('Gone idle');
+
+        changeIcon(icons.play);
+        changeTitle(defaultTitle);
+        button.badge.textContent = '';
+        button.badge.display = 'none';
+//        opera.contexts.toolbar.addItem(button);
+
+        button.disabled = true;
+    }
+
+    function unIdle () {
+        console.log('Unidled btn');
+        button.badge.display = 'block';
+        button.disabled = false;
+
+  //      opera.contexts.toolbar.removeItem(button);
+        window.clearTimeout(noResponse);
+        noResponse = null;
+    }
+
 //opera.extension.onconnect = enableButton;
 }, false);
