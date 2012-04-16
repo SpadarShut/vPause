@@ -1,6 +1,5 @@
 TODO for vPause
 
-* Handle tab close
 * Change icons for hotkeys
 * Dbl click actions
 * Backend for settings
@@ -15,7 +14,8 @@ Settings:
 	  current / left / same as on the page
 	- Double click action
 	  download / next / prev / to start? / toggle time display
-	  
-	  
+
+
 DONE:
 x Badge on time update
+x Handle tab close

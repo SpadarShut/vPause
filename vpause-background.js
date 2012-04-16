@@ -1,6 +1,6 @@
 window.addEventListener("load", function() {
     var players = [];
-    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose;
+    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, restoreIcon;
     var dblClickTimeout = 300;
     var defaultTitle = "vPause";
     var icons = {
@@ -35,11 +35,11 @@ window.addEventListener("load", function() {
 
 	opera.extension.onmessage = function(event){
 		//console.log('ONMESSAGE: '+ event.data);
-        //unIdle();
-        if (typeof event.data == "string" && event.data.indexOf('hotkey_') === 0) {
+/*        if (typeof event.data == "string" && event.data.indexOf('hotkey_') === 0) {
             tellPlayer( event.data.substring(7));
         }
-        else if (typeof event.data == 'object'){
+        else */
+        if (typeof event.data == 'object'){
             switch(event.data.type){
                 case 'startedPlaying':
                     handleStartedPlaying(event);
@@ -53,13 +53,14 @@ window.addEventListener("load", function() {
                 case 'stopped':
                     handleStop(event);
                     break;
-            }
-        }
-        else {
-            switch(event.data){
-                case 'paused' :
-                case 'playing':
+                case 'hotkey':
+                    handleHotkey(event);
+                    break;
+                case 'playerState':
                     handlePolling(event);
+                    break;
+                case 'icon':
+                    changeIcon(event.data.info);
                     break;
             }
         }
@@ -68,14 +69,12 @@ window.addEventListener("load", function() {
     function buttonClicked (){
         // Handle double click
         if (btnClickAction){
-            console.log('dbl click');
             window.clearTimeout(btnClickAction);
             btnClickAction = null;
             buttonDblClicked();
         }
         // Handle single click
         else {
-            console.log('single click');
             btnClickAction = window.setTimeout(function(){
                 btnClickAction = null;
                 poll();
@@ -140,9 +139,7 @@ window.addEventListener("load", function() {
         window.clearTimeout(monitorClose);
         monitorClose = window.setTimeout(function(){
             goIdle();
-        }, 2000);
-
-        console.log((new Date).getTime())
+        }, 1500);
     }
     
     function handlePause (event){
@@ -151,7 +148,6 @@ window.addEventListener("load", function() {
             unIdle();
             lastPlayer = event.source;
             changeIcon( icons.play );
-            //changeTitle(defaultTitle)
         }
     }
 
@@ -159,8 +155,13 @@ window.addEventListener("load", function() {
         window.clearTimeout(monitorClose);
         goIdle();
     }
-    
-    function tellPlayer( msg ){
+
+    function handleHotkey (event) {
+
+        tellPlayer (event.data.info);
+    }
+
+    function tellPlayer( msg ) {
         if (msg && lastPlayer) {
             lastPlayer.postMessage( msg );
         }
@@ -170,8 +171,15 @@ window.addEventListener("load", function() {
         button.title = title;
     }
 
-    function changeIcon(icon, restorePreviousAfter) {
+    function changeIcon(icon, andRestore) {
+        window.clearTimeout(restoreIcon);
+
         button.icon = icon;
+        if (andRestore) {
+            restoreIcon = window.setTimeout(function(){
+                tellPlayer('gimmeIcon')
+            }, 1000)
+        }
     }
 
     function goIdle () {

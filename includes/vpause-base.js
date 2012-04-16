@@ -234,21 +234,21 @@ window.addEventListener('load', function(event) {
     var showTimeLeft = 1;
 
     var hotkeys = {
-        hotkey_tglplay:  "Ctrl+Alt+p",
-        hotkey_prev:     "Ctrl+Shift+left",
-        hotkey_next:     "Ctrl+Shift+right",
-        hotkey_vup:      "Ctrl+Shift+up",
-        hotkey_vdown:    "Ctrl+Shift+down",
-        hotkey_tglloop:  "Ctrl+Alt+r"
+        tglplay:  "Ctrl+Alt+p",
+        prev:     "Ctrl+Shift+left",
+        next:     "Ctrl+Shift+right",
+        vup:      "Ctrl+Shift+up",
+        vdown:    "Ctrl+Shift+down",
+        tglloop:  "Ctrl+Alt+r"
     };
 
     function sendState() {
-        window.console.log('sendState');
         var plr = window.audioPlayer;
         if (plr && plr.player){
-            var msg =  plr.player.paused() ? 'paused' : 'playing';
-            //window.console.log(msg);
-			mes(msg);
+			mes({
+                type: 'playerState',
+                info: plr.player.paused() ? 'paused' : 'playing'
+            })
         }
     }
 
@@ -279,7 +279,7 @@ window.addEventListener('load', function(event) {
 
     function toggleLoop(){
         var plr = window.audioPlayer;
-        plr && plr.toggleRepeat()
+        plr && plr.toggleRepeat();
     }
 
     function prevTrack(){
@@ -335,28 +335,28 @@ window.addEventListener('load', function(event) {
                 }*/
 
             } else {
-
                 window.console.log('cant change vol');
 /*
-
                 var curVol = window.getCookie('audio_vol');
                 var newVol = curVol + delta > 100 ? 100 : (curVol + delta < 0 ? 0 : curVol + delta);
                 window.console.log(newVol);
                 plr.player.setVolume(newVol);
                 window.setCookie('audio_vol', newVol, 365);
 */
-
             }
         }
-
     }
+
     function setHotkeys (keys){
         var type = 'keyup';
         for ( var key in keys ) {
             if (key && keys[key]) {
                 (function(key){
                     shortcut.add(keys[key], function(e) {
-                        mes(key);
+                        mes({
+                            type: 'hotkey',
+                            info: key
+                        });
                     },{
                         'type': type,
                         'disable_in_input': disableInInputs,
@@ -419,6 +419,17 @@ window.addEventListener('load', function(event) {
         }
     }
 
+    function giveIcon () {
+        var plr = window.audioPlayer;
+        var icon = 'play';
+
+        if (plr && plr.id && plr.player && !plr.player.paused()){
+            icon = 'pause';
+        }
+
+        mes({type: 'icon', info: icon});
+    }
+
 	function mes(mes){
 		opera.extension.postMessage(mes);
 	}
@@ -446,6 +457,8 @@ window.addEventListener('load', function(event) {
                 case 'vup'    : volUp();
                     break;
                 case 'vdown'  : volDown();
+                    break;
+                case 'gimmeIcon'  : giveIcon();
                     break;
             }
         };
