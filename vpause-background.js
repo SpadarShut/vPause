@@ -4,18 +4,18 @@ window.addEventListener("load", function() {
     var dblClickTimeout = 300;
     var defaultTitle = "vPause";
     var icons = {
-        play:       'btn_play.png',
-        play_dis:   'btn_play_disabled.png',
-        pause:      'btn_pause.png',
-        prev:       'btn_prev.png',
-        next:       'btn_next.png',
-        repeat:     'btn_repeat.png',
-        repeat_dis: 'btn_repeat_disabled.png',
-        vol_0:      'btn_vol_0.png',
-        vol_1:      'btn_vol_1.png',
-        vol_2:      'btn_vol_2.png',
-        vol_3:      'btn_vol_3.png',
-        vol_4:      'btn_vol_4.png'
+        play:       'img/btn_play.png',
+        play_dis:   'img/btn_play_disabled.png',
+        pause:      'img/btn_pause.png',
+        prev:       'img/btn_prev.png',
+        next:       'img/btn_next.png',
+        repeat:     'img/btn_repeat.png',
+        repeat_dis: 'img/btn_repeat_disabled.png',
+        vol_0:      'img/btn_vol_0.png',
+        vol_1:      'img/btn_vol_1.png',
+        vol_2:      'img/btn_vol_2.png',
+        vol_3:      'img/btn_vol_3.png',
+        vol_4:      'img/btn_vol_4.png'
     };
 
     var button = opera.contexts.toolbar.createItem({
@@ -35,10 +35,6 @@ window.addEventListener("load", function() {
 
 	opera.extension.onmessage = function(event){
 		//console.log('ONMESSAGE: '+ event.data);
-/*        if (typeof event.data == "string" && event.data.indexOf('hotkey_') === 0) {
-            tellPlayer( event.data.substring(7));
-        }
-        else */
         if (typeof event.data == 'object'){
             switch(event.data.type){
                 case 'startedPlaying':
@@ -139,7 +135,7 @@ window.addEventListener("load", function() {
         window.clearTimeout(monitorClose);
         monitorClose = window.setTimeout(function(){
             goIdle();
-        }, 1500);
+        }, 1700);
     }
     
     function handlePause (event){
