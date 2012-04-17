@@ -277,16 +277,19 @@ window.addEventListener('load', function(event) {
     function toggleLoop(){
         var plr = window.audioPlayer;
         plr && plr.toggleRepeat();
+        mes({type: 'icon', info: plr.repeat ? 'repeat': 'repeat_dis'});
     }
 
     function prevTrack(){
         var plr = window.audioPlayer;
-        plr && plr.prevTrack()
+        plr && plr.prevTrack();
+        mes({type: 'icon', info: 'prev'});
     }
 
     function nextTrack(){
         var plr = window.audioPlayer;
-        plr && plr.nextTrack()
+        plr && plr.nextTrack();
+        mes({type: 'icon', info: 'next'});
     }
 
     function volDown(){
@@ -299,7 +302,7 @@ window.addEventListener('load', function(event) {
 
     function setVol(delta) {
         var plr = window.audioPlayer;
-        if ( !plr ){ return };
+        if ( !plr ){ return }
 		var volLine = window.ge('audio_volume_line'+plr.id) || window.ge('gp_vol_line');
 		if (volLine) {
 			var slider = window.ge('audio_vol_slider'+plr.id);
@@ -322,6 +325,16 @@ window.addEventListener('load', function(event) {
 
 			volLine.dispatchEvent(mdown);
 			volLine.dispatchEvent(mup);
+
+            var curVol = window.parseInt(window.getCookie('audio_vol'));
+            var icon = 'vol_';
+
+            if ( curVol == 0 ) { icon += '0'}
+            else if ( curVol <= 33 ) {icon += '1' }
+            else if ( curVol <= 66 ) {icon += '2' }
+            else if ( curVol <= 90 ) {icon += '3' }
+            else { icon += '4' }
+            mes({type: 'icon', info: icon});
 
 		} else {
 			window.console.log('cant change vol');
@@ -391,8 +404,10 @@ window.addEventListener('load', function(event) {
                     var res = plr.formatTime(t);
                     if (showTimeLeft) {res = "-" + res}
 
-                    mes({type: 'playProgress',
-                         info: res})
+                    mes({
+                        type: 'playProgress',
+                        info: res
+                    })
                 }
             });
 
@@ -407,7 +422,7 @@ window.addEventListener('load', function(event) {
         }
     }
 
-    function giveIcon () {
+    function updateIcon () {
         var plr = window.audioPlayer;
         var icon = 'play';
 
@@ -415,41 +430,42 @@ window.addEventListener('load', function(event) {
             icon = 'pause';
         }
 
-        mes({type: 'icon', info: icon});
+        mes({ type: 'icon', info: icon });
     }
 
 	function mes(mes){
 		opera.extension.postMessage(mes);
 	}
 
+    function handleMessaging (event) {
+        switch (event.data) {
+            case 'wassup?'   : sendState();
+                break;
+            case 'pauseIt'   : doPause();
+                break;
+            case 'playIt'    : doPlay();
+                break;
+            case 'prev'      : prevTrack();
+                break;
+            case 'next'      : nextTrack();
+                break;
+            case 'tglplay'   : togglePlay();
+                break;
+            case 'tglloop'   : toggleLoop();
+                break;
+            case 'vup'       : volUp();
+                break;
+            case 'vdown'     : volDown();
+                break;
+            case 'updateIcon': updateIcon();
+                break;
+        }
+    }
     function initVK () {
         hijackTimer = window.setInterval(hijackPlayer, 1000);
 
         // Execute this when a message is received from the background script.
-        opera.extension.onmessage = function(event) {
-            switch (event.data) {
-                case 'wassup?': sendState();
-                    break;
-                case 'pauseIt': doPause();
-                    break;
-                case 'playIt' : doPlay();
-                    break;
-                case 'prev'   : prevTrack();
-                    break;
-                case 'next'   : nextTrack();
-                    break;
-                case 'tglplay': togglePlay();
-                    break;
-                case 'tglloop': toggleLoop();
-                    break;
-                case 'vup'    : volUp();
-                    break;
-                case 'vdown'  : volDown();
-                    break;
-                case 'gimmeIcon'  : giveIcon();
-                    break;
-            }
-        };
+        opera.extension.onmessage = handleMessaging;
 
         Function.vPauseAddCallListener = function(func, callbacks) {
             var successNumber = 0,

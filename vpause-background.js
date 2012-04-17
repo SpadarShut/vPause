@@ -56,7 +56,7 @@ window.addEventListener("load", function() {
                     handlePolling(event);
                     break;
                 case 'icon':
-                    changeIcon(event.data.info);
+                    handleIconChange(event);
                     break;
             }
         }
@@ -86,11 +86,11 @@ window.addEventListener("load", function() {
         opera.extension.broadcastMessage('wassup?');
         noResponse = window.setTimeout(function(){
             handlePolling(null)
-        }, dblClickTimeout + 50)
+        }, dblClickTimeout + 150)
     }
 
 	function handlePolling(event) {
-        console.log('handlePolling e.data: ' + !event ? event : event.data);/**/
+        console.log('handlePolling e.data: ' + !event ? event : event.data);
         if (event === null) {
             goIdle();
         }
@@ -124,18 +124,18 @@ window.addEventListener("load", function() {
         changeIcon(icons.pause);
         unIdle();
         if (event.data.info) {
-            changeTitle(event.data.info[5] + ' - ' + event.data.info[6]  + ' (' + event.data.info[4] +')' )
+            changeTitle(htmlDecode (event.data.info[5] + ' - ' + event.data.info[6])  + ' (' + event.data.info[4] +')' )
         }
     }
 
     function handlePlayProgress(event) {
-        button.badge.textContent = event.data.info;
+        //button.badge.textContent = event.data.info;
 
         // Need to monitor when a page is closed while playing to turn off the button.
         window.clearTimeout(monitorClose);
         monitorClose = window.setTimeout(function(){
-            goIdle();
-        }, 1700);
+            //goIdle();
+        }, 2700);
     }
     
     function handlePause (event){
@@ -167,14 +167,23 @@ window.addEventListener("load", function() {
         button.title = title;
     }
 
-    function changeIcon(icon, andRestore) {
-        window.clearTimeout(restoreIcon);
+    function handleIconChange (event) {
+        var icon = event.data.info;
+        var restore = true;
+        if (icon == 'play' || icon == 'pause') {
+            restore = false;
+        }
+        changeIcon(icons[icon], restore);
+    }
 
+    function changeIcon(icon, andRestore) {
         button.icon = icon;
+        //window.console.log(icon);
+        restoreIcon && window.clearTimeout(restoreIcon);
         if (andRestore) {
             restoreIcon = window.setTimeout(function(){
-                tellPlayer('gimmeIcon')
-            }, 1000)
+                tellPlayer('updateIcon');
+            }, 1500)
         }
     }
 
@@ -195,9 +204,15 @@ window.addEventListener("load", function() {
         button.badge.display = 'block';
         button.disabled = false;
 
-  //      opera.contexts.toolbar.removeItem(button);
+//      opera.contexts.toolbar.removeItem(button);
         window.clearTimeout(noResponse);
         noResponse = null;
+    }
+
+    function htmlDecode(input){
+        var e = window.document.createElement('div');
+        e.innerHTML = input;
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
     }
 
 //opera.extension.onconnect = enableButton;
