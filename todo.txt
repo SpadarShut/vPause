@@ -1,8 +1,7 @@
 TODO for vPause
 
-* Change icons for hotkeys
-* Dbl click actions
 * Backend for settings
+* Dbl click actions
   - I18n
 * UI for settings
 
@@ -13,9 +12,13 @@ Settings:
 	- Show time badge
 	  current / left / same as on the page
 	- Double click action
-	  download / next / prev / to start? / toggle time display
-
+	  download / next / prev / to start? / toggle time display / toggle repeat
+	- Hotkeys UI
+	- Feedback page link
+	- Move player close button to left (or right when in #gp.reverse .close)
 
 DONE:
 x Badge on time update
 x Handle tab close
+x Change icons for hotkeys
+x fix single-click bug

@@ -1,5 +1,5 @@
 window.addEventListener('load', function(event) {
-
+    'use strict';
     /**
      * http://www.openjs.com/scripts/events/keyboard_shortcuts/
      * Version : 2.01.B
@@ -222,10 +222,9 @@ window.addEventListener('load', function(event) {
             else if(ele.removeEventListener) ele.removeEventListener(type, callback, false);
             else ele['on'+type] = false;
         }
-    }
-
+    };
     var volStep = 5;
-    var disableInInputs = false;
+    var disableInInputs = true;
     var plr = window.audioPlayer;
     var hijackTimer;
     var showTimeLeft = 1;
@@ -239,13 +238,38 @@ window.addEventListener('load', function(event) {
         tglloop:  "Ctrl+Alt+r"
     };
 
+    function handleMessaging (event) {
+        switch (event.data) {
+            case 'wassup?'   : sendState();
+                break;
+            case 'pauseIt'   : doPause();
+                break;
+            case 'playIt'    : doPlay();
+                break;
+            case 'prev'      : prevTrack();
+                break;
+            case 'next'      : nextTrack();
+                break;
+            case 'tglplay'   : togglePlay();
+                break;
+            case 'tglloop'   : toggleLoop();
+                break;
+            case 'vup'       : volUp();
+                break;
+            case 'vdown'     : volDown();
+                break;
+            case 'updateIcon': updateIcon();
+                break;
+        }
+    }
+
     function sendState() {
         var plr = window.audioPlayer;
-        if (plr && plr.player){
+        if (plr && plr.player  && plr.player.id ){
 			mes({
                 type: 'playerState',
                 info: plr.player.paused() ? 'paused' : 'playing'
-            })
+            });
         }
     }
 
@@ -307,7 +331,7 @@ window.addEventListener('load', function(event) {
 		if (volLine) {
 			var slider = window.ge('audio_vol_slider'+plr.id);
 
-			if(volLine.id == "gp_vol_line") {
+			if(volLine.id === "gp_vol_line") {
 				slider = window.ge('gp_vol_slider');
 			}
 			// Simulate click on volume control
@@ -376,10 +400,10 @@ window.addEventListener('load', function(event) {
             plr.setIcon = Function.vPauseAddCallListener( plr.setIcon, {
                 success: function(props){
                     var icon = props.args[0];
-					if(icon == 'pauseicon' ){
+					if(icon === 'pauseicon'){
                         mes({type: 'justPaused', info: plr.lastSong});
                     }
-                    else if(icon == 'playicon'){
+                    else if(icon === 'playicon'){
                         mes({type: 'startedPlaying', info: plr.lastSong});
                     }
                 }
@@ -388,7 +412,7 @@ window.addEventListener('load', function(event) {
             // hook player stop
             plr.stop = Function.vPauseAddCallListener( plr.stop, {
                 success: function(props) {
-                    mes({type: 'stopped'})
+                    mes({type: 'stopped'});
                 }
             });
 
@@ -437,30 +461,6 @@ window.addEventListener('load', function(event) {
 		opera.extension.postMessage(mes);
 	}
 
-    function handleMessaging (event) {
-        switch (event.data) {
-            case 'wassup?'   : sendState();
-                break;
-            case 'pauseIt'   : doPause();
-                break;
-            case 'playIt'    : doPlay();
-                break;
-            case 'prev'      : prevTrack();
-                break;
-            case 'next'      : nextTrack();
-                break;
-            case 'tglplay'   : togglePlay();
-                break;
-            case 'tglloop'   : toggleLoop();
-                break;
-            case 'vup'       : volUp();
-                break;
-            case 'vdown'     : volDown();
-                break;
-            case 'updateIcon': updateIcon();
-                break;
-        }
-    }
     function initVK () {
         hijackTimer = window.setInterval(hijackPlayer, 1000);
 
@@ -498,14 +498,14 @@ window.addEventListener('load', function(event) {
                 callbacks.after && callbacks.after(props);
 
                 return result;
-            }
+            };
         };
 
     }
 
     function init(){
         setHotkeys(hotkeys);
-        if(window.self == window.top && (window.location.host == 'vkontakte.ru' || window.location.host == 'vk.com')){
+        if(window.self === window.top && (window.location.host === 'vkontakte.ru' || window.location.host === 'vk.com')){
             initVK();
         }
     }

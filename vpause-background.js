@@ -1,8 +1,12 @@
 window.addEventListener("load", function() {
+    'use strict';
     var players = [];
     var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, restoreIcon;
     var dblClickTimeout = 300;
-    var defaultTitle = "vPause";
+    var options = {
+        btnTitle: 'vPause',
+        dblClickAction: 'rpt'
+    };
     var icons = {
         play:       'img/btn_play.png',
         play_dis:   'img/btn_play_disabled.png',
@@ -20,7 +24,7 @@ window.addEventListener("load", function() {
 
     var button = opera.contexts.toolbar.createItem({
         disabled:   true,
-        title:      defaultTitle,
+        title:      options.btnTitle,
         icon:       icons.play,
         onclick:    buttonClicked,
         badge: {
@@ -31,11 +35,37 @@ window.addEventListener("load", function() {
         }
     });
 
-    opera.contexts.toolbar.addItem(button);
 
-	opera.extension.onmessage = function(event){
-		//console.log('ONMESSAGE: '+ event.data);
-        if (typeof event.data == 'object'){
+    function init () {
+        setPrefs(options);
+        opera.contexts.toolbar.addItem(button);
+        opera.extension.onmessage = handleMessages;
+    }
+
+    function setPrefs (opts) {
+        for (var option in opts){
+            if (opts.hasOwnProperty(option)) {
+                options[option] = getPref(option) || opts[option];
+            }
+        }
+    }
+
+    function getPref (pref) {
+        var val = widget.preferences[pref];
+        if (typeof val === 'undefined'){
+            val = options[pref];
+        }
+        return val;
+    }
+
+    function setPref (name, val) {
+        widget.preferences[name] = val;
+        tellPlayer('settingsChanged');
+    }
+
+    function handleMessages (event) {
+        //console.log('ONMESSAGE: '+ event.data);
+        if (typeof event.data === 'object'){
             switch(event.data.type){
                 case 'startedPlaying':
                     handleStartedPlaying(event);
@@ -60,7 +90,7 @@ window.addEventListener("load", function() {
                     break;
             }
         }
-	};
+    }
 
     function buttonClicked (){
         // Handle double click
@@ -74,28 +104,55 @@ window.addEventListener("load", function() {
             btnClickAction = window.setTimeout(function(){
                 btnClickAction = null;
                 poll();
-            }, dblClickTimeout)
+            }, dblClickTimeout);
         }
     }
 
     function buttonDblClicked () {
-        tellPlayer('next')
+
+        /* Possible values
+        *  dl / next / prev / rpt / time  / to start?
+        * */
+
+         var fn = options.dblClickAction;
+
+        switch (fn) {
+            case 'next': tellPlayer('next');
+                break;
+            case 'prev': tellPlayer('prev');
+                break;
+            case 'rpt': tellPlayer('tglloop');
+                break;
+            case 'dl': downloadTrack();
+                break;
+        }
+    }
+
+    function downloadTrack (){
+
+        if (lastPlayer && lastPlayer.lastSong && lastPlayer.lastSong[2]){
+            window.location = lastPlayer.lastSong[2] + "?/"+ lastPlayer.lastSong[5] + " - " +lastPlayer.lastSong[6];
+        }
+        else {
+
+        }
     }
 
     function poll(){
         opera.extension.broadcastMessage('wassup?');
         noResponse = window.setTimeout(function(){
-            handlePolling(null)
-        }, dblClickTimeout + 150)
+            handlePolling(null);
+        }, dblClickTimeout + 150);
     }
 
 	function handlePolling(event) {
-        console.log('handlePolling e.data: ' + !event ? event : event.data);
+        //console.log('handlePolling e.data: ' + !event ? event : event.data);
         if (event === null) {
             goIdle();
         }
         else {
             window.clearTimeout(pendingAction);
+            window.clearTimeout(noResponse);
 
             players.push(event);
 
@@ -103,10 +160,10 @@ window.addEventListener("load", function() {
             pendingAction = setTimeout(function(){
                 var nowPlaying = 0;
                 players.forEach(function(event,k,l){
-                    if(event.data == 'playing'){
+                    if(event.data.info === 'playing'){
                         nowPlaying++;
                         lastPlayer = event.source; // ??? unnecessary/harmful
-                        event.source.postMessage('pauseIt');
+                        tellPlayer('pauseIt');
                     }
                 });
                 if(!nowPlaying) {
@@ -115,7 +172,7 @@ window.addEventListener("load", function() {
                     }
                 }
                 players = []; //reset for next click
-            }, 20)
+            }, 20);
         }
     }
 
@@ -124,23 +181,22 @@ window.addEventListener("load", function() {
         changeIcon(icons.pause);
         unIdle();
         if (event.data.info) {
-            changeTitle(htmlDecode (event.data.info[5] + ' - ' + event.data.info[6])  + ' (' + event.data.info[4] +')' )
+            changeTitle(htmlDecode (event.data.info[5] + ' - ' + event.data.info[6])  + ' (' + event.data.info[4] +')' );
         }
     }
 
     function handlePlayProgress(event) {
-        //button.badge.textContent = event.data.info;
-
+        button.badge.textContent = event.data.info;
         // Need to monitor when a page is closed while playing to turn off the button.
         window.clearTimeout(monitorClose);
         monitorClose = window.setTimeout(function(){
-            //goIdle();
-        }, 2700);
+            goIdle();
+        }, 2100);
     }
     
     function handlePause (event){
         window.clearTimeout(monitorClose);
-        if (event.source == lastPlayer){
+        if (event.source === lastPlayer){
             unIdle();
             lastPlayer = event.source;
             changeIcon( icons.play );
@@ -153,7 +209,6 @@ window.addEventListener("load", function() {
     }
 
     function handleHotkey (event) {
-
         tellPlayer (event.data.info);
     }
 
@@ -170,7 +225,7 @@ window.addEventListener("load", function() {
     function handleIconChange (event) {
         var icon = event.data.info;
         var restore = true;
-        if (icon == 'play' || icon == 'pause') {
+        if (icon === 'play' || icon === 'pause') {
             restore = false;
         }
         changeIcon(icons[icon], restore);
@@ -183,7 +238,7 @@ window.addEventListener("load", function() {
         if (andRestore) {
             restoreIcon = window.setTimeout(function(){
                 tellPlayer('updateIcon');
-            }, 1500)
+            }, 1500);
         }
     }
 
@@ -191,7 +246,7 @@ window.addEventListener("load", function() {
         console.log('Gone idle');
 
         changeIcon(icons.play);
-        changeTitle(defaultTitle);
+        changeTitle(options.btnTitle);
         button.badge.textContent = '';
         button.badge.display = 'none';
 //        opera.contexts.toolbar.addItem(button);
@@ -215,5 +270,8 @@ window.addEventListener("load", function() {
         return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
     }
 
+	// Run extension
+	init();
+	
 //opera.extension.onconnect = enableButton;
 }, false);
