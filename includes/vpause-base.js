@@ -1,5 +1,5 @@
-window.addEventListener('load', function(event) {
-    'use strict';
+window.addEventListener('DOMContentLoaded', function(event) {
+    //'use strict';
     /**
      * http://www.openjs.com/scripts/events/keyboard_shortcuts/
      * Version : 2.01.B
@@ -461,6 +461,10 @@ window.addEventListener('load', function(event) {
 		opera.extension.postMessage(mes);
 	}
 
+/*    function getPref (pref) {
+        mes({type: 'getPref', info : pref})
+    }*/
+
     function initVK () {
         hijackTimer = window.setInterval(hijackPlayer, 1000);
 
@@ -500,7 +504,9 @@ window.addEventListener('load', function(event) {
                 return result;
             };
         };
-
+/*        if (getPref('vPauseMoveCloseBtn') === 'true') {
+            window.document.body.classList.add('vPauseMoveCloseBtn');
+        }*/
     }
 
     function init(){

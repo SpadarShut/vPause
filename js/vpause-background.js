@@ -1,5 +1,5 @@
 window.addEventListener("load", function() {
-    'use strict';
+    //'use strict';
     var players = [];
     var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, restoreIcon;
     var dblClickTimeout = 300;

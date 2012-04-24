@@ -12,10 +12,11 @@ Settings:
 	- Show time badge
 	  current / left / same as on the page
 	- Double click action
-	  download / next / prev / to start? / toggle time display / toggle repeat
+	  download / next / prev / toggle repeat / to start? / toggle time display?
 	- Hotkeys UI
-	- Feedback page link
+	- Checkbox Fire hotkeys when in inputs
 	- Move player close button to left (or right when in #gp.reverse .close)
+	- Feedback page link
 
 DONE:
 x Badge on time update
