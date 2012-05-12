@@ -6,7 +6,7 @@ TODO for vPause
 * UI for settings
 
 * Icon animation
-
+* Remove button on f5, when paused & closed, navigated to another page
 
 Settings:
 	- Show time badge

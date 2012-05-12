@@ -242,6 +242,8 @@ window.addEventListener('DOMContentLoaded', function(event) {
         switch (event.data) {
             case 'wassup?'   : sendState();
                 break;
+            case 'checkPlayer': checkPlayer();
+                break;
             case 'pauseIt'   : doPause();
                 break;
             case 'playIt'    : doPlay();
@@ -261,6 +263,14 @@ window.addEventListener('DOMContentLoaded', function(event) {
             case 'updateIcon': updateIcon();
                 break;
         }
+    }
+
+    function checkPlayer(){
+        var plr = window.audioPlayer;
+        mes({
+            type: 'playerOpen',
+            info: !!(plr && plr.player)
+        });
     }
 
     function sendState() {

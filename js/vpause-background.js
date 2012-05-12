@@ -1,11 +1,14 @@
 window.addEventListener("load", function() {
     //'use strict';
+    var prefsLocation = widget.preferences;
     var players = [];
-    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, restoreIcon;
+    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, restoreIcon, disableBtn;
     var dblClickTimeout = 300;
-    var options = {
+    var defaults = {
         btnTitle: 'vPause',
-        dblClickAction: 'rpt'
+        dblClickAction: 'next', // next | prev | rpt | dl
+        showTime: false,
+        hideBtn: true
     };
     var icons = {
         play:       'img/btn_play.png',
@@ -24,7 +27,7 @@ window.addEventListener("load", function() {
 
     var button = opera.contexts.toolbar.createItem({
         disabled:   true,
-        title:      options.btnTitle,
+        title:      getPref("btnTitle"),
         icon:       icons.play,
         onclick:    buttonClicked,
         badge: {
@@ -37,30 +40,33 @@ window.addEventListener("load", function() {
 
 
     function init () {
-        setPrefs(options);
-        opera.contexts.toolbar.addItem(button);
+        setPrefs(defaults);
+        if (!getPref('hideBtn')) {
+            opera.contexts.toolbar.addItem(button);
+        }
         opera.extension.onmessage = handleMessages;
     }
 
-    function setPrefs (opts) {
-        for (var option in opts){
-            if (opts.hasOwnProperty(option)) {
-                options[option] = getPref(option) || opts[option];
-            }
-        }
-    }
-
     function getPref (pref) {
-        var val = widget.preferences[pref];
+        var val = prefsLocation[pref];
         if (typeof val === 'undefined'){
-            val = options[pref];
+            val = defaults[pref];
         }
         return val;
     }
 
     function setPref (name, val) {
-        widget.preferences[name] = val;
+        prefsLocation[name] = val;
         tellPlayer('settingsChanged');
+    }
+
+    function setPrefs (opts) {
+        for (var option in opts){
+            // Write defaults to extension options storage if they're not there yet
+            if (prefsLocation[option] !== undefined) {
+                setPref(option, opts[option]);
+            }
+        }
     }
 
     function handleMessages (event) {
@@ -88,6 +94,9 @@ window.addEventListener("load", function() {
                 case 'icon':
                     handleIconChange(event);
                     break;
+                case 'playerOpen':
+                    handleCheckPlayer(event);
+                    break;
             }
         }
     }
@@ -110,11 +119,11 @@ window.addEventListener("load", function() {
 
     function buttonDblClicked () {
 
-        /* Possible values
-        *  dl / next / prev / rpt / time  / to start?
-        * */
+        /*  Possible values
+         *  dl / next / prev / rpt / time  / to start?
+         */
 
-         var fn = options.dblClickAction;
+        var fn = getPref('dblClickAction');
 
         switch (fn) {
             case 'next': tellPlayer('next');
@@ -129,7 +138,6 @@ window.addEventListener("load", function() {
     }
 
     function downloadTrack (){
-
         if (lastPlayer && lastPlayer.lastSong && lastPlayer.lastSong[2]){
             window.location = lastPlayer.lastSong[2] + "?/"+ lastPlayer.lastSong[5] + " - " +lastPlayer.lastSong[6];
         }
@@ -148,7 +156,7 @@ window.addEventListener("load", function() {
 	function handlePolling(event) {
         //console.log('handlePolling e.data: ' + !event ? event : event.data);
         if (event === null) {
-            goIdle();
+            goIdle('from handlepolling null');
         }
         else {
             window.clearTimeout(pendingAction);
@@ -168,7 +176,7 @@ window.addEventListener("load", function() {
                 });
                 if(!nowPlaying) {
                     if(lastPlayer){
-                        lastPlayer.postMessage('playIt');
+                        tellPlayer('playIt');
                     }
                 }
                 players = []; //reset for next click
@@ -186,16 +194,29 @@ window.addEventListener("load", function() {
     }
 
     function handlePlayProgress(event) {
-        button.badge.textContent = event.data.info;
+        //console.log('playProgress at '+ (new Date).getTime());
+        if (getPref('showTime')) {
+            button.badge.textContent = event.data.info;
+        }
         // Need to monitor when a page is closed while playing to turn off the button.
         window.clearTimeout(monitorClose);
+        window.clearTimeout(disableBtn);
+
         monitorClose = window.setTimeout(function(){
-            goIdle();
-        }, 2100);
+            console.log('playProgress timed out');
+            tellPlayer('checkPlayer');
+        }, 1500);
+    }
+
+    function handleCheckPlayer(event){
+        if (event.data && event.data.info !== true) {
+            goIdle('from checkPlayerIsClosed')
+        }
     }
     
     function handlePause (event){
         window.clearTimeout(monitorClose);
+        window.clearTimeout(disableBtn);
         if (event.source === lastPlayer){
             unIdle();
             lastPlayer = event.source;
@@ -205,7 +226,8 @@ window.addEventListener("load", function() {
 
     function handleStop(event) {
         window.clearTimeout(monitorClose);
-        goIdle();
+        window.clearTimeout(disableBtn);
+        goIdle('from handleStop');
     }
 
     function handleHotkey (event) {
@@ -214,7 +236,11 @@ window.addEventListener("load", function() {
 
     function tellPlayer( msg ) {
         if (msg && lastPlayer) {
-            lastPlayer.postMessage( msg );
+            try {
+                lastPlayer.postMessage( msg );
+            } catch (e){
+                goIdle('from tellPlayer')
+            }
         }
     }
 
@@ -242,16 +268,17 @@ window.addEventListener("load", function() {
         }
     }
 
-    function goIdle () {
-        console.log('Gone idle');
+    function goIdle (from) {
+        console.log('Gone idle: '+ from);
+        disableBtn = window.setTimeout(function(){
+			changeIcon(icons.play);
+			changeTitle(getPref('btnTitle'));
+			button.badge.textContent = '';
+			button.badge.display = 'none';
+			opera.contexts.toolbar.removeItem(button);
+        }, 1400);
 
-        changeIcon(icons.play);
-        changeTitle(options.btnTitle);
-        button.badge.textContent = '';
-        button.badge.display = 'none';
-//        opera.contexts.toolbar.addItem(button);
-
-        button.disabled = true;
+        //button.disabled = true;
     }
 
     function unIdle () {
@@ -259,7 +286,7 @@ window.addEventListener("load", function() {
         button.badge.display = 'block';
         button.disabled = false;
 
-//      opera.contexts.toolbar.removeItem(button);
+        opera.contexts.toolbar.addItem(button);
         window.clearTimeout(noResponse);
         noResponse = null;
     }
