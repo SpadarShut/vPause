@@ -2,7 +2,7 @@ window.addEventListener("load", function() {
     //'use strict';
     var prefsLocation = widget.preferences;
     var players = [];
-    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, restoreIcon, disableBtn;
+    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, resumeIconUpdate, disableBtn;
     var dblClickTimeout = 300;
     var defaults = {
         btnTitle: 'vPause',
@@ -195,7 +195,7 @@ window.addEventListener("load", function() {
 
     function handlePlayProgress(event) {
         //console.log('playProgress at '+ (new Date).getTime());
-        if (getPref('showTime')) {
+        if (getPref('showTime') && !resumeIconUpdate) {
             button.badge.textContent = event.data.info;
         }
         // Need to monitor when a page is closed while playing to turn off the button.
@@ -259,10 +259,14 @@ window.addEventListener("load", function() {
 
     function changeIcon(icon, andRestore) {
         button.icon = icon;
+        button.badge.textContent = '';
         //window.console.log(icon);
-        restoreIcon && window.clearTimeout(restoreIcon);
+        if (resumeIconUpdate) {
+            window.clearTimeout(resumeIconUpdate);
+            resumeIconUpdate = null;
+        }
         if (andRestore) {
-            restoreIcon = window.setTimeout(function(){
+            resumeIconUpdate = window.setTimeout(function(){
                 tellPlayer('updateIcon');
             }, 1500);
         }
