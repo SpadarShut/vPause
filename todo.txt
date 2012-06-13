@@ -1,25 +1,31 @@
 TODO for vPause
 
 * Backend for settings
-* Dbl click actions
   - I18n
-* UI for settings
-
-* Icon animation
 * Remove button on f5, when paused & closed, navigated to another page
+* cant use Del in hotkeys
+* show track time checkbox doesn't check on open
 
 Settings:
-	- Show time badge
-	  current / left / same as on the page
-	- Double click action
-	  download / next / prev / toggle repeat / to start? / toggle time display?
-	- Hotkeys UI
-	- Checkbox Fire hotkeys when in inputs
-	- Move player close button to left (or right when in #gp.reverse .close)
-	- Feedback page link
+	~ Double click action
+	  next / prev / toggle repeat / to start? /
+	- Checkbox: Fire hotkeys when in inputs
 
 DONE:
+x Show time badge
+x Hotkeys UI
+x UI for settings
+x Dbl click actions
 x Badge on time update
 x Handle tab close
 x Change icons for hotkeys
 x fix single-click bug
+x Feedback page link
+x test if "none" is working and delay is reduced
+x hotkeys running on settings page
+
+Naxt Version
+	- Move player close button to left (or right when in #gp.reverse .close)
+	- Icon animation
+	- toggle time display: current / left / same as on the page
+        - better badge display handling

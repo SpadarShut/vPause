@@ -2,42 +2,253 @@
 * vPauseDefaultOptions is declared in default-options.js
 * */
 
-function setPrefs (defaults) {
-    if (defaults) {
-        for (var option in defaults) {
-            var el = $(option);
-            console.log(el);
-            if (el) {
-                el.value = getPref(defaults[option])
+
+addEventListener('DOMContentLoaded', function(){
+    // prefsLocation
+
+    var prefsLocation;
+    if(window.widget && window.widget.preferences ) {
+        prefsLocation = widget.preferences
+    } else {
+        prefsLocation = window.localStorage
+    }
+
+    // glue for multiple values ( checkbox, select-multiple )
+    var glue    = '\n';
+
+    // get the FORM elements
+    var formElements = document.querySelectorAll( 'input,select' );
+
+    // list of FORM elements
+    var skip            = hash( 'hidden,submit,image,reset,button' );
+    var multipleValues  = hash( 'checkbox,select-multiple' );
+    var checkable       = hash( 'checkbox,radio' );
+
+    // string to hash
+    function hash( str, glue ){
+        var obj = {};
+        var tmp = str.split(glue||',');
+
+        while( tmp.length ) {
+            obj[ tmp.pop() ] = true;
+        }
+
+        return obj;
+    }
+
+
+    // walk the elements and apply a callback method to them
+    function walkElements( callback ){
+        var obj = [];
+        for( var i=0,element=null; element=formElements[i++]; ){
+            // skip the element if it has no name or is of a type with no useful value
+            var type = element.type.toLowerCase();
+            var name = element.name||'';
+            if( skip[type]===true || name=='') continue;
+
+            var tmp = callback( element, name, type );
+            if( tmp!=null )
+                obj.push( tmp );
+        }
+        return obj;
+    }
+
+
+    // listener for element changes
+    function changedElement( e ){
+        var element = e.currentTarget||e;
+        var type    = element.type.toLowerCase();
+        var name    = element.name||'';
+
+        var value   = multipleValues[type]!==true ? element.value : walkElements(
+            function( e, n, t ){
+                if( n==name && e.options ){
+                    var tmp = [];
+                    for( var j=0,option=null; option=e.options[j++]; ){
+                        if( option.selected ){
+                            tmp.push( option.value );
+                        }
+                    }
+                    return tmp.join( glue );
+                }
+                else if( n==name && checkable[t]===true && e.checked ){
+                    return e.value;
+                }
+            }
+        ).join( glue );
+
+        console.log('change: ', name, value);
+        // set value
+        prefsLocation.setItem( name, value );
+    }
+
+
+    // set the textContent of an element
+    function setText( id, txt ){
+        var e = document.getElementById(id);
+        if( e ){
+            e.textContent = txt;
+        }
+    }
+
+
+    // walk and set the elements accordingly to the prefsLocation
+    walkElements(
+        function( element, name, type ){
+            var value       = prefsLocation[name]!==undefined?prefsLocation.getItem( name ):element.value;
+            var valueHash   = hash( value, glue );
+
+            if( element.selectedOptions ){
+                // 'select' element
+                for( var j=0,option=null; option=element.options[j++]; ){
+                    option.selected = valueHash[option.value]===true;
+                }
+            }
+            else if( checkable[type]===true ){
+                // 'checkable' element
+                element.checked = valueHash[element.value]===true;
+            }
+            else {
+                // any other kind of element
+                element.value = value;
+            }
+
+            // set the widget.preferences to the value of the element if it was undefined
+            // YOU MAY NOT WANT TO DO THIS
+            if( prefsLocation[name]==undefined ){
+                changedElement( element );
+            }
+
+            // listen to changes
+            element.addEventListener( 'input', changedElement, true );
+        }
+    );
+
+    function setPrefs (defaults) {
+        if (defaults) {
+            for (var option in defaults) {
+                var el = $(option);
+                console.log(el);
+                if (el) {
+                    el.value = getPref(defaults[option])
+                }
             }
         }
     }
-}
 
-function $(id) {
-    return window.document.getElementById(id);
-}
-
-function getPref (pref) {
-    var val = widget.preferences[pref];
-    if (typeof val === 'undefined'){
-        val = vPauseDefaultOptions[pref];
+    function $(id) {
+        return window.document.getElementById(id);
     }
-    console.log('getPref:'+ pref + ": " + val);
-    return val;
-}
 
-function setPref (name, val) {
-    widget.preferences[name] = val;
-    tellPlayer('settingsChanged');
-}
+    function getPref (pref) {
+        var val = prefsLocation[pref];
+        if (typeof val === 'undefined'){
+            val = vPauseDefaultOptions[pref];
+        }
+        console.log('getPref:'+ pref + ": " + val);
+        return val;
+    }
 
-function savePrefs() {
+    function mes(mes){
+   		opera.extension.postMessage(mes);
+   	}
 
-}
+    function listenSetHotkeys( ){
 
-function init() {
-    setPrefs(vPauseDefaultOptions);
-}
+        var inputs = window.document.querySelectorAll('input[id ^="hotkey-"]');
+        Array.prototype.forEach.call(inputs, function (el){
+            el.addEventListener('keydown', function(e){
+                var kc = vPauseShortcut.KeyCode;
+                var key = kc.translate_event(e);
+                var shcut = kc.hot_key(key);
 
-init();
+                if(shcut == 'Tab' || shcut == 'Shift+Tab') return;
+
+                e.preventDefault();
+                var pressed = [], val;
+                if (key.code != 16 && key.code != 17 && key.code != 18 ) { // not Ctrl, Alt, Shift, Tab
+                    pressed.push(e);
+
+                    if ((key.code === 8 || key.code === 46 ) && pressed.length == 1) { // backspace, del
+                        val = '';
+                    }else {
+                        val = shcut;
+                    }
+                    el.value = val;
+                }
+            }, false);
+
+        });
+    }
+
+    function saveHotkeys(e){
+        var oldHotkeys = {};
+        for(var el in prefsLocation){
+            if (el.indexOf('hotkey-') === 0){
+                oldHotkeys[el.substring(7)] = prefsLocation[el];
+            }
+        }
+        // Remove old hotkeys
+        for (var k in oldHotkeys) {
+            window.vPauseShortcut.remove(oldHotkeys[k])
+        }
+        var inputs = window.document.querySelectorAll('input[id ^="hotkey-"]');
+        Array.prototype.forEach.call(inputs, function (el){
+            changedElement(el);
+        });
+        setHotkeys();
+        opera.extension.postMessage({type: 'hotkeys', info: oldHotkeys});
+        // todo show 'Saved' message
+    }
+
+
+    function getHotkeysList(){
+        var ks = {};
+        for(var el in prefsLocation){
+           if (el.indexOf('hotkey-') === 0){
+               ks[el.substring(7)] = prefsLocation[el];
+           }
+        }
+        return ks
+    }
+
+    function setHotkeys (){
+        var keys = getHotkeysList();
+        var type = 'keydown'; //keyup?
+        for ( var key in keys ) {
+            if (key && keys[key]) {
+                (function(key){
+                    // vPauseShortcut is defined in external file
+                    window.vPauseShortcut.add(keys[key], function(e) {
+                        mes({
+                            type: 'hotkey',
+                            info: key
+                        })
+                    },{
+                        'type': type,
+                        'disable_in_input': true,
+                        'propagate': true
+                    })
+                })(key)
+            }
+        }
+    }
+
+
+    function init() {
+        setPrefs(vPauseDefaultOptions);
+        setHotkeys();
+        // populate the title, name, author, ...
+        setText( 'widget-title', widget.name );
+        setText( 'widget-name', widget.name );
+        setText( 'widget-author', widget.author );
+
+        listenSetHotkeys();
+
+        $('save-hotkeys').addEventListener('click', saveHotkeys, false)
+    }
+
+    init();
+
+}, false);
+

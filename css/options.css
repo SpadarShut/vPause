@@ -12,7 +12,10 @@ body {
   border: 1px solid rgba(255,255,255,0.33);
   box-shadow: 0 0 10px #98b0c9;
 }
-
+a {
+    color: #2B587A;
+    text-decoration: underline;
+}
 header {
   display: block;
   text-align: center;
@@ -59,14 +62,56 @@ fieldset {
   padding: 10px 20px;
 }
 
-fieldset label {
+/*fieldset label {
   margin-left: 20px;
-}
+}*/
 
 fieldset *:disabled {
   opacity: 0.5;
 }
-/*
+
+.fset-hotkeys ul {
+	display: table;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	}
+.fset-hotkeys li {
+	display: table-row;
+}
+.fset-hotkeys li > * {
+	display: table-cell;
+	vertical-align:top;
+	width: 50%;
+	margin: 0 0 .8em;
+	}
+select {
+	padding: .3em;
+	}
+.fset-hotkeys input {
+    border: 1px solid rgba(40,40,128,0.4);
+    padding: .5em .5em .5em 30px;
+	width: 18em;
+	vertical-align: middle;
+    border-radius: 3px;
+    background: #fff no-repeat 6px 50%;
+	}
+
+.fset-hotkeys input:focus {
+    /*box-shadow: 0 0 3px rgba(0,0,128,0.6);*/
+    border-color: rgba(40,40,128,0.7);
+}
+
+#hotkey-tglplay { background-image: url(../img/btn_play.png)}
+#hotkey-next { background-image: url(../img/btn_next.png)}
+#hotkey-prev { background-image: url(../img/btn_prev.png)}
+#hotkey-vup { background-image: url(../img/btn_vol_4.png)}
+#hotkey-vdown { background-image: url(../img/btn_vol_0.png)}
+#hotkey-tglloop { background-image: url(../img/btn_repeat.png)}
+
+.action {
+    text-align: center;
+}
 
 fieldset button {
   border-radius: 3px;
@@ -96,25 +141,8 @@ fieldset button:disabled {
   box-shadow: 0 1px 1px rgba(121,153,166,0.75), inset 0 1px rgba(255,255,255,0.25), inset 0 0 1px rgba(255,255,255,0.75) !important;
 }
 
-fieldset input {
-  background: #fff;
-  color: #1e3853;
-}
 
-fieldset input[type=text] {
-  border-radius: 3px;
-  border: 1px solid rgba(80,80,130,0.5);
-  font: 13px/24px "helvetica neue",arial,sans-serif;
-  -o-transition: 0.25s;
-  height: 25px;
-  line-height: 22px;
-  padding: 0 5px;
-}
-
-fieldset input[type=text]:focus {
-  border-color: rgba(80,80,130,0.8);
-}
-
+/*
 fieldset input[type=radio] {
 }
 

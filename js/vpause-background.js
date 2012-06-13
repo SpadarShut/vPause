@@ -1,15 +1,10 @@
 window.addEventListener("load", function() {
-    //'use strict';
+    'use strict';
     var prefsLocation = widget.preferences;
     var players = [];
     var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, resumeIconUpdate, disableBtn;
     var dblClickTimeout = 300;
-    var defaults = {
-        btnTitle: 'vPause',
-        dblClickAction: 'next', // next | prev | rpt | dl
-        showTime: false,
-        hideBtn: true
-    };
+    var defaults = window.vPauseDefaultOptions;
     var icons = {
         play:       'img/btn_play.png',
         play_dis:   'img/btn_play_disabled.png',
@@ -41,9 +36,6 @@ window.addEventListener("load", function() {
 
     function init () {
         setPrefs(defaults);
-        if (!getPref('hideBtn')) {
-            opera.contexts.toolbar.addItem(button);
-        }
         opera.extension.onmessage = handleMessages;
     }
 
@@ -63,7 +55,7 @@ window.addEventListener("load", function() {
     function setPrefs (opts) {
         for (var option in opts){
             // Write defaults to extension options storage if they're not there yet
-            if (prefsLocation[option] !== undefined) {
+            if (prefsLocation[option] !== undefined) { // todo use getPref ???
                 setPref(option, opts[option]);
             }
         }
@@ -132,19 +124,19 @@ window.addEventListener("load", function() {
                 break;
             case 'rpt': tellPlayer('tglloop');
                 break;
-            case 'dl': downloadTrack();
-                break;
         }
     }
 
-    function downloadTrack (){
+
+
+/*    function downloadTrack (){
         if (lastPlayer && lastPlayer.lastSong && lastPlayer.lastSong[2]){
             window.location = lastPlayer.lastSong[2] + "?/"+ lastPlayer.lastSong[5] + " - " +lastPlayer.lastSong[6];
         }
         else {
 
         }
-    }
+    }*/
 
     function poll(){
         opera.extension.broadcastMessage('wassup?');
@@ -197,6 +189,9 @@ window.addEventListener("load", function() {
         //console.log('playProgress at '+ (new Date).getTime());
         if (getPref('showTime') && !resumeIconUpdate) {
             button.badge.textContent = event.data.info;
+        }
+        else if (button.badge.textContent){
+            button.badge.textContent = '';
         }
         // Need to monitor when a page is closed while playing to turn off the button.
         window.clearTimeout(monitorClose);
@@ -303,6 +298,6 @@ window.addEventListener("load", function() {
 
 	// Run extension
 	init();
-	
-//opera.extension.onconnect = enableButton;
+
+   //opera.extension.onconnect = enableButton;
 }, false);
