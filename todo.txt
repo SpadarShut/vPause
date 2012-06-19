@@ -2,9 +2,9 @@ TODO for vPause
 
 * Backend for settings
   - I18n
-* Remove button on f5, when paused & closed, navigated to another page
 * cant use Del in hotkeys
 * show track time checkbox doesn't check on open
+* dbk click action doesn't restore after restart
 
 Settings:
 	~ Double click action
@@ -12,6 +12,7 @@ Settings:
 	- Checkbox: Fire hotkeys when in inputs
 
 DONE:
+x Remove button on f5, when paused & closed, navigated to another page
 x Show time badge
 x Hotkeys UI
 x UI for settings

@@ -2,7 +2,7 @@ window.addEventListener("load", function() {
     'use strict';
     var prefsLocation = widget.preferences;
     var players = [];
-    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, resumeIconUpdate, disableBtn;
+    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, resumeIconUpdate;
     var dblClickTimeout = 300;
     var defaults = window.vPauseDefaultOptions;
     var icons = {
@@ -37,6 +37,7 @@ window.addEventListener("load", function() {
     function init () {
         setPrefs(defaults);
         opera.extension.onmessage = handleMessages;
+        window.setInterval(monitorPlayer, 1000);
     }
 
     function getPref (pref) {
@@ -193,14 +194,8 @@ window.addEventListener("load", function() {
         else if (button.badge.textContent){
             button.badge.textContent = '';
         }
-        // Need to monitor when a page is closed while playing to turn off the button.
         window.clearTimeout(monitorClose);
-        window.clearTimeout(disableBtn);
 
-        monitorClose = window.setTimeout(function(){
-            console.log('playProgress timed out');
-            tellPlayer('checkPlayer');
-        }, 1500);
     }
 
     function handleCheckPlayer(event){
@@ -208,10 +203,17 @@ window.addEventListener("load", function() {
             goIdle('from checkPlayerIsClosed')
         }
     }
-    
+
+    function monitorPlayer() {
+        window.clearTimeout(monitorClose);
+        monitorClose = window.setTimeout(function(){
+            console.log('monitor close before checkplayer');
+            tellPlayer('checkPlayer');
+        }, 1000);
+    }
+
     function handlePause (event){
         window.clearTimeout(monitorClose);
-        window.clearTimeout(disableBtn);
         if (event.source === lastPlayer){
             unIdle();
             lastPlayer = event.source;
@@ -221,7 +223,6 @@ window.addEventListener("load", function() {
 
     function handleStop(event) {
         window.clearTimeout(monitorClose);
-        window.clearTimeout(disableBtn);
         goIdle('from handleStop');
     }
 
@@ -269,15 +270,11 @@ window.addEventListener("load", function() {
 
     function goIdle (from) {
         console.log('Gone idle: '+ from);
-        disableBtn = window.setTimeout(function(){
-			changeIcon(icons.play);
-			changeTitle(getPref('btnTitle'));
-			button.badge.textContent = '';
-			button.badge.display = 'none';
-			opera.contexts.toolbar.removeItem(button);
-        }, 1400);
-
-        //button.disabled = true;
+        changeIcon(icons.play);
+        changeTitle(getPref('btnTitle'));
+        button.badge.textContent = '';
+        button.badge.display = 'none';
+        opera.contexts.toolbar.removeItem(button);
     }
 
     function unIdle () {

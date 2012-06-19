@@ -7,9 +7,6 @@ window.addEventListener('DOMContentLoaded', function(event) {
     var prefsLocation = widget.preferences;
     var hijackTimer;
     var showTimeLeft = 1;
-/*
-    var hotkeys = {
-    };*/
 
     function handleMessaging (event) {
         switch (event.data) {
