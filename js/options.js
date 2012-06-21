@@ -157,7 +157,8 @@ addEventListener('DOMContentLoaded', function(){
 
         var inputs = window.document.querySelectorAll('input[id ^="hotkey-"]');
         Array.prototype.forEach.call(inputs, function (el){
-            el.addEventListener('keydown', function(e){
+            el.addEventListener('keydown', function(e) {
+
                 var kc = vPauseShortcut.KeyCode;
                 var key = kc.translate_event(e);
                 var shcut = kc.hot_key(key);
@@ -166,15 +167,17 @@ addEventListener('DOMContentLoaded', function(){
 
                 e.preventDefault();
                 var pressed = [], val;
-                if (key.code != 16 && key.code != 17 && key.code != 18 ) { // not Ctrl, Alt, Shift, Tab
+                if (key.code != 16 && key.code != 17 && key.code != 18 ) { // not Ctrl, Alt, Shift
                     pressed.push(e);
 
-                    if ((key.code === 8 || key.code === 46 ) && pressed.length == 1) { // backspace, del
+                    if (shcut === "Delete" || shcut === "Backspace" ) {
                         val = '';
-                    }else {
+                    } else {
                         val = shcut;
                     }
                     el.value = val;
+
+                    $('save-hotkeys').removeAttribute('disabled');
                 }
             }, false);
 
@@ -182,6 +185,8 @@ addEventListener('DOMContentLoaded', function(){
     }
 
     function saveHotkeys(e){
+        if (e.target.disabled) return ;
+
         var oldHotkeys = {};
         for(var el in prefsLocation){
             if (el.indexOf('hotkey-') === 0){
@@ -198,9 +203,8 @@ addEventListener('DOMContentLoaded', function(){
         });
         setHotkeys();
         opera.extension.postMessage({type: 'hotkeys', info: oldHotkeys});
-        // todo show 'Saved' message
+        $('save-hotkeys').disabled = true;
     }
-
 
     function getHotkeysList(){
         var ks = {};

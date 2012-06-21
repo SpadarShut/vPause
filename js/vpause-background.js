@@ -2,7 +2,7 @@ window.addEventListener("load", function() {
     'use strict';
     var prefsLocation = widget.preferences;
     var players = [];
-    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, resumeIconUpdate;
+    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, resumeIconUpdate, monitorIntervalID;
     var dblClickTimeout = 300;
     var defaults = window.vPauseDefaultOptions;
     var icons = {
@@ -37,7 +37,6 @@ window.addEventListener("load", function() {
     function init () {
         setPrefs(defaults);
         opera.extension.onmessage = handleMessages;
-        window.setInterval(monitorPlayer, 1000);
     }
 
     function getPref (pref) {
@@ -128,8 +127,6 @@ window.addEventListener("load", function() {
         }
     }
 
-
-
 /*    function downloadTrack (){
         if (lastPlayer && lastPlayer.lastSong && lastPlayer.lastSong[2]){
             window.location = lastPlayer.lastSong[2] + "?/"+ lastPlayer.lastSong[5] + " - " +lastPlayer.lastSong[6];
@@ -184,6 +181,7 @@ window.addEventListener("load", function() {
         if (event.data.info) {
             changeTitle(htmlDecode (event.data.info[5] + ' - ' + event.data.info[6])  + ' (' + event.data.info[4] +')' );
         }
+        startMonitorPlayer();
     }
 
     function handlePlayProgress(event) {
@@ -195,7 +193,6 @@ window.addEventListener("load", function() {
             button.badge.textContent = '';
         }
         window.clearTimeout(monitorClose);
-
     }
 
     function handleCheckPlayer(event){
@@ -204,16 +201,29 @@ window.addEventListener("load", function() {
         }
     }
 
-    function monitorPlayer() {
+    function checkPlayer() {
         window.clearTimeout(monitorClose);
+        //console.log('monitor');
         monitorClose = window.setTimeout(function(){
             console.log('monitor close before checkplayer');
             tellPlayer('checkPlayer');
-        }, 1000);
+        }, 500);
     }
 
-    function handlePause (event){
-        window.clearTimeout(monitorClose);
+    function startMonitorPlayer () {
+        stopMonitorPlayer ();
+        console.log('start monitor');
+        monitorIntervalID = window.setInterval(checkPlayer, 1100);
+    }
+
+    function stopMonitorPlayer () {
+        console.log('stop monitor');
+        window.clearInterval(monitorIntervalID);
+        //monitorIntervalID = null;
+    }
+
+    function handlePause(event) {
+        //window.clearTimeout(monitorClose);
         if (event.source === lastPlayer){
             unIdle();
             lastPlayer = event.source;
@@ -222,8 +232,8 @@ window.addEventListener("load", function() {
     }
 
     function handleStop(event) {
-        window.clearTimeout(monitorClose);
-        goIdle('from handleStop');
+        checkPlayer();
+        //goIdle('from handleStop');
     }
 
     function handleHotkey (event) {
@@ -256,7 +266,6 @@ window.addEventListener("load", function() {
     function changeIcon(icon, andRestore) {
         button.icon = icon;
         button.badge.textContent = '';
-        //window.console.log(icon);
         if (resumeIconUpdate) {
             window.clearTimeout(resumeIconUpdate);
             resumeIconUpdate = null;
@@ -270,10 +279,10 @@ window.addEventListener("load", function() {
 
     function goIdle (from) {
         console.log('Gone idle: '+ from);
+        stopMonitorPlayer();
         changeIcon(icons.play);
         changeTitle(getPref('btnTitle'));
         button.badge.textContent = '';
-        button.badge.display = 'none';
         opera.contexts.toolbar.removeItem(button);
     }
 

@@ -1,17 +1,16 @@
 TODO for vPause
 
-* Backend for settings
-  - I18n
-* cant use Del in hotkeys
-* show track time checkbox doesn't check on open
-* dbk click action doesn't restore after restart
+* I18n
+* show track time checkbox isn't checked on open / dbl click action doesn't restore after restart
+* Update Big Icon
+* resaving hotkeys doesn't affect already open tabs
 
-Settings:
-	~ Double click action
-	  next / prev / toggle repeat / to start? /
-	- Checkbox: Fire hotkeys when in inputs
 
 DONE:
+x clear monitor interval after tab is closed or not opened yet
+x button jumps when changing tracks
+x Highlight saved options
+x cant use Del in hotkeys
 x Remove button on f5, when paused & closed, navigated to another page
 x Show time badge
 x Hotkeys UI
@@ -26,7 +25,13 @@ x test if "none" is working and delay is reduced
 x hotkeys running on settings page
 
 Naxt Version
+    Settings:
+	~ Double click action
+	  next / prev / toggle repeat / to start? /
+	- Checkbox: Fire hotkeys when in inputs
+    - Optimize Options access
 	- Move player close button to left (or right when in #gp.reverse .close)
 	- Icon animation
 	- toggle time display: current / left / same as on the page
-        - better badge display handling
+	- better badge display handling
+	- Popup

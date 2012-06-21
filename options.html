@@ -13,23 +13,6 @@
   </header>
 
   <section>
-	  <p></p>
-
-	  <h3>Double click action</h3>
-	  <fieldset>
-		  <p>
-			  <select name="dblClickAction" id="dblClickAction">
-				  <option value="rpt" selected>Toggle repeat</option>
-				  <option value="next">Play next track</option>
-				  <option value="prev">Play previous track</option>
-				  <!--<option value="none">None</option>-->
-			  </select>
-		  </p>
-	  </fieldset>
-	  <h3>Time</h3>
-	  <fieldset>
-		  <p><label><input type="checkbox" name="showTime" id="showTime" value="show"> Show track time on button</label></p>
-	  </fieldset>
 	  <h3>Hotkeys</h3>
 	  <fieldset class="fset-hotkeys">
 		  <p>
@@ -57,14 +40,35 @@
 		  </ul>
 
 		  <p class="action">
-			  <button id="save-hotkeys">Save hotkeys</button>
+			  <button id="save-hotkeys" disabled>Save hotkeys</button>
 		  </p>
+	  </fieldset>
+
+
+
+	  <h3>Double click action</h3>
+	  <fieldset>
+		  <p>
+			  <select name="dblClickAction" id="dblClickAction">
+				  <option value="rpt" selected>Toggle repeat</option>
+				  <option value="next">Play next track</option>
+				  <option value="prev">Play previous track</option>
+				  <!--<option value="none">None</option>-->
+			  </select>
+		  </p>
+	  </fieldset>
+
+
+
+	  <h3>Time</h3>
+	  <fieldset>
+		  <p><label><input type="checkbox" name="showTime" id="showTime" value="show"> Show track time on button</label></p>
 	  </fieldset>
 
   </section>
 
   <footer>
-    <p><a href="http://vk.com/vpause">Support at vk.com</a></p>
+    <p><a href="http://vk.com/vpause">vk.com/vpause</a></p>
   </footer>
 
 <script>
