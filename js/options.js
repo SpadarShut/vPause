@@ -92,48 +92,49 @@ addEventListener('DOMContentLoaded', function(){
     }
 
 
-    // walk and set the elements accordingly to the prefsLocation
-    walkElements(
-        function( element, name, type ){
-            var value       = prefsLocation[name]!==undefined?prefsLocation.getItem( name ):element.value;
-            var valueHash   = hash( value, glue );
-
-            if( element.selectedOptions ){
-                // 'select' element
-                for( var j=0,option=null; option=element.options[j++]; ){
-                    option.selected = valueHash[option.value]===true;
-                }
-            }
-            else if( checkable[type]===true ){
-                // 'checkable' element
-                element.checked = valueHash[element.value]===true;
-            }
-            else {
-                // any other kind of element
-                element.value = value;
-            }
-
-            // set the widget.preferences to the value of the element if it was undefined
-            // YOU MAY NOT WANT TO DO THIS
-            if( prefsLocation[name]==undefined ){
-                changedElement( element );
-            }
-
-            // listen to changes
-            element.addEventListener( 'input', changedElement, true );
-        }
-    );
 
     function setPrefs (defaults) {
-        if (defaults) {
-            for (var option in defaults) {
-                var el = $(option);
-                console.log(el);
-                if (el) {
-                    el.value = getPref(defaults[option])
-                }
+        if (!defaults) return ;
+
+        for (var option in defaults) {
+            //var el = $(option);
+            //console.log('input ' + option, el);
+            if (prefsLocation[option] === undefined) {
+                prefsLocation[option] = defaults[option];
             }
         }
+
+        // walk and set the elements accordingly to the prefsLocation
+        walkElements(
+            function( element, name, type ){
+                var value       = prefsLocation[name]!==undefined?prefsLocation.getItem( name ):element.value;
+                var valueHash   = hash( value, glue );
+
+                if( element.selectedOptions ){
+                    // 'select' element
+                    for( var j=0,option=null; option=element.options[j++]; ){
+                        option.selected = valueHash[option.value]===true;
+                    }
+                }
+                else if( checkable[type]===true ){
+                    // 'checkable' element
+                    element.checked = valueHash[element.value]===true;
+                }
+                else {
+                    // any other kind of element
+                    element.value = value;
+                }
+
+                // set the widget.preferences to the value of the element if it was undefined
+                // YOU MAY NOT WANT TO DO THIS
+                if( prefsLocation[name]==undefined ){
+                    changedElement( element );
+                }
+
+                // listen to changes
+                element.addEventListener( 'input', changedElement, true );
+            }
+        );
     }
 
     function $(id) {
@@ -240,6 +241,7 @@ addEventListener('DOMContentLoaded', function(){
 
 
     function init() {
+        console.log(JSON.stringify(getHotkeysList()));
         setPrefs(vPauseDefaultOptions);
         setHotkeys();
         // populate the title, name, author, ...

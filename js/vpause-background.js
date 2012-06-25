@@ -55,7 +55,7 @@ window.addEventListener("load", function() {
     function setPrefs (opts) {
         for (var option in opts){
             // Write defaults to extension options storage if they're not there yet
-            if (prefsLocation[option] !== undefined) { // todo use getPref ???
+            if (prefsLocation[option] === undefined) {
                 setPref(option, opts[option]);
             }
         }
@@ -127,15 +127,6 @@ window.addEventListener("load", function() {
         }
     }
 
-/*    function downloadTrack (){
-        if (lastPlayer && lastPlayer.lastSong && lastPlayer.lastSong[2]){
-            window.location = lastPlayer.lastSong[2] + "?/"+ lastPlayer.lastSong[5] + " - " +lastPlayer.lastSong[6];
-        }
-        else {
-
-        }
-    }*/
-
     function poll(){
         opera.extension.broadcastMessage('wassup?');
         noResponse = window.setTimeout(function(){
@@ -185,8 +176,7 @@ window.addEventListener("load", function() {
     }
 
     function handlePlayProgress(event) {
-        //console.log('playProgress at '+ (new Date).getTime());
-        if (getPref('showTime') && !resumeIconUpdate) {
+        if (getPref('showTime') === 'true' && !resumeIconUpdate) {
             button.badge.textContent = event.data.info;
         }
         else if (button.badge.textContent){
@@ -203,11 +193,10 @@ window.addEventListener("load", function() {
 
     function checkPlayer() {
         window.clearTimeout(monitorClose);
-        //console.log('monitor');
         monitorClose = window.setTimeout(function(){
             console.log('monitor close before checkplayer');
             tellPlayer('checkPlayer');
-        }, 500);
+        }, 1000);
     }
 
     function startMonitorPlayer () {
@@ -237,7 +226,13 @@ window.addEventListener("load", function() {
     }
 
     function handleHotkey (event) {
-        tellPlayer (event.data.info);
+        var msg = '';
+        if(event.data.info && event.data.info.indexOf('hotkey-') === 0) {
+            msg = event.data.info.substring(7);
+        } else {
+            msg = event.data.info
+        }
+        tellPlayer (msg);
     }
 
     function tellPlayer( msg ) {

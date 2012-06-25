@@ -47,7 +47,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
 
     function sendState() {
         var plr = window.audioPlayer;
-        if (plr && plr.player  && plr.id){
+        if (plr && plr.player  && plr.id) {
 			mes({
                 type: 'playerState',
                 info: plr.player.paused() ? 'paused' : 'playing'
@@ -158,7 +158,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
         var ks = {};
         for(var el in prefsLocation){
            if (el.indexOf('hotkey-') === 0){
-               ks[el.substring(7)] = prefsLocation[el];
+               ks[el] = prefsLocation[el];
            }
         }
         return ks
@@ -168,6 +168,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
         //remove old hotkeys
         console.log('removingHotkeys', JSON.stringify(e.data.info));
         if (e.data && e.data.info) {
+            // info is old hotkeys object
             for (var k in e.data.info) {
                 window.vPauseShortcut.remove(e.data.info[k])
             }
@@ -186,7 +187,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
                     window.vPauseShortcut.add(keys[key], function(e) {
                         mes({
                             type: 'hotkey',
-                            info: key
+                            info:  key
                         });
                     },{
                         'type': type,

@@ -1,11 +1,11 @@
 var vPauseDefaultOptions = {
-    btnTitle: 'vPause',
-    dblClickAction: 'next', // next | prev | rpt | dl
-    showTime: false,
-    tglplay:  "Ctrl+Alt+p",
-    prev:     "Ctrl+Shift+left",
-    next:     "Ctrl+Shift+right",
-    vup:      "Ctrl+Shift+up",
-    vdown:    "Ctrl+Shift+down",
-    tglloop:  "Ctrl+Shift+r"
+     btnTitle:         'vPause',
+     dblClickAction:   'next', // next | prev | rpt | dl
+     showTime:          false,
+    'hotkey-tglplay':  'Ctrl+Alt+P',
+    'hotkey-prev':     'Ctrl+Shift+Left',
+    'hotkey-next':     'Ctrl+Shift+Right',
+    'hotkey-vup':      'Ctrl+Shift+Up',
+    'hotkey-vdown':    'Ctrl+Shift+Down',
+    'hotkey-tglloop':  'Ctrl+Shift+R'
 };

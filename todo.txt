@@ -1,12 +1,12 @@
 TODO for vPause
 
 * I18n
-* show track time checkbox isn't checked on open / dbl click action doesn't restore after restart
 * Update Big Icon
 * resaving hotkeys doesn't affect already open tabs
-
+* Setting hotkeys in non-english layout inserts wrong characters
 
 DONE:
+x show track time checkbox isn't checked on open / dbl click action doesn't restore after restart
 x clear monitor interval after tab is closed or not opened yet
 x button jumps when changing tracks
 x Highlight saved options
@@ -24,7 +24,7 @@ x Feedback page link
 x test if "none" is working and delay is reduced
 x hotkeys running on settings page
 
-Naxt Version
+Next Version
     Settings:
 	~ Double click action
 	  next / prev / toggle repeat / to start? /
