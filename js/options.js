@@ -203,7 +203,7 @@ addEventListener('DOMContentLoaded', function(){
             changedElement(el);
         });
         setHotkeys();
-        opera.extension.postMessage({type: 'hotkeys', info: oldHotkeys});
+        mes({type: 'updatehotkeys', info: oldHotkeys});
         $('save-hotkeys').disabled = true;
     }
 

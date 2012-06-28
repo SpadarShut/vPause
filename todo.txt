@@ -2,10 +2,10 @@ TODO for vPause
 
 * I18n
 * Update Big Icon
-* resaving hotkeys doesn't affect already open tabs
 * Setting hotkeys in non-english layout inserts wrong characters
 
 DONE:
+x resaving hotkeys doesn't affect already open tabs
 x show track time checkbox isn't checked on open / dbl click action doesn't restore after restart
 x clear monitor interval after tab is closed or not opened yet
 x button jumps when changing tracks

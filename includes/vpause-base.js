@@ -9,31 +9,37 @@ window.addEventListener('DOMContentLoaded', function(event) {
     var showTimeLeft = 1;
 
     function handleMessaging (event) {
-        switch (event.data) {
-            case 'wassup?'    : sendState();
-                break;
-            case 'checkPlayer': checkPlayer();
-                break;
-            case 'pauseIt'    : doPause();
-                break;
-            case 'playIt'     : doPlay();
-                break;
-            case 'prev'       : prevTrack();
-                break;
-            case 'next'       : nextTrack();
-                break;
-            case 'tglplay'    : togglePlay();
-                break;
-            case 'tglloop'    : toggleLoop();
-                break;
-            case 'vup'        : volUp();
-                break;
-            case 'vdown'      : volDown();
-                break;
-            case 'updateIcon' : updateIcon();
-                break;
-            case 'hotkeys'    : updateHotkeys(event);
-                break;
+        if (typeof event.data === 'string') {
+            switch (event.data) {
+                case 'wassup?'    : sendState();
+                    break;
+                case 'checkPlayer': checkPlayer();
+                    break;
+                case 'pauseIt'    : doPause();
+                    break;
+                case 'playIt'     : doPlay();
+                    break;
+                case 'prev'       : prevTrack();
+                    break;
+                case 'next'       : nextTrack();
+                    break;
+                case 'tglplay'    : togglePlay();
+                    break;
+                case 'tglloop'    : toggleLoop();
+                    break;
+                case 'vup'        : volUp();
+                    break;
+                case 'vdown'      : volDown();
+                    break;
+                case 'updateIcon' : updateIcon();
+                    break;
+            }
+        }
+        else if ( typeof event.data === 'object') {
+            switch (event.data.type) {
+                case 'hotkeys'    : updateHotkeys(event);
+                    break;
+            }
         }
     }
 
@@ -166,7 +172,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
 
     function updateHotkeys (e) {
         //remove old hotkeys
-        console.log('removingHotkeys', JSON.stringify(e.data.info));
+        //console.log('removingHotkeys', JSON.stringify(e.data.info));
         if (e.data && e.data.info) {
             // info is old hotkeys object
             for (var k in e.data.info) {
@@ -179,7 +185,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
     function setHotkeys (){
         var keys = getHotkeysList();
         var type = 'keydown'; //keyup?
-        console.log('settingHotkeys', JSON.stringify(keys));
+        //console.log('settingHotkeys', JSON.stringify(keys));
         for ( var key in keys ) {
             if (key && keys[key]) {
                 (function(key){
@@ -276,9 +282,6 @@ window.addEventListener('DOMContentLoaded', function(event) {
     function initVK () {
         hijackTimer = window.setInterval(hijackPlayer, 1000);
 
-        // Execute this when a message is received from the background script.
-        opera.extension.onmessage = handleMessaging;
-
         Function.vPauseAddCallListener = function(func, callbacks) {
             var successNumber = 0,
                 errorNumber = 0,
@@ -318,9 +321,10 @@ window.addEventListener('DOMContentLoaded', function(event) {
     }
 
     function init(){
-        if (!window.vPauseShortcut){
-            console.log('netu :(')
-        }
+
+        // Execute this when a message is received from the background script.
+        opera.extension.onmessage = handleMessaging;
+
         setHotkeys();
         if(window.self === window.top && (window.location.host === 'vkontakte.ru' || window.location.host === 'vk.com')){
             initVK();

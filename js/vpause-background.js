@@ -80,6 +80,9 @@ window.addEventListener("load", function() {
                 case 'hotkey':
                     handleHotkey(event);
                     break;
+                case 'updatehotkeys':
+                    handleUpdateHotkeys(event);
+                    break;
                 case 'playerState':
                     handlePolling(event);
                     break;
@@ -91,6 +94,11 @@ window.addEventListener("load", function() {
                     break;
             }
         }
+    }
+
+    function handleUpdateHotkeys(e){
+        console.log('handleUpdateHotkeys');
+        opera.extension.broadcastMessage({type: 'hotkeys', info: e.data.info});
     }
 
     function buttonClicked (){
