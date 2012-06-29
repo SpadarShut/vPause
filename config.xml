@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" id="vPause">
 	<name>vPause</name>
-	<description xml:lang="en">Play/pause Vkontakte audioplayer</description>
-	<description xml:lang="ru">Кнопка "Пауза/воспроизведение" для аудиоплеера ВКонтакте</description>
-	<description xml:lang="be">Кнопка "Пауза/прайграванне" для аўдыёплэера ВКонтакте</description>
-	<author href="http://my.opera.com/SpShut/">Pavel Shut</author>
+	<description xml:lang="en">Control vk.com audioplayer form any tab</description>
+	<description xml:lang="ru">Управление аудиоплеером vk.com с любой вкладки</description>
+	<description xml:lang="be">Кіраванне аўдыёплэерам vk.com з любой уклдадкі</description>
+	<author href="http://vk.com/spadarshut/">Pavel Shut</author>
 	<icon src="img/icon.png" width="64" height="64"/>
 	<icon src="img/btn_play.png" width="18" height="18" />
 	<access origin="http://vkontakte.ru" subdomains="true"/>

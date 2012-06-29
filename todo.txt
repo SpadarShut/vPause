@@ -1,10 +1,10 @@
 TODO for vPause
 
-* I18n
 * Update Big Icon
-* Setting hotkeys in non-english layout inserts wrong characters
 
 DONE:
+x I18n
+x Setting hotkeys in non-english layout inserts wrong characters
 x resaving hotkeys doesn't affect already open tabs
 x show track time checkbox isn't checked on open / dbl click action doesn't restore after restart
 x clear monitor interval after tab is closed or not opened yet

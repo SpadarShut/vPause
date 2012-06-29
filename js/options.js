@@ -83,16 +83,6 @@ addEventListener('DOMContentLoaded', function(){
     }
 
 
-    // set the textContent of an element
-    function setText( id, txt ){
-        var e = document.getElementById(id);
-        if( e ){
-            e.textContent = txt;
-        }
-    }
-
-
-
     function setPrefs (defaults) {
         if (!defaults) return ;
 
@@ -179,9 +169,19 @@ addEventListener('DOMContentLoaded', function(){
                     el.value = val;
 
                     $('save-hotkeys').removeAttribute('disabled');
+
+                    return false;
                 }
             }, false);
 
+
+            el.addEventListener('keypress', function(e) {
+                var kc = vPauseShortcut.KeyCode;
+                var key = kc.translate_event(e);
+                var shcut = kc.hot_key(key);
+                if(shcut == 'Tab' || shcut == 'Shift+Tab') return;
+                e.preventDefault();
+            })
         });
     }
 
@@ -239,22 +239,63 @@ addEventListener('DOMContentLoaded', function(){
         }
     }
 
+    // set the textContent of an element
+    function setText( id, txt ){
+        var e = document.getElementById(id);
+        if( e ){
+            e.textContent = txt;
+        }
+    }
+
+    function localize() {
+        var els = document.querySelectorAll('[data-i18n]');
+        var dic = window.locale;
+
+        // Walk through elements
+        for (var i in els) {
+            var el = els[i];
+            if ( !(el instanceof HTMLElement) ) { continue }
+
+            // @data-i18n should be in this format [attrname]stringID;[attrname]stringID
+            // If [attrname] is not present innerHTML will be localized
+            var propsToLze = el.dataset.i18n.split(';');
+            for (var prop in propsToLze) {
+                if (!propsToLze.hasOwnProperty(prop)) { continue }
+
+                prop = propsToLze[prop].replace(/\s/g,'');
+                if (prop.indexOf('[') === 0){
+                    var hash = prop.match(/\[(.*)\](.*)/);
+                    var attr = hash[1];
+                    var val = '';
+                    if (dic[hash[2]]) val = dic[hash[2]];
+                    el[attr] = val;
+                } else {
+                    el.innerHTML = dic[prop] || '';
+                    if (!dic[prop]) {
+                        console.log('vPause :: No such value in locale: ' + prop )
+                    }
+                }
+            }
+        }
+    }
 
     function init() {
         console.log(JSON.stringify(getHotkeysList()));
         setPrefs(vPauseDefaultOptions);
         setHotkeys();
+        localize();
         // populate the title, name, author, ...
         setText( 'widget-title', widget.name );
         setText( 'widget-name', widget.name );
-        setText( 'widget-author', widget.author );
 
         listenSetHotkeys();
 
-        $('save-hotkeys').addEventListener('click', saveHotkeys, false)
+        $('save-hotkeys').addEventListener('click', saveHotkeys, false);
+        document.body.classList.add('ready');
     }
 
     init();
+
 
 }, false);
 

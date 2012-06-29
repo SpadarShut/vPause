@@ -52,7 +52,7 @@ h2 {
 }
 
 h3 {
-  margin-bottom: 0;
+  margin-bottom: 3px;
   margin-top: 25px;
 }
 
@@ -173,3 +173,17 @@ select {
 .error {
 	background: #EDC7C7;
 	}
+
+@-o-keyframes fadein {
+	from { opacity: 0 }
+	to   { opacity: 1 }
+}
+@keyframes fadein {
+	from { opacity: 0 }
+	to   { opacity: 1 }
+}
+
+body {
+	-o-animation: fadein 250ms;
+       animation: fadein 250ms;
+}

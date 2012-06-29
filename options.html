@@ -9,50 +9,47 @@
   <header>
     <img src="img/icon.png">
     <h1 id="widget-name">&nbsp;</h1>
-    <h2>Made by <span id="widget-author"></span></h2>
   </header>
 
   <section>
-	  <h3>Hotkeys</h3>
+	  <h3 data-i18n="headerHotkeys"></h3>
 	  <fieldset class="fset-hotkeys">
-		  <p>
-			  It is recommended to use combinations with <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd> to avoid conflicts with existing browser hotkeys
-		  </p>
+		  <p data-i18n="hotkeysHint"></p>
 		  <ul>
 			  <li>
-				  <label for="hotkey-tglplay">Play/pause</label>
-				  <input type="text" name="hotkey-tglplay" id="hotkey-tglplay" placeholder="Click here and press your hotkey"> </li>
+				  <label for="hotkey-tglplay" data-i18n="labelHotkeyPlayPause"></label>
+				  <input type="text" name="hotkey-tglplay" id="hotkey-tglplay" data-i18n="[placeholder]labelClickHereHotkey"> </li>
 			  <li>
-				  <label for="hotkey-next">Next track</label>
-				  <input type="text" name="hotkey-next" id="hotkey-next" placeholder="Click here and press your hotkey"> </li>
+				  <label for="hotkey-next" data-i18n="labelHotkeyNextTrack"></label>
+				  <input type="text" name="hotkey-next" id="hotkey-next" data-i18n="[placeholder]labelClickHereHotkey"> </li>
 			  <li>
-				  <label for="hotkey-prev">Previous track</label>
-				  <input type="text" name="hotkey-prev" id="hotkey-prev" placeholder="Click here and press your hotkey"> </li>
+				  <label for="hotkey-prev" data-i18n="labelHotkeyPrevTrack"></label>
+				  <input type="text" name="hotkey-prev" id="hotkey-prev" data-i18n="[placeholder]labelClickHereHotkey"> </li>
 			  <li>
-				  <label for="hotkey-vup">Volume up</label>
-				  <input type="text" name="hotkey-vup" id="hotkey-vup" placeholder="Click here and press your hotkey"> </li>
+				  <label for="hotkey-vup" data-i18n="labelHotkeyVolUp"></label>
+				  <input type="text" name="hotkey-vup" id="hotkey-vup" data-i18n="[placeholder]labelClickHereHotkey"> </li>
 			  <li>
-				  <label for="hotkey-vdown">Volume down</label>
-				  <input type="text" name="hotkey-vdown" id="hotkey-vdown" placeholder="Click here and press your hotkey"> </li>
+				  <label for="hotkey-vdown" data-i18n="labelHotkeyVolDown"></label>
+				  <input type="text" name="hotkey-vdown" id="hotkey-vdown" data-i18n="[placeholder]labelClickHereHotkey"> </li>
 			  <li>
-				  <label for="hotkey-tglloop">Toggle repeat</label>
-				  <input type="text" name="hotkey-tglloop" id="hotkey-tglloop" placeholder="Click here and press your hotkey"> </li>
+				  <label for="hotkey-tglloop" data-i18n="labelHotkeyRepeat"></label>
+				  <input type="text" name="hotkey-tglloop" id="hotkey-tglloop" data-i18n="[placeholder]labelClickHereHotkey"> </li>
 		  </ul>
 
 		  <p class="action">
-			  <button id="save-hotkeys" disabled>Save hotkeys</button>
+			  <button id="save-hotkeys" disabled data-i18n="saveHotkeys"></button>
 		  </p>
 	  </fieldset>
 
 
 
-	  <h3>Double click action</h3>
+	  <h3 data-i18n="headerDblClick"></h3>
 	  <fieldset>
 		  <p>
 			  <select name="dblClickAction" id="dblClickAction">
-				  <option value="rpt" selected>Toggle repeat</option>
-				  <option value="next">Play next track</option>
-				  <option value="prev">Play previous track</option>
+				  <option value="rpt" selected data-i18n="labelToggleRepeat"></option>
+				  <option value="next" data-i18n="labelPlayNext"></option>
+				  <option value="prev" data-i18n="labelPlayPrev"></option>
 				  <!--<option value="none">None</option>-->
 			  </select>
 		  </p>
@@ -60,9 +57,10 @@
 
 
 
-	  <h3>Time</h3>
+	  <h3 data-i18n="headerButtonBadge"></h3>
 	  <fieldset>
-		  <p><label><input type="checkbox" name="showTime" id="showTime" value="true"> Show track time on button</label></p>
+		  <p><label><input type="checkbox" name="showTime" id="showTime" value="true">
+			  <span data-i18n="labelShowTime"></span></label></p>
 	  </fieldset>
 
   </section>
@@ -78,6 +76,7 @@
 
   <script src="js/default-options.js"></script>
   <script src="includes/a_shortcut.js"></script>
+  <script src="js/lang.js"></script>
   <script src="js/options.js"></script>
 
 </body>
