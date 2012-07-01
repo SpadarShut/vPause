@@ -5,7 +5,7 @@ var locale = {
     ,'extensionDecription'  : 'Управление аудиоплеером vk.com с любой вкладки'
 
     ,'headerHotkeys'        : 'Горячие клавиши'
-    ,'hotkeysHint'          : 'Рекоммендуется использовать сочетания с <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>.'
+    ,'hotkeysHint'          : 'Рекомендуется использовать сочетания с <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>.'
     ,'labelHotkeyPlayPause' : 'Воспроизведение/пауза'
     ,'labelHotkeyNextTrack' : 'Следующая запись'
     ,'labelHotkeyPrevTrack' : 'Предыдущаящая запись'
