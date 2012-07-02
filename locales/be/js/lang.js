@@ -5,7 +5,7 @@ var locale = {
     ,'extensionDecription'  : 'Кіраванне аўдыёплэерам vk.com з любой уклдадкі'
 
     ,'headerHotkeys'        : 'Гарачыя клавішы'
-    ,'hotkeysHint'          : 'Пажадана выкарыстоўваць спалучэнні з <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>.'
+    ,'hotkeysHint'          : ''
     ,'labelHotkeyPlayPause' : 'Прайграванне/паўза'
     ,'labelHotkeyNextTrack' : 'Наступны запіс'
     ,'labelHotkeyPrevTrack' : 'Папярэдні запіс'

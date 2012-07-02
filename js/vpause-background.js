@@ -97,7 +97,7 @@ window.addEventListener("load", function() {
     }
 
     function handleUpdateHotkeys(e){
-        console.log('handleUpdateHotkeys');
+        //console.log('handleUpdateHotkeys');
         opera.extension.broadcastMessage({type: 'hotkeys', info: e.data.info});
     }
 
@@ -202,19 +202,19 @@ window.addEventListener("load", function() {
     function checkPlayer() {
         window.clearTimeout(monitorClose);
         monitorClose = window.setTimeout(function(){
-            console.log('monitor close before checkplayer');
+            //console.log('monitor close before checkplayer');
             tellPlayer('checkPlayer');
         }, 1000);
     }
 
     function startMonitorPlayer () {
         stopMonitorPlayer ();
-        console.log('start monitor');
+        //console.log('start monitor');
         monitorIntervalID = window.setInterval(checkPlayer, 1100);
     }
 
     function stopMonitorPlayer () {
-        console.log('stop monitor');
+        //console.log('stop monitor');
         window.clearInterval(monitorIntervalID);
         //monitorIntervalID = null;
     }
@@ -281,7 +281,7 @@ window.addEventListener("load", function() {
     }
 
     function goIdle (from) {
-        console.log('Gone idle: '+ from);
+        //console.log('Gone idle: '+ from);
         stopMonitorPlayer();
         changeIcon(icons.play);
         changeTitle(getPref('btnTitle'));
@@ -290,7 +290,7 @@ window.addEventListener("load", function() {
     }
 
     function unIdle () {
-        console.log('Unidled btn');
+        //console.log('Unidled btn');
         button.badge.display = 'block';
         button.disabled = false;
 

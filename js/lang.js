@@ -5,7 +5,7 @@ var locale = {
     ,'extensionDecription'  : 'Control vk.com audioplayer form any tab'
 
     ,'headerHotkeys'        : 'Hotkeys'
-    ,'hotkeysHint'          : 'It is recommended to use combinations with <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>.'
+    ,'hotkeysHint'          : ''
     ,'labelHotkeyPlayPause' : 'Play/pause'
     ,'labelHotkeyNextTrack' : 'Next track'
     ,'labelHotkeyPrevTrack' : 'Previous track'

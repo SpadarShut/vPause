@@ -5,10 +5,10 @@ var locale = {
     ,'extensionDecription'  : 'Управление аудиоплеером vk.com с любой вкладки'
 
     ,'headerHotkeys'        : 'Горячие клавиши'
-    ,'hotkeysHint'          : 'Рекомендуется использовать сочетания с <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>.'
+    ,'hotkeysHint'          : ''
     ,'labelHotkeyPlayPause' : 'Воспроизведение/пауза'
     ,'labelHotkeyNextTrack' : 'Следующая запись'
-    ,'labelHotkeyPrevTrack' : 'Предыдущаящая запись'
+    ,'labelHotkeyPrevTrack' : 'Предыдущая запись'
     ,'labelHotkeyVolUp'     : 'Громче'
     ,'labelHotkeyVolDown'   : 'Тише'
     ,'labelHotkeyRepeat'    : 'Вкл/выкл повтор'

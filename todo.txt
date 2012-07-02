@@ -1,8 +1,9 @@
 TODO for vPause
 
-* Update Big Icon
 
 DONE:
+x clean up console output
+x Update Big Icon
 x I18n
 x Setting hotkeys in non-english layout inserts wrong characters
 x resaving hotkeys doesn't affect already open tabs
@@ -27,7 +28,7 @@ x hotkeys running on settings page
 Next Version
     Settings:
 	~ Double click action
-	  next / prev / toggle repeat / to start? /
+	   to start? / focus tab with player
 	- Checkbox: Fire hotkeys when in inputs
     - Optimize Options access
 	- Move player close button to left (or right when in #gp.reverse .close)
