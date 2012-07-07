@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
                     break;
             }
         }
-        else if ( typeof event.data === 'object') {
+        else if (typeof event.data === 'object') {
             switch (event.data.type) {
                 case 'hotkeys'    : updateHotkeys(event);
                     break;
@@ -47,7 +47,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
         var plr = window.audioPlayer;
         mes({
             type: 'playerOpen',
-            info: !!(plr && plr.player && plr.id )
+            info: !!(plr && plr.player && plr.id)
         });
     }
 

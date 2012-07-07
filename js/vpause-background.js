@@ -178,7 +178,7 @@ window.addEventListener("load", function() {
         changeIcon(icons.pause);
         unIdle();
         if (event.data.info) {
-            changeTitle(htmlDecode (event.data.info[5] + ' - ' + event.data.info[6])  + ' (' + event.data.info[4] +')' );
+            changeTitle(htmlDecode (event.data.info[5] + ' - ' + event.data.info[6])  + ' (' + htmlDecode(event.data.info[4]) +')' );
         }
         startMonitorPlayer();
     }
@@ -302,6 +302,9 @@ window.addEventListener("load", function() {
     function htmlDecode(input){
         var e = window.document.createElement('div');
         e.innerHTML = input;
+        if (e.querySelector('*')) {
+            e.innerHTML = e.textContent
+        }
         return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
     }
 

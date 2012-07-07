@@ -186,7 +186,7 @@ addEventListener('DOMContentLoaded', function(){
     }
 
     function saveHotkeys(e){
-        if (e.target.disabled) return ;
+        if (e.target.disabled) return;
 
         var oldHotkeys = {};
         for(var el in prefsLocation){
