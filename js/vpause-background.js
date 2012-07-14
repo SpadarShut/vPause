@@ -62,7 +62,7 @@ window.addEventListener("load", function() {
     }
 
     function handleMessages (event) {
-        //console.log('ONMESSAGE: '+ event.data);
+        //console.log('ONMESSAGE: '+ JSON.stringify(event.data));
         if (typeof event.data === 'object'){
             switch(event.data.type){
                 case 'startedPlaying':
@@ -78,6 +78,7 @@ window.addEventListener("load", function() {
                     handleStop(event);
                     break;
                 case 'hotkey':
+                    console.log('ONMESSAGE: '+ JSON.stringify(event.data));
                     handleHotkey(event);
                     break;
                 case 'updatehotkeys':
@@ -91,6 +92,9 @@ window.addEventListener("load", function() {
                     break;
                 case 'playerOpen':
                     handleCheckPlayer(event);
+                    break;
+                case 'readyToBeFocused':
+                    focusPlayerTab(event);
                     break;
             }
         }
@@ -118,19 +122,15 @@ window.addEventListener("load", function() {
     }
 
     function buttonDblClicked () {
-
-        /*  Possible values
-         *  dl / next / prev / rpt / time  / to start?
-         */
-
         var fn = getPref('dblClickAction');
-
         switch (fn) {
-            case 'next': tellPlayer('next');
+            case 'next' : tellPlayer('next');
                 break;
-            case 'prev': tellPlayer('prev');
+            case 'prev' : tellPlayer('prev');
                 break;
-            case 'rpt': tellPlayer('tglloop');
+            case 'rpt'  : tellPlayer('tglloop');
+                break;
+            case 'focus': tellPlayer('focus');
                 break;
         }
     }
@@ -202,19 +202,16 @@ window.addEventListener("load", function() {
     function checkPlayer() {
         window.clearTimeout(monitorClose);
         monitorClose = window.setTimeout(function(){
-            //console.log('monitor close before checkplayer');
             tellPlayer('checkPlayer');
         }, 1000);
     }
 
     function startMonitorPlayer () {
         stopMonitorPlayer ();
-        //console.log('start monitor');
         monitorIntervalID = window.setInterval(checkPlayer, 1100);
     }
 
     function stopMonitorPlayer () {
-        //console.log('stop monitor');
         window.clearInterval(monitorIntervalID);
         //monitorIntervalID = null;
     }
@@ -230,7 +227,6 @@ window.addEventListener("load", function() {
 
     function handleStop(event) {
         checkPlayer();
-        //goIdle('from handleStop');
     }
 
     function handleHotkey (event) {
@@ -241,6 +237,15 @@ window.addEventListener("load", function() {
             msg = event.data.info
         }
         tellPlayer (msg);
+    }
+
+    function focusPlayerTab (evt) {
+        var tabs = opera.extension.tabs.getAll();
+        for( var tab in tabs ) {
+            if (tabs[tab].title && /\u00a0\u00a0\u00a0$/.test(tabs[tab].title)){
+                tabs[tab].focus();
+            }
+        }
     }
 
     function tellPlayer( msg ) {
@@ -290,7 +295,6 @@ window.addEventListener("load", function() {
     }
 
     function unIdle () {
-        //console.log('Unidled btn');
         button.badge.display = 'block';
         button.disabled = false;
 
@@ -311,5 +315,4 @@ window.addEventListener("load", function() {
 	// Run extension
 	init();
 
-   //opera.extension.onconnect = enableButton;
 }, false);

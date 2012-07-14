@@ -33,7 +33,7 @@ a {
 header {
   display: block;
   text-align: center;
-  padding: 45px 50px 15px 50px;
+  padding: 20px 50px 15px;
   margin: 0 50px;
   border-bottom: 1px solid rgba(0,0,0,0.15);
   box-shadow: 0 1px #fff;
@@ -75,9 +75,9 @@ fieldset {
     border-radius: 2px;
     padding: 10px 20px;
     border: 1px solid rgba(0,0,0,.05);
-	-o-transition: height .3s;
 	-webkit-transition: height .3s;
-	transition: height .3s;
+         -o-transition: height .3s;
+            transition: height .3s;
 }
 
 fieldset button {

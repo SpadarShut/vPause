@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', function(event) {
     'use strict';
 
-    var volStep = 5;
+    var volStep = 2;
     var disableInInputs = true;
     var plr = window.audioPlayer;
     var prefsLocation = widget.preferences;
@@ -33,6 +33,8 @@ window.addEventListener('DOMContentLoaded', function(event) {
                     break;
                 case 'updateIcon' : updateIcon();
                     break;
+                case 'focus'      : focusTab();
+                    break;
             }
         }
         else if (typeof event.data === 'object') {
@@ -41,6 +43,12 @@ window.addEventListener('DOMContentLoaded', function(event) {
                     break;
             }
         }
+    }
+
+    function focusTab(){
+        // dirty hack to help focus the tab
+        document.title += '\u00a0\u00a0\u00a0';
+        mes({type:"readyToBeFocused"})
     }
 
     function checkPlayer(){
@@ -172,7 +180,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
 
     function updateHotkeys (e) {
         //remove old hotkeys
-        //console.log('removingHotkeys', JSON.stringify(e.data.info));
+        console.log('removingHotkeys', JSON.stringify(e.data.info));
         if (e.data && e.data.info) {
             // info is old hotkeys object
             for (var k in e.data.info) {
@@ -185,7 +193,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
     function setHotkeys (){
         var keys = getHotkeysList();
         var type = 'keydown'; //keyup?
-        //console.log('settingHotkeys', JSON.stringify(keys));
+        console.log('settingHotkeys', JSON.stringify(keys));
         for ( var key in keys ) {
             if (key && keys[key]) {
                 (function(key){
@@ -195,8 +203,9 @@ window.addEventListener('DOMContentLoaded', function(event) {
                             type: 'hotkey',
                             info:  key
                         });
+                        //console.log(key)
                     },{
-                        'type': type,
+                        'type': (key == 'hotkey-vup' || key == 'hotkey-vdown') ? 'keypress' : type,
                         'disable_in_input': disableInInputs,
                         'propagate': true
                     });
@@ -315,6 +324,14 @@ window.addEventListener('DOMContentLoaded', function(event) {
                 return result;
             };
         };
+
+        //
+        window.addEventListener('focus', function(){
+            if (document.title) {
+                document.title.replace('\u00a0\u00a0\u00a0','');
+            }
+        }, false);
+
 /*        if (getPref('vPauseMoveCloseBtn') === 'true') {
             window.document.body.classList.add('vPauseMoveCloseBtn');
         }*/

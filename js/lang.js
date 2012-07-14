@@ -19,6 +19,7 @@ var locale = {
     ,'labelToggleRepeat'    : 'Toggle repeat'
     ,'labelPlayNext'        : 'Play next track'
     ,'labelPlayPrev'        : 'Play previous track'
+    ,'labelFocusPlayerTab'  : 'Open player tab'
 
     ,'headerButtonBadge'    : 'Button badge'
     ,'labelShowTime'        : 'Show track time'

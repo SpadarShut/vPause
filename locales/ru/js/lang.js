@@ -19,6 +19,7 @@ var locale = {
     ,'labelToggleRepeat'    : 'Вкл/выкл повтор'
     ,'labelPlayNext'        : 'Следующая запись'
     ,'labelPlayPrev'        : 'Предыдущая запись'
+    ,'labelFocusPlayerTab'  : 'Переключиться на вкладку с плеером'
 
     ,'headerButtonBadge'    : 'Надпись на кнопке'
     ,'labelShowTime'        : 'Показывать время воспроизведения'

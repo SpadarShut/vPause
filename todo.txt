@@ -1,7 +1,6 @@
 TODO for vPause
 
     Settings:
-    - Focus player tab hotkey & dbl click
 	- Move player close button to left (or right when in #gp.reverse .close)
 	- toggle time display: current / left / same as on the page
 	- Checkbox: Fire hotkeys when in inputs
@@ -12,27 +11,8 @@ TODO for vPause
 	- Popup
 
 DONE:
-x clean up console output
-x Update Big Icon
-x I18n
-x Setting hotkeys in non-english layout inserts wrong characters
-x resaving hotkeys doesn't affect already open tabs
-x show track time checkbox isn't checked on open / dbl click action doesn't restore after restart
-x clear monitor interval after tab is closed or not opened yet
-x button jumps when changing tracks
-x Highlight saved options
-x cant use Del in hotkeys
-x Remove button on f5, when paused & closed, navigated to another page
-x Show time badge
-x Hotkeys UI
-x UI for settings
-x Dbl click actions
-x Badge on time update
-x Handle tab close
-x Change icons for hotkeys
-x fix single-click bug
-x Feedback page link
-x test if "none" is working and delay is reduced
-x hotkeys running on settings page
+    x Focus player tab hotkey & dbl click
+    x Hold hotkeys for volume change
+
 
 Next Version

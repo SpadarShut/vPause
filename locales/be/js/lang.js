@@ -19,6 +19,7 @@ var locale = {
     ,'labelToggleRepeat'    : 'Укл/выкл паўтарэнне'
     ,'labelPlayNext'        : 'Наступны запіс'
     ,'labelPlayPrev'        : 'Папярэдні запіс'
+    ,'labelFocusPlayerTab'  : 'Пераключыцца на ўкладку з плэерам'
 
     ,'headerButtonBadge'    : 'Надпіс на кнопцы'
     ,'labelShowTime'        : 'Паказваць час прайгравання'

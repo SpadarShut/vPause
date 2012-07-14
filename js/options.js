@@ -220,6 +220,7 @@ addEventListener('DOMContentLoaded', function(){
     function setHotkeys (){
         var keys = getHotkeysList();
         var type = 'keydown'; //keyup?
+        console.log('settingHotkeys', JSON.stringify(keys));
         for ( var key in keys ) {
             if (key && keys[key]) {
                 (function(key){
@@ -227,14 +228,15 @@ addEventListener('DOMContentLoaded', function(){
                     window.vPauseShortcut.add(keys[key], function(e) {
                         mes({
                             type: 'hotkey',
-                            info: key
-                        })
+                            info:  key
+                        });
+                        //console.log(key)
                     },{
-                        'type': type,
-                        'disable_in_input': true,
+                        'type': (key == 'hotkey-vup' || key == 'hotkey-vdown') ? 'keypress' : type,
+                        'disable_in_input': disableInInputs,
                         'propagate': true
-                    })
-                })(key)
+                    });
+                })(key);
             }
         }
     }
