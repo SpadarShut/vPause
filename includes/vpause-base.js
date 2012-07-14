@@ -2,7 +2,6 @@ window.addEventListener('DOMContentLoaded', function(event) {
     'use strict';
 
     var volStep = 2;
-    var disableInInputs = true;
     var plr = window.audioPlayer;
     var prefsLocation = widget.preferences;
     var hijackTimer;
@@ -206,7 +205,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
                         //console.log(key)
                     },{
                         'type': (key == 'hotkey-vup' || key == 'hotkey-vdown') ? 'keypress' : type,
-                        'disable_in_input': disableInInputs,
+                        'disable_in_input': true,
                         'propagate': true
                     });
                 })(key);
