@@ -275,7 +275,7 @@ addEventListener('DOMContentLoaded', function(){
                 } else {
                     el.innerHTML = dic[prop] || '';
                     if (!dic[prop]) {
-                        console.log('vPause :: No such value in locale: ' + prop )
+                        console.log('vPause :: No such value in locale '+ locale.locale +': ' + prop )
                     }
                 }
             }

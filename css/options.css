@@ -23,8 +23,8 @@ body {
     border: 1px solid rgba(255,255,255,0.33);
     box-shadow: 0 0 10px #98b0c9;
     /*opacity: 0;*/
- -o-animation: fadein 250ms 100ms both;
-    animation: fadein 250ms 100ms both;
+ -o-animation: fadein 300ms 150ms both;
+    animation: fadein 300ms 150ms both;
 }
 a {
     color: #2B587A;
@@ -138,6 +138,7 @@ select {
 #hotkey-vup { background-image: url(../img/btn_vol_4.png)}
 #hotkey-vdown { background-image: url(../img/btn_vol_1.png)}
 #hotkey-tglloop { background-image: url(../img/btn_repeat.png)}
+#hotkey-addSong { background-image: url(../img/btn_repeat.png)}
 
 .action {
     text-align: center;

@@ -34,6 +34,8 @@ window.addEventListener('DOMContentLoaded', function(event) {
                     break;
                 case 'focus'      : focusTab();
                     break;
+                case 'addSong'    : addSong();
+                    break;
             }
         }
         else if (typeof event.data === 'object') {
@@ -42,12 +44,6 @@ window.addEventListener('DOMContentLoaded', function(event) {
                     break;
             }
         }
-    }
-
-    function focusTab(){
-        // dirty hack to help focus the tab
-        document.title += '\u00a0\u00a0\u00a0';
-        mes({type:"readyToBeFocused"})
     }
 
     function checkPlayer(){
@@ -111,11 +107,23 @@ window.addEventListener('DOMContentLoaded', function(event) {
         mes({type: 'icon', info: 'next'});
     }
 
+    function focusTab(){
+        // dirty hack to help focus the tab
+        document.title += '\u00a0\u00a0\u00a0';
+        mes({type:"readyToBeFocused"})
+    }
+
+    function addSong() {
+        var plr = window.audioPlayer;
+        plr && plr.addCurrentTrack();
+        mes({type: 'icon', info: 'added'});
+    }
+
     function volDown(){
         setVol(-volStep);
     }
 
-    function volUp() {
+    function volUp(){
         setVol(volStep);
     }
 
@@ -167,6 +175,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
 		}
     }
 
+
     function getHotkeysList(){
         var ks = {};
         for(var el in prefsLocation){
@@ -192,7 +201,7 @@ window.addEventListener('DOMContentLoaded', function(event) {
     function setHotkeys (){
         var keys = getHotkeysList();
         var type = 'keydown'; //keyup?
-        console.log('settingHotkeys', JSON.stringify(keys));
+        // console.log('settingHotkeys', JSON.stringify(keys));
         for ( var key in keys ) {
             if (key && keys[key]) {
                 (function(key){

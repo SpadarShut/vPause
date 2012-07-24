@@ -14,6 +14,7 @@ var locale = {
     ,'labelHotkeyRepeat'    : 'Укл/выкл паўтарэнне'
     ,'labelClickHereHotkey' : 'Націсніце тут пажаданыя клавішы'
     ,'saveHotkeys'          : 'Захаваць гарачыя клавішы'
+    ,'labelAddSong'         : 'Дадаць да маіх аўдыёзапісаў'
 
     ,'headerDblClick'       : 'Дзеянне на падвойнае націсканне кнопкі'
     ,'labelToggleRepeat'    : 'Укл/выкл паўтарэнне'

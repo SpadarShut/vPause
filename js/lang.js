@@ -14,6 +14,7 @@ var locale = {
     ,'labelHotkeyRepeat'    : 'Toggle repeat'
     ,'labelClickHereHotkey' : 'Click here and press your hotkey'
     ,'saveHotkeys'          : 'Save hotkeys'
+    ,'labelAddSong'         : 'Add to my music'
 
     ,'headerDblClick'       : 'Double click action'
     ,'labelToggleRepeat'    : 'Toggle repeat'

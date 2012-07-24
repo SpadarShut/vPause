@@ -17,7 +17,8 @@ window.addEventListener("load", function() {
         vol_1:      'img/btn_vol_1.png',
         vol_2:      'img/btn_vol_2.png',
         vol_3:      'img/btn_vol_3.png',
-        vol_4:      'img/btn_vol_4.png'
+        vol_4:      'img/btn_vol_4.png',
+        added:      'img/btn_plus.png'
     };
 
     var button = opera.contexts.toolbar.createItem({
@@ -124,13 +125,15 @@ window.addEventListener("load", function() {
     function buttonDblClicked () {
         var fn = getPref('dblClickAction');
         switch (fn) {
-            case 'next' : tellPlayer('next');
+            case 'next'    : tellPlayer('next');
                 break;
-            case 'prev' : tellPlayer('prev');
+            case 'prev'    : tellPlayer('prev');
                 break;
-            case 'rpt'  : tellPlayer('tglloop');
+            case 'rpt'     : tellPlayer('tglloop');
                 break;
-            case 'focus': tellPlayer('focus');
+            case 'focus'   : tellPlayer('focus');
+                break;
+            case 'addSong' : tellPlayer('addSong');
                 break;
         }
     }

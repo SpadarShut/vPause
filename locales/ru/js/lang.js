@@ -14,6 +14,7 @@ var locale = {
     ,'labelHotkeyRepeat'    : 'Вкл/выкл повтор'
     ,'labelClickHereHotkey' : 'Нажмите здесь желаемые клавиши'
     ,'saveHotkeys'          : 'Сохранить грячие клавиши'
+    ,'labelAddSong'         : 'Добавть в мои аудиозаписи'
 
     ,'headerDblClick'       : 'Действие по двойному нажатию кнопки'
     ,'labelToggleRepeat'    : 'Вкл/выкл повтор'
