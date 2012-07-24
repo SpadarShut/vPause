@@ -138,7 +138,7 @@ select {
 #hotkey-vup { background-image: url(../img/btn_vol_4.png)}
 #hotkey-vdown { background-image: url(../img/btn_vol_1.png)}
 #hotkey-tglloop { background-image: url(../img/btn_repeat.png)}
-#hotkey-addSong { background-image: url(../img/btn_repeat.png)}
+#hotkey-addSong { background-image: url(../img/btn_plus.png)}
 
 .action {
     text-align: center;
