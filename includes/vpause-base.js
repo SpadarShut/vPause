@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', function(event) {
+    window.addEventListener('DOMContentLoaded', function(event) {
     'use strict';
 
     var volStep = 2;
@@ -128,10 +128,12 @@ window.addEventListener('DOMContentLoaded', function(event) {
     }
 
     function setVol(delta) {
-        var plr = window.audioPlayer;
+        var plr = window.audioPlayer, icon = 'vol_', curVol = window.parseInt(window.getCookie('audio_vol'));
+
+        // plr.volClick(e, 'ac')
         if ( !plr ){ return }
-		var volLine = window.ge('audio_volume_line'+plr.id) || window.ge('gp_vol_line');
-		if (volLine) {
+		var volLine = window.ge('audio_vol_line'+plr.id) || window.ge('ac_vol') || window.ge('pd_vol');
+		if (false && volLine) {
 			var slider = window.ge('audio_vol_slider'+plr.id);
 
 			if(volLine.id === "gp_vol_line") {
@@ -153,26 +155,21 @@ window.addEventListener('DOMContentLoaded', function(event) {
 			volLine.dispatchEvent(mdown);
 			volLine.dispatchEvent(mup);
 
-            var curVol = window.parseInt(window.getCookie('audio_vol'));
-            var icon = 'vol_';
-
-            if ( curVol == 0 ) { icon += '0'}
-            else if ( curVol <= 33 ) {icon += '1' }
-            else if ( curVol <= 66 ) {icon += '2' }
-            else if ( curVol <= 90 ) {icon += '3' }
-            else { icon += '4' }
-            mes({type: 'icon', info: icon});
-
 		} else {
-			window.console.log('cant change vol');
-/*
-			var curVol = window.getCookie('audio_vol');
-			var newVol = curVol + delta > 100 ? 100 : (curVol + delta < 0 ? 0 : curVol + delta);
-			window.console.log(newVol);
-			plr.player.setVolume(newVol);
-			window.setCookie('audio_vol', newVol, 365);
-*/
+
+            var newVol = curVol + delta > 100 ? 100 : (curVol + delta < 0 ? 0 : curVol + delta);
+            window.console.log(newVol);
+            plr.player.setVolume(newVol / 100);
+
 		}
+
+        if ( newVol == 0 ) { icon += '0'}
+        else if ( newVol <= 33 ) {icon += '1' }
+        else if ( newVol <= 66 ) {icon += '2' }
+        else if ( newVol <= 90 ) {icon += '3' }
+        else { icon += '4' }
+        mes({type: 'icon', info: icon});
+        window.setCookie('audio_vol', newVol, 365);
     }
 
 

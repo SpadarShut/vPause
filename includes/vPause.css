@@ -1,9 +1,0 @@
-.vPauseMoveCloseBtn #gp .close {
-    float: left;
-}
-.vPauseMoveCloseBtn #gp.reverse .close {
-    float: right;
-}
-html {
-	padding-top: 40px !important;
-	}

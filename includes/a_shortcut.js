@@ -368,7 +368,7 @@ window.vPauseShortcut = {
                 else if(e.srcElement) element=e.srcElement;
                 if(element.nodeType==3) element=element.parentNode;
 
-                if(element.tagName == 'INPUT' || element.tagName == 'TEXTAREA') return;
+                if(element.tagName == 'INPUT' || element.tagName == 'TEXTAREA' || element.contentEditable == 'true')  return;
             }
 
             var key = ths.KeyCode.hot_key(ths.KeyCode.translate_event(e));

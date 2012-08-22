@@ -1,18 +1,19 @@
 TODO for vPause
 
     Settings:
-	- Move player close button to left (or right when in #gp.reverse .close)
 	- toggle time display: current / left / same as on the page
 	- Checkbox: Fire hotkeys when in inputs
 
+	- seek on next-prev hotkeys press
     - Optimize Options access
 	- better badge display handling
-
+	- delete file
+	
 	- Popup
+	- show loading percent if song is still loading and play state is pause
 
 DONE:
-    x Focus player tab hotkey & dbl click
-    x Hold hotkeys for volume change
+	x Add to my music
 
 
 Next Version
