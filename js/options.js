@@ -220,7 +220,6 @@ addEventListener('DOMContentLoaded', function(){
 
     function setHotkeys (){
         var keys = getHotkeysList();
-        var type = 'keydown'; //keyup?
         console.log('settingHotkeys', JSON.stringify(keys));
         for ( var key in keys ) {
             if (key && keys[key]) {
@@ -233,7 +232,7 @@ addEventListener('DOMContentLoaded', function(){
                         });
                         //console.log(key)
                     },{
-                        'type': (key == 'hotkey-vup' || key == 'hotkey-vdown') ? 'keypress' : type,
+                        'type': (key == 'hotkey-vup' || key == 'hotkey-vdown') ? 'keypress' : 'keydown',
                         'disable_in_input': true,
                         'propagate': true
                     });

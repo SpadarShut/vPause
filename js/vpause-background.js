@@ -2,7 +2,7 @@ window.addEventListener("load", function() {
     'use strict';
     var prefsLocation = widget.preferences;
     var players = [];
-    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, resumeIconUpdate, monitorIntervalID;
+    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, waitBeforeIconUpdate, monitorIntervalID, timer = [0,0,0];
     var dblClickTimeout = 300;
     var defaults = window.vPauseDefaultOptions;
     var icons = {
@@ -97,6 +97,9 @@ window.addEventListener("load", function() {
                 case 'readyToBeFocused':
                     focusPlayerTab(event);
                     break;
+                case 'onLoadProgress':
+                    handleLoadprogress(event);
+                    break;
             }
         }
     }
@@ -187,13 +190,72 @@ window.addEventListener("load", function() {
     }
 
     function handlePlayProgress(event) {
-        if (getPref('showTime') === 'true' && !resumeIconUpdate) {
-            button.badge.textContent = event.data.info;
-        }
-        else if (button.badge.textContent){
-            button.badge.textContent = '';
-        }
+        setBadge ( event.data.info, event);
         window.clearTimeout(monitorClose);
+    }
+
+    function handleLoadprogress (event) {
+        setBadge(null, event);
+    }
+
+    function setBadge(txt, event) {
+        txt = null;
+        var waitingTxt = ' ... ';
+
+        if (getPref('showTime') !== 'true' || waitBeforeIconUpdate) return;
+
+        if (event && event.data.type && event.data.type == 'onLoadProgress') {
+
+
+            // todo fix incorrect loaded calculation after seeking
+
+            /* If last three seconds player wasn't playing or was paused */
+            if (timer[0] === timer[1] /* && timer[1] === timer[2] */ || button.icon == icons.play) {
+                var i = event.data.info;
+                var bTotal = i.bTotal;
+                var bLoaded = i.bLoaded;
+                var songDur = i.dur;
+
+                if (!songDur || !bLoaded || !bTotal) return;
+
+                var bitrate = (bTotal / songDur).toFixed();
+                var secondsLoaded = Math.max(((bLoaded - bitrate * timer[0]) / bitrate ).toFixed(), 0);
+
+                if (secondsLoaded > 60) {
+                    secondsLoaded < 65 ? txt = 'ok': txt = '';
+                }
+                else if (secondsLoaded > 0) {
+                    txt = "+"+ secondsLoaded + "s";
+                }
+                else {
+                    txt = waitingTxt;
+                }
+                button.badge.textContent = txt;
+            }
+
+        } else {
+            // Then it's playProgress event
+
+            // if (getPref('showTime') === 'true' && !waitBeforeIconUpdate) {}
+            txt = event.data.info.leftFRM;
+
+            // don't update if the time is same as last
+            if (timer[0] !== event.data.info.cur ) {
+                button.badge.textContent = txt;
+            }
+            timer.unshift(event.data.info.cur);
+            timer.length = 3;
+
+            // either we never update the badge or we need to wait after icon change
+/*            if (txt){
+                txt = '';
+                button.badge.textContent = txt;
+            }*/
+        }
+
+     /*   if (txt !== undefined) {
+            button.badge.textContent = txt;
+        }*/
     }
 
     function handleCheckPlayer(event){
@@ -244,7 +306,10 @@ window.addEventListener("load", function() {
 
     function focusPlayerTab (evt) {
         var tabs = opera.extension.tabs.getAll();
+        // dirty hack to get the tab where the message came from
+		// we've appended three spaces to the title and look for a tab with them
         for( var tab in tabs ) {
+            window.console.log(tab);
             if (tabs[tab].title && /\u00a0\u00a0\u00a0$/.test(tabs[tab].title)){
                 tabs[tab].focus();
             }
@@ -277,12 +342,12 @@ window.addEventListener("load", function() {
     function changeIcon(icon, andRestore) {
         button.icon = icon;
         button.badge.textContent = '';
-        if (resumeIconUpdate) {
-            window.clearTimeout(resumeIconUpdate);
-            resumeIconUpdate = null;
+        if (waitBeforeIconUpdate) {
+            window.clearTimeout(waitBeforeIconUpdate);
+            waitBeforeIconUpdate = null;
         }
         if (andRestore) {
-            resumeIconUpdate = window.setTimeout(function(){
+            waitBeforeIconUpdate = window.setTimeout(function(){
                 tellPlayer('updateIcon');
             }, 1500);
         }

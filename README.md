@@ -7,7 +7,8 @@ Features
 --------
 
 * Addressbar button to play/pause the player which appears only when you play a song
-* A configurable action on double clicking the button: play previous track, play next track, or toggle repeat
+* A configurable action on double clicking the button: play previous track, play next track, toggle repeat,
+  switch to the tab with player, add current song to my audio
 * Hotkeys allow to switch tracks, play, pause, control volume *
 * Optionally show track time on the button
 * Hovering the button will show a tooltip with current track title and duration
@@ -28,7 +29,8 @@ vPause (ru)
 -----------
 
 * Кнопка в адресной строке браузера, появляющаяся при воспроизведении аудио
-* Возможность выбрать действие на двойное нажатие кнопки: следующая запись, предыдущая запись, вкл/выкл повтор
+* Возможность выбрать действие на двойное нажатие кнопки: следующая запись, предыдущая запись, вкл/выкл повтор,
+  перкеключиться на вкладку с плеером, добавить текущую песню в мои записи
 * Грячие клавиши позволяют переключать записи, играть и ставить на паузу, контролировать звук *
 * Показ времени воспроизведения на кнопке
 * Подсказка с названием записи и ее продолжительностью при наведении на кнопку

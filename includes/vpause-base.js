@@ -197,7 +197,6 @@
 
     function setHotkeys (){
         var keys = getHotkeysList();
-        var type = 'keydown'; //keyup?
         // console.log('settingHotkeys', JSON.stringify(keys));
         for ( var key in keys ) {
             if (key && keys[key]) {
@@ -210,7 +209,7 @@
                         });
                         //console.log(key)
                     },{
-                        'type': (key == 'hotkey-vup' || key == 'hotkey-vdown') ? 'keypress' : type,
+                        'type': 'keydown',
                         'disable_in_input': true,
                         'propagate': true
                     });
@@ -222,7 +221,7 @@
     function hijackPlayer (){
         var plr = window.audioPlayer;
         if (plr && !plr.isHijacked){
-            // hook icon changes - basically distilled player events
+            // hook icon changes - basically, distilled player events
             plr.setIcon = Function.vPauseAddCallListener( plr.setIcon, {
                 success: function(props){
                     var icon = props.args[0];
@@ -256,11 +255,30 @@
 
                     mes({
                         type: 'playProgress',
-                        info: res
+                        info: {
+                            leftFRM: res,
+                            dur: len,
+                            cur: cur
+
+                        }
                     })
                 }
             });
 
+            // hook player stop
+            plr.onLoadProgress = Function.vPauseAddCallListener( plr.onLoadProgress, {
+                success: function(props) {
+                    var bLoaded = props.args[0];
+                    var bTotal  = props.args[1];
+
+                    mes({type : 'onLoadProgress',
+                         info : {
+                             bLoaded:  props.args[0],
+                             bTotal: props.args[1],
+                             dur: plr.duration
+                         }});
+                }
+            });
 
             plr.isHijacked = true;
             if(plr.player && !plr.player.paused()){
