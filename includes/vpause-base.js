@@ -268,15 +268,13 @@
             // hook player stop
             plr.onLoadProgress = Function.vPauseAddCallListener( plr.onLoadProgress, {
                 success: function(props) {
-                    var bLoaded = props.args[0];
-                    var bTotal  = props.args[1];
-
                     mes({type : 'onLoadProgress',
                          info : {
                              bLoaded:  props.args[0],
                              bTotal: props.args[1],
                              dur: plr.duration
-                         }});
+                         }
+                    });
                 }
             });
 

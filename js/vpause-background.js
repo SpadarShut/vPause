@@ -199,28 +199,35 @@ window.addEventListener("load", function() {
     }
 
     function setBadge(txt, event) {
-        txt = null;
+        //txt = null;  //?
         var waitingTxt = ' ... ';
 
         if (getPref('showTime') !== 'true' || waitBeforeIconUpdate) return;
 
+
+        // Process loading events
+
         if (event && event.data.type && event.data.type == 'onLoadProgress') {
 
+            var i = event.data.info;
+            var songDur = i.dur || 0;
+            var bTotal = i.bTotal || 0;
 
-            // todo fix incorrect loaded calculation after seeking
+            if (!songDur || !bTotal) return;
 
-            /* If last three seconds player wasn't playing or was paused */
-            if (timer[0] === timer[1] /* && timer[1] === timer[2] */ || button.icon == icons.play) {
-                var i = event.data.info;
-                var bTotal = i.bTotal;
-                var bLoaded = i.bLoaded;
-                var songDur = i.dur;
+            var bLoaded = i.bLoaded || 0;
+            var curSec = timer[0] || 0;
+            var bitrate = (bTotal / songDur).toFixed();
+            var totalSecLoaded = Math.max((bLoaded / bitrate ).toFixed(), 0);
+            var more = totalSecLoaded - curSec;
 
-                if (!songDur || !bLoaded || !bTotal) return;
+            /* If less than three more seconds are loaded or the player
+             *  is paused show how many seconds of the track are loaded
+             * */
 
-                var bitrate = (bTotal / songDur).toFixed();
-                var secondsLoaded = Math.max(((bLoaded - bitrate * timer[0]) / bitrate ).toFixed(), 0);
+            if (more < 3 || button.icon == icons.play) {
 
+                var secondsLoaded = Math.max(((bLoaded - bitrate * curSec) / bitrate ).toFixed(), 0);
                 if (secondsLoaded > 60) {
                     secondsLoaded < 65 ? txt = 'ok': txt = '';
                 }
@@ -234,28 +241,17 @@ window.addEventListener("load", function() {
             }
 
         } else {
+
             // Then it's playProgress event
-
-            // if (getPref('showTime') === 'true' && !waitBeforeIconUpdate) {}
+            
             txt = event.data.info.leftFRM;
-
             // don't update if the time is same as last
             if (timer[0] !== event.data.info.cur ) {
                 button.badge.textContent = txt;
             }
             timer.unshift(event.data.info.cur);
             timer.length = 3;
-
-            // either we never update the badge or we need to wait after icon change
-/*            if (txt){
-                txt = '';
-                button.badge.textContent = txt;
-            }*/
         }
-
-     /*   if (txt !== undefined) {
-            button.badge.textContent = txt;
-        }*/
     }
 
     function handleCheckPlayer(event){
