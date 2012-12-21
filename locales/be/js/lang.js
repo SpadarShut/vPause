@@ -15,6 +15,7 @@ var locale = {
     ,'labelClickHereHotkey' : 'Націсніце тут пажаданыя клавішы'
     ,'saveHotkeys'          : 'Захаваць гарачыя клавішы'
     ,'labelAddSong'         : 'Дадаць да маіх аўдыёзапісаў'
+    ,'labelDlPlaylist'      : 'Загрузіць плэйліст як .m3u'
 
     ,'headerDblClick'       : 'Дзеянне на падвойнае націсканне кнопкі'
     ,'labelToggleRepeat'    : 'Укл/выкл паўтарэнне'

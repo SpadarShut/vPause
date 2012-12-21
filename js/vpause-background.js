@@ -127,17 +127,8 @@ window.addEventListener("load", function() {
 
     function buttonDblClicked () {
         var fn = getPref('dblClickAction');
-        switch (fn) {
-            case 'next'    : tellPlayer('next');
-                break;
-            case 'prev'    : tellPlayer('prev');
-                break;
-            case 'rpt'     : tellPlayer('tglloop');
-                break;
-            case 'focus'   : tellPlayer('focus');
-                break;
-            case 'addSong' : tellPlayer('addSong');
-                break;
+        if (fn && fn !== undefined) {
+            tellPlayer(fn);
         }
     }
 
@@ -243,7 +234,7 @@ window.addEventListener("load", function() {
         } else {
 
             // Then it's playProgress event
-            
+
             txt = event.data.info.leftFRM;
             // don't update if the time is same as last
             if (timer[0] !== event.data.info.cur ) {

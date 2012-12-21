@@ -24,6 +24,7 @@
                     break;
                 case 'tglplay'    : togglePlay();
                     break;
+                case 'rpt':
                 case 'tglloop'    : toggleLoop();
                     break;
                 case 'vup'        : volUp();
@@ -36,6 +37,8 @@
                     break;
                 case 'addSong'    : addSong();
                     break;
+                case 'dlPlaylist' : dlPlaylist();
+                    break;
             }
         }
         else if (typeof event.data === 'object') {
@@ -44,6 +47,10 @@
                     break;
             }
         }
+    }
+
+    function dlPlaylist() {
+        console.log('dlPlaylist')
     }
 
     function checkPlayer(){

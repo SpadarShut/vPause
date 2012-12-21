@@ -15,6 +15,7 @@ var locale = {
     ,'labelClickHereHotkey' : 'Click here and press your hotkey'
     ,'saveHotkeys'          : 'Save hotkeys'
     ,'labelAddSong'         : 'Add to my music'
+    ,'labelDlPlaylist'       : 'Download current playlist as .m3u'
 
     ,'headerDblClick'       : 'Double click action'
     ,'labelToggleRepeat'    : 'Toggle repeat'
