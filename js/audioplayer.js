@@ -148,7 +148,7 @@ var audioPlayer = {
     if (element) {
       var _a = audioPlayer;
       _a.player = element;
-      var volume = parseInt(getCookie('audio_vol'));
+      var volume = browser.mobile ? 80 : parseInt(getCookie('audio_vol'));
       if (!isNaN(volume)) _a.player.setVolume(volume / 100);
       _a.operate(id, true);
       if (!_a.gotData) {
@@ -181,6 +181,7 @@ var audioPlayer = {
     if (!nfo) {
       nfo = geByClass1('info', ge('audio' + aid + '_pad'));
     }
+    if (!ge('audio_info' + aid)) return null;
     art = geByTag1('b', nfo);
     l = geByTag1('a', art);
     if (l) art = l;
@@ -213,7 +214,9 @@ var audioPlayer = {
   setSongInfo: function() {
     var _a = audioPlayer, aid = currentAudioId(), pl;
 
-    if ((pl = padAudioPlaylist()) && pl[aid]) {
+    if (window.Pads && Pads.audioSearchCleared && (pl = cur.nextPlaylist) && pl[aid]) {
+      _a.lastSong = pl[aid];
+    } else if ((pl = padAudioPlaylist()) && pl[aid]) {
       _a.lastSong = pl[aid];
     } else if (_a.songInfos[aid]) {
       _a.lastSong = _a.songInfos[aid];
@@ -222,6 +225,7 @@ var audioPlayer = {
     } else {
       _a.lastSong = _a.getSongInfoFromDOM(aid);
     }
+    if (!_a.lastSong) return;
     ls.set('pad_lastsong', _a.lastSong);
     _a.lastSong.aid = aid;
   },
@@ -405,6 +409,12 @@ var audioPlayer = {
         _a.setPadPlaylist(window.audioPlaylist);
       }
       if (_a.lastSong == undefined || id != _a.lastSong.aid) _a.setSongInfo();
+      if (!_a.lastSong) return;
+      if (_a.lastSong[0] && _a.lastSong[1] && (!_a.lastSong[2] || parseInt(_a.lastSong[11]))) {
+        showAudioClaimWarning(_a.lastSong[0], _a.lastSong[0], '', -1, _a.lastSong[5] + ' &ndash; ' + _a.lastSong[6]);
+        _a.setAid(null);
+        return;
+      }
       var url = _a.lastSong[2];
       _a.duration = _a.lastSong[3];
       _a.player.loadAudio(url);
@@ -487,7 +497,7 @@ var audioPlayer = {
           removeClass(_row, 'current');
 
           if (aid) {
-            var t = _a.duration || _a.lastSong && _a.lastSong[3] || ge('audio_info' + aid).split(',')[1],
+            var t = _a.duration || _a.lastSong && _a.lastSong[3] || ge('audio_info' + aid).value.split(',')[1],
                 res = _a.formatTime(t),
                 dur = geByClass1('duration', ge('audio' + aid));
             if (dur && res) dur.innerHTML = res;
@@ -528,6 +538,9 @@ var audioPlayer = {
           addClass(ge('play' + aid), 'playing');
           addClass(_row, 'current');
           if (ge('player' + aid)) {
+            if (ge('audio_vol' + aid) && browser.mobile) {
+              hide('audio_vol' + aid);
+            }
             if (ge('audio_vol_line' + aid)) {
               setStyle(ge('audio_vol_line' + aid), {width: (playerVol * 100) + '%'});
             }
@@ -572,7 +585,7 @@ var audioPlayer = {
   stop: function() {
     var _a = audioPlayer, aid = currentAudioId();
     if (aid) {
-      if (_a.player) _a.player.stopAudio();
+      if (_a.player && !_a.player.paused()) _a.player.stopAudio();
       _a.setGraphics('stop');
       _a.setAid(null);
     }
@@ -592,14 +605,15 @@ var audioPlayer = {
   setPlaybackParams: function() {
     var _a = audioPlayer, aid = currentAudioId(), ids = (aid || '').split('_'), params = {};
     if (cur.curSection == 'recommendations') params.recommendation = 1;
-    if (nav.objLoc[0] == 'search' && nav.objLoc['c[section]'] == 'audio' && !nav.objLoc['c[q]']) params.top = 1;
-    if (nav.objLoc[0] == 'audio' && nav.objLoc['act'] == 'popular' && !nav.objLoc['q']) params.top_audio = 1;
+    if (cur.module == 'search' && nav.objLoc['c[section]'] == 'audio' && !nav.objLoc['c[q]']) params.top = 1;
+    if (cur.module == 'audio' && nav.objLoc['act'] == 'popular' && !nav.objLoc['q']) params.top_audio = 1;
     if ((aid + '').match(/^-?\d+_\d+_s(\d+)$/) && window.audioPlaylist && audioPlaylist[aid]) params.status = 1;
     if (_a.isAudioFriend(ids[0], aid)) params.friend = ids[0];
-    if ((cur.module == 'groups' || cur.module == 'public' || nav.objLoc[0] == 'audio') && cur.oid == ids[0] && cur.oid < 0) params.group = 1;
-    if ((nav.objLoc[0] == 'audio' || nav.objLoc[0] == 'feed') && nav.objLoc['q'] || nav.objLoc[0] == 'search' && nav.objLoc['c[q]']) params.search = 1;
-    if (nav.objLoc[0] == 'audio' && nav.objLoc['album_id'] && cur.album_id) params.album = 1;
-    if (!params.search && nav.objLoc[0] == 'feed') params.feed = 1;
+    if ((cur.module == 'groups' || cur.module == 'public' || cur.module == 'audio') && cur.oid == ids[0] && cur.oid < 0) params.group = 1;
+    if ((cur.module == 'audio' || cur.module == 'feed') && nav.objLoc['q'] || cur.module == 'search' && nav.objLoc['c[q]']) params.search = 1;
+    if (cur.module == 'audio' && nav.objLoc['album_id'] && cur.album_id) params.album = 1;
+    if (cur.module == 'audio' && cur.club) params.club = cur.club;
+    if (!params.search && cur.module == 'feed') params.feed = 1;
     _a.playbackParams = params;
   },
   isAudioFriend: function(oid, full_id) {
@@ -615,7 +629,7 @@ var audioPlayer = {
       aid = ids.join('_');
     }
     if (_a.statusExport && ids[1] != _a.statusSent) {
-      setTimeout(ajax.post.pbind('audio', {act: 'audio_status', full_id: aid, hash: _a.addHash}), 0);
+      setTimeout(ajax.post.pbind('audio', {act: 'audio_status', full_id: aid, hash: _a.addHash, top: (_a.playbackParams.top_audio || _a.playbackParams.top) ? 1 : ''}), 0);
       _a.statusSent = ids[1];
     }
     clearTimeout(_a.playbackTimer);
@@ -804,6 +818,16 @@ var audioPlayer = {
       toggleClass(r, 'on', _a.repeat);
     }
   },
+  showRec: function(aid, fromPad) {
+    var _a = audioPlayer;
+    aid = aid || currentAudioId() ||  _a.lastSong && _a.lastSong.aid || cur.defaultTrack && cur.defaultTrack.id || window.audioPlaylist && audioPlaylist.start || '';
+    if (!aid) return;
+    if (fromPad) {
+      _a.loadTrackRecommendations(aid);
+    } else if (window.Audio) {
+      Audio.loadRecommendations({update: true, audioId: aid});
+    }
+  },
   toggleStatus: function() {
     var _a = audioPlayer, aid = currentAudioId(), exp = _a.statusExport, c = ge('gp_status_check');
     if (!_a.addHash) return;
@@ -820,7 +844,7 @@ var audioPlayer = {
         }
       }
     }
-    ajax.post('audio', {act: 'toggle_status', exp: (exp ? '' : 1), hash: _a.addHash, id: aid});
+    ajax.post('audio', {act: 'toggle_status', exp: (exp ? '' : 1), hash: _a.addHash, id: aid, top: (_a.playbackParams.top_audio || _a.playbackParams.top) ? 1 : ''});
   },
   setControlsTitle: function() {
     var _a = audioPlayer;
@@ -845,8 +869,8 @@ var audioPlayer = {
           obj.duration.innerHTML = songInfo[4];
         }
         if (obj.add) {
-          var aid = currentAudioId();
-          toggleClass(obj.add, 'added', !!(aid && cur.addedIds && cur.addedIds[aid]));
+          var aid = currentAudioId(), cur_aids = aid && aid.split('_') || [], raw_id = aid && cur_aids[0] + '_' + cur_aids[1] || null;
+          toggleClass(obj.add, 'added', !!(raw_id && cur.addedIds && cur.addedIds[raw_id]));
         }
       }
     }
@@ -918,7 +942,7 @@ var audioPlayer = {
       Pads.setAudioCurPos(400);
       return;
     }
-    if (!w.pageNode || !play_btn || nav.objLoc[0] == 'im') return;
+    if (!w.pageNode || !play_btn || cur.module == 'im') return;
     var xy = getXY(play_btn);
     var dheight = Math.max(intval(w.innerHeight), intval(de.clientHeight));
     var height = Math.max(0, xy[1] - (dheight - 16) / 2);
@@ -1005,13 +1029,15 @@ var audioPlayer = {
     }
   },
 
-  genPlaylist: function(res, copyToMain) {
+  genPlaylist: function(list, copyToMain, allMy) {
+    var res = clone(list);
     if (!res || !res.length) return;
     for (var i in res) {
       if (res[i][11] && parseInt(res[i][11])) {
         res.splice(i, 1);
       }
     }
+    if (!res.length) return;
     if (res[0]._order !== undefined) {
       res = res.sort(function(a,b) {return a._order - b._order});
     }
@@ -1032,6 +1058,7 @@ var audioPlayer = {
     cur.nextPlaylist.length = res.length;
     cur.nextPlaylist.instance = cur.nextPlaylist.source = window.curNotifier && curNotifier.instance_id || '';
     cur.nextPlaylist.address = nav.strLoc;
+    if (allMy) cur.nextPlaylist.my = 1;
     if (window._pads && _pads.shown == 'mus' && Pads.audioSearchStr) {
       cur.nextPlaylist.searchStr = Pads.audioSearchStr;
     }
@@ -1078,6 +1105,86 @@ var audioPlayer = {
     }
   },
 
+  updateCurrentPlaylist: function(obj, aid) {
+    var _a = audioPlayer;
+    if (obj && obj.all && window.audioPlaylist && audioPlaylist[aid]) {
+      var found = false, audio_id = aid.split('_')[1], curId = aid, fullIds = {};
+      do {
+        var curAudioId = curId.split('_')[1];
+        fullIds[curAudioId] = curId;
+        curId = audioPlaylist[curId]._next;
+      } while (curId && curId != aid);
+      for (var i in obj.all) {
+        if (obj.all[i][1] == audio_id) {
+          found = true;
+        }
+        if (fullIds[obj.all[i][1]] && !obj.all[i].full_id) {
+          obj.all[i].full_id = fullIds[obj.all[i][1]];
+        }
+      }
+      if (found) {
+        _a.genPlaylist(obj.all, true);
+      }
+    }
+  },
+
+  loadTrackRecommendations: function(aid) {
+    var _a = audioPlayer, ids = aid.split('_');
+    if (!ids[0] || !ids[1]) return;
+    ajax.post('/audio', {act: 'audio_recommendations', oid: ids[0], aid: ids[1]}, {
+      onDone: function(obj) {
+        if (obj && obj.all && obj.all.length) {
+          var curPlist = window.audioPlaylist;
+          _a.genPlaylist(obj.all, false);
+          if (cur.nextPlaylist)  cur.nextPlaylist.rec = 1;
+          if (window.Pads) {
+            Pads.audioSearchCleared = true;
+            if (window._pads && _pads.shown == 'mus') {
+              _a.recsLoaded = 1;
+              Pads.updateAudioPlaylist();
+            }
+          }
+        }
+      },
+      onFail: function(msg) {
+        setTimeout(showFastBox(getLang('global_error'), msg).hide, 3000);
+        return true;
+      }
+    });
+  },
+
+  showMyAudios: function(el) {
+    var _a = audioPlayer, allMy = (cur.module == 'audio' && cur.oid == vk.id && cur.audiosList && cur.audiosList.all);
+    if (allMy) {
+      _a.genPlaylist(allMy, false, true);
+      if (window.Pads) {
+        Pads.audioSearchCleared = true;
+        if (window._pads && _pads.shown == 'mus') Pads.updateAudioPlaylist();
+      }
+      re(el);
+    } else {
+      ajax.post('/audio', {act: 'load_audios_silent', id: vk.id}, {
+        cache: 1,
+        showProgress: function() {
+          ge('pad_footer_text').innerHTML = '<div class="progress" style="display: block;"></div>';
+        },
+        hideProgress: function() {
+          ge('pad_footer_text').innerHTML = '';
+        },
+        onDone: function(data, opts) {
+          var obj = eval('('+data+')');
+          if (!obj || !obj.all) return;
+          _a.genPlaylist(obj.all, false, true);
+          if (window.Pads) {
+            Pads.audioSearchCleared = true;
+            if (window._pads && _pads.shown == 'mus') Pads.updateAudioPlaylist();
+          }
+          re(el);
+        }
+      });
+    }
+  },
+
   createDynamicPlaylist: function(aid, copyToMain, limit) {
     var _a = audioPlayer;
     if (!aid) return;
@@ -1092,31 +1199,28 @@ var audioPlayer = {
       ajax.post('/audio', {act: 'get_playlist', oid: cur.oid}, {
         onDone: function(res) {
           var obj = eval('(' + res + ')');
-          if (obj && obj.all && window.audioPlaylist[aid]) {
-            var found = false, audio_id = aid.split('_')[1], curId = aid, fullIds = {};
-            do {
-              var curAudioId = curId.split('_')[1];
-              fullIds[curAudioId] = curId;
-              curId = audioPlaylist[curId]._next;
-            } while (curId != aid);
-            for (var i in obj.all) {
-              if (obj.all[i][1] == audio_id) {
-                found = true;
-              }
-              if (fullIds[obj.all[i][1]]) {
-                obj.all[i].full_id = fullIds[obj.all[i][1]];
-              }
-            }
-            if (found) {
-              _a.genPlaylist(obj.all, true);
-            }
-          }
+          _a.updateCurrentPlaylist(obj, aid);
         }
       })
+    } else if (cur.module == 'groups' || cur.module == 'public' || cur.module == 'profile' || cur.module == 'feed') {
+      var ids = aid.split('_'), local_id = ids && ids[3] || '';
+      if (local_id && ge('post'+ids[2]+'_'+ids[3])) {
+        var wallType = cur.wallType;
+        if (wallType != 'own' && wallType != 'all') {
+          wallType = 'own';
+        }
+        ajax.post('/audio', {act: 'get_wall_playlist', oid: ids[2], wall_type: wallType, local_id: local_id}, {
+          onDone: function(obj) {
+            if (obj && obj.all && obj.all.length) {
+              _a.updateCurrentPlaylist(obj, aid);
+            }
+          }
+        });
+      }
     }
   },
   showCurrentTrack: function() {
-    var _a = audioPlayer, aid = currentAudioId(), pad_aid = pad_aid_raw = ls.get('audio_id') || aid;
+    var _a = audioPlayer, aid = currentAudioId(), pad_aid = pad_aid_raw = ls.get('audio_id') || aid, cur_aids = aid && aid.split('_') || [], raw_id = aid && cur_aids[0] + '_' + cur_aids[1] || null;
     if (aid && _a.player) {
       _a.setGraphics('load');
       if (_a.player.paused()) {
@@ -1150,7 +1254,7 @@ var audioPlayer = {
         if (obj.repeat) toggleClass(obj.repeat, 'on', !!_a.repeat);
         if (obj.status) toggleClass(obj.status, 'on', !!_a.statusExport);
         if (obj.shuffle) toggleClass(obj.shuffle, 'on', !!_a.shuffle);
-        if (obj.add) toggleClass(obj.add, 'added', !!(aid && cur.addedIds && cur.addedIds[aid]));
+        if (obj.add) toggleClass(obj.add, 'added', !!(raw_id && cur.addedIds && cur.addedIds[raw_id]));
       }
     }
   },
@@ -1197,7 +1301,11 @@ var audioPlayer = {
     if (dur && res) dur.innerHTML = res;
   },
   switchTimeFormat: function(id, event) {
-    var _a = audioPlayer;
+    var _a = audioPlayer, aid = currentAudioId();
+    if (aid && id) {
+      var aids = aid.split('_'), ids = id.split('_');
+      if (aids[0] != ids[0] || aids[1] != ids[1]) return false;
+    }
     _a.timeLeft = (_a.timeLeft + 1) % 2;
     if (_a.player) {
       _a.player.callPlayProgress();
@@ -1242,6 +1350,20 @@ var audioPlayer = {
       }
     }
   },
+  showCurrentAdded: function() {
+    var _a = audioPlayer;
+    if (_a.controls) {
+      for (var i in _a.controls) {
+        var obj = _a.controls[i];
+        if (obj.add) {
+          addClass(obj.add, 'added');
+          if (obj.add.tt) {
+            obj.add.tt.hide();
+          }
+        }
+      }
+    }
+  },
   addCurrentTrack: function() {
     if (cur.addingAudio) return false;
     var _a = audioPlayer, aid = currentAudioId();
@@ -1254,8 +1376,9 @@ var audioPlayer = {
         ids[1] = ids[0];
         ids[0] = vk.id;
       }
+      var raw_id = ids[0] + '_' + ids[1];
       cur.addingAudio = true;
-      if (cur.addedIds && cur.addedIds[aid]) return false;
+      if (cur.addedIds && cur.addedIds[raw_id]) return false;
       if (ids && ids[0] && ids[1]) {
         var query = {act: 'add', oid: ids[0], aid: ids[1], hash: _a.addHash};
         if (_a.top) query.top = 1;
@@ -1273,25 +1396,22 @@ var audioPlayer = {
                   aobj._order = 0;
                   cur.audiosList['all'] = [aobj];
                 }
-                cur.audios[obj[1]] = aobj;
+                cur.audios[aobj[1]] = aobj;
                 cur.audiosIndex.add(aobj);
               }, 0);
             }
             if (!cur.addedIds) cur.addedIds = {};
-            cur.addedIds[aid] = 1;
+            cur.addedIds[raw_id] = 1;
             showDoneBox(text, {out: 2000});
             cur.addingAudio = false;
-            if (_a.controls) {
-              for (var i in _a.controls) {
-                var obj = _a.controls[i];
-                if (obj.add) {
-                  addClass(obj.add, 'added');
-                  if (obj.add.tt) {
-                    obj.add.tt.hide();
-                  }
-                }
+            _a.showCurrentAdded();
+            each([raw_id, raw_id + '_pad'], function() {
+              var Actions = window.Audio || window.searchActions || {},
+                  addEl = geByClass1('audio_add_wrap', ge('audio' + this));
+              if (Actions && Actions.animateAdded && addEl && !hasClass(addEl, 'anim')) {
+                Actions.animateAdded(addEl, isVisible(addEl) ? 200 : 0);
               }
-            }
+            });
           },
           onFail: function() {
             cur.addingAudio = false;
@@ -1300,8 +1420,15 @@ var audioPlayer = {
       }
     }
   },
-  shuffleAudios: function() {
-    var _a = audioPlayer, pl = window.audioPlaylist, aid = currentAudioId();
+  shuffleAudios: function(fromPad) {
+    var _a = audioPlayer, pl, aid;
+    if (fromPad && window.Pads) {
+      pl = Pads.audioSearchCleared ? cur.nextPlaylist || {} : ((!window.audioPlaylist || window.curNotifier && (padPlData = ls.get('pad_pldata')) && padPlData.source == curNotifier.instance_id) ? ls.get('pad_playlist') || window.audioPlaylist : padAudioPlaylist());
+      aid = ((_a = window.audioPlayer) && _a.isPlaylistGlobal()) ? ls.get('audio_id') || currentAudioId() : currentAudioId();
+    } else {
+      pl = window.audioPlaylist;
+      aid = currentAudioId();
+    }
     if (aid) {
       var m = aid.match(/^-?\d+_\d+_s(\d+)$/);
       if (m && m[1] && _a.statusData && _a.statusData[m[1]]) {
@@ -1314,7 +1441,7 @@ var audioPlayer = {
         window.audioPlaylist = pl;
       }
     }
-    if (nav.objLoc[0] != 'audio' && !pl) {
+    if (cur.module != 'audio' && !pl) {
       return false;
     }
     _a.shuffle = !_a.shuffle;
@@ -1326,7 +1453,7 @@ var audioPlayer = {
         }
       }
     }
-    if (nav.objLoc[0] == 'audio' && window.Audio) {
+    if (cur.module == 'audio' && window.Audio) {
       Audio.mixAudios();
     } else {
       var aid = currentAudioId(), startId = pl.start, res = [], other = [];
@@ -1378,7 +1505,7 @@ var audioPlayer = {
       for (var i in other) {
         res.push(other[i]);
       }
-      _a.genPlaylist(res, true);
+      _a.genPlaylist(res, true, pl && pl.my);
       if (Pads.updateAudioPlaylist) {
         Pads.updateAudioPlaylist();
       }
@@ -1398,7 +1525,7 @@ var audioPlayer = {
       addEvent(obj.volumeArea, 'mousedown', function(e){
         _a.volClick(e, name);
       });
-      var volume = parseInt(getCookie('audio_vol'));
+      var volume = browser.mobile ? 80 : parseInt(getCookie('audio_vol'));
       volume = Math.max(0, Math.min(volume, 100));
       setStyle(obj.volume, {width: volume + '%'});
     }
@@ -1412,7 +1539,7 @@ var audioPlayer = {
     }
     if (obj.play) {
       addEvent(obj.play, 'click', function(e){
-        var aid = obj.padPlaylist && _a.isPlaylistGlobal() ? ls.get('audio_id') || currentAudioId() : currentAudioId() || (_a.lastSong && _a.lastSong.aid) || (cur.defaultTrack && cur.defaultTrack.id) || window.audioPlaylist && audioPlaylist.start || '';
+        var aid = (obj.padPlaylist && _a.isPlaylistGlobal() ? ls.get('audio_id') : null) || currentAudioId() || (_a.lastSong && _a.lastSong.aid) || (cur.defaultTrack && cur.defaultTrack.id) || window.audioPlaylist && audioPlaylist.start || '';
         if (obj.padPlaylist) {
           window.padPlClicked = true;
         }
@@ -1426,7 +1553,8 @@ var audioPlayer = {
       next: _a.nextTrack.pbind(false, !!obj.padPlaylist),
       add: _a.addCurrentTrack,
       repeat: _a.toggleRepeat,
-      shuffle: _a.shuffleAudios,
+      shuffle: _a.shuffleAudios.pbind(!!obj.padPlaylist),
+      rec: _a.showRec.pbind(false, !!obj.padPlaylist),
       status: _a.toggleStatus
     };
     for (var i in clickClbks) {
@@ -1439,9 +1567,10 @@ var audioPlayer = {
       add: 'audio_add_to_audio',
       repeat: 'audio_repeat_tooltip',
       shuffle: 'audio_shuffle',
+      rec: 'audio_show_recommendations',
       status: 'audio_export_tip'
     };
-    each(['prev', 'next', 'play', 'add', 'repeat', 'status', 'shuffle', 'volumeArea'], function(){
+    each(['prev', 'next', 'play', 'add', 'repeat', 'rec', 'status', 'shuffle', 'volumeArea'], function(){
       if (obj[this]) {
         var self = this;
         addEvent(obj[this], 'mouseover', function() {
@@ -1452,7 +1581,7 @@ var audioPlayer = {
         });
       }
     });
-    each(['prev', 'next', 'play', 'add', 'repeat', 'status', 'shuffle', 'volumeArea', 'progressArea'], function(){
+    each(['prev', 'next', 'play', 'add', 'repeat', 'rec', 'status', 'shuffle', 'volumeArea', 'progressArea'], function(){
       if (obj[this]) {
         addEvent(obj[this], 'mouseout', function() {
           removeClass(this, 'over');
@@ -1484,7 +1613,7 @@ var audioPlayer = {
     }
     if (obj.play) {
       removeEvent(obj.play, 'click', function(e){
-        var aid = obj.padPlaylist && _a.isPlaylistGlobal() ? ls.get('audio_id') || currentAudioId() : currentAudioId() || (_a.lastSong && _a.lastSong.aid) || (cur.defaultTrack && cur.defaultTrack.id) || window.audioPlaylist && audioPlaylist.start || '';
+        var aid = (obj.padPlaylist && _a.isPlaylistGlobal() ? ls.get('audio_id') : null) || currentAudioId() || (_a.lastSong && _a.lastSong.aid) || (cur.defaultTrack && cur.defaultTrack.id) || window.audioPlaylist && audioPlaylist.start || '';
         if (obj.padPlaylist) {
           window.padPlClicked = true;
         }
@@ -1498,6 +1627,8 @@ var audioPlayer = {
       next: _a.nextTrack.pbind(false, !!obj.padPlaylist),
       add: _a.addCurrentTrack,
       repeat: _a.toggleRepeat,
+      shuffle: _a.shuffleAudios.pbind(!!obj.padPlaylist),
+      rec: _a.showRec.pbind(false, !!obj.padPlaylist),
       status: _a.toggleStatus
     };
     for (var i in clickClbks) {
@@ -1510,9 +1641,10 @@ var audioPlayer = {
       add: 'audio_add_to_audio',
       repeat: 'audio_repeat_tooltip',
       shuffle: 'audio_shuffle',
+      rec: 'audio_show_recommendations',
       status: 'audio_export_tip'
     };
-    each(['prev', 'next', 'play', 'add', 'repeat', 'status', 'shuffle', 'volumeArea'], function(){
+    each(['prev', 'next', 'play', 'add', 'repeat', 'rec', 'status', 'shuffle', 'volumeArea'], function(){
       if (obj[this]) {
         var self = this;
         removeEvent(obj[this], 'mouseover', function() {
@@ -1523,7 +1655,7 @@ var audioPlayer = {
         });
       }
     });
-    each(['prev', 'next', 'play', 'add', 'repeat', 'status', 'shuffle', 'volumeArea', 'progressArea'], function(){
+    each(['prev', 'next', 'play', 'add', 'repeat', 'rec', 'status', 'shuffle', 'volumeArea', 'progressArea'], function(){
       if (obj[this]) {
         removeEvent(obj[this], 'mouseout', function() {
           removeClass(this, 'over');

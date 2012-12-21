@@ -50,7 +50,11 @@
     }
 
     function dlPlaylist() {
-        console.log('dlPlaylist')
+
+    }
+
+    function generatem3u (playlist) {
+        
     }
 
     function checkPlayer(){
