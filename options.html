@@ -1,94 +1,60 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="css/options.css">
-  <title id="widget-title"></title>
-</head>
+    <meta charset="utf-8"/>
+    <link href="css/options.css" rel="stylesheet"/>
+    <title>vPause</title></head>
 <body>
-  <header>
-    <img src="img/icon.png">
-    <h1 id="widget-name">&nbsp;</h1>
-  </header>
+<header><img src="img/icon.png"/>
 
-  <section>
-	  <h3 data-i18n="headerHotkeys"></h3>
-	  <fieldset class="fset-hotkeys">
-		  <p data-i18n="hotkeysHint"></p>
-		  <ul>
-			  <li>
-				  <label for="hotkey-tglplay" data-i18n="labelHotkeyPlayPause"></label>
-				  <input type="text" name="hotkey-tglplay" id="hotkey-tglplay" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-			  <li>
-				  <label for="hotkey-next" data-i18n="labelHotkeyNextTrack"></label>
-				  <input type="text" name="hotkey-next" id="hotkey-next" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-			  <li>
-				  <label for="hotkey-prev" data-i18n="labelHotkeyPrevTrack"></label>
-				  <input type="text" name="hotkey-prev" id="hotkey-prev" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-			  <li>
-				  <label for="hotkey-vup" data-i18n="labelHotkeyVolUp"></label>
-				  <input type="text" name="hotkey-vup" id="hotkey-vup" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-			  <li>
-				  <label for="hotkey-vdown" data-i18n="labelHotkeyVolDown"></label>
-				  <input type="text" name="hotkey-vdown" id="hotkey-vdown" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-			  <li>
-				  <label for="hotkey-tglloop" data-i18n="labelHotkeyRepeat"></label>
-				  <input type="text" name="hotkey-tglloop" id="hotkey-tglloop" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-              <li>
-                  <label for="hotkey-addSong" data-i18n="labelAddSong"></label>
-                  <input type="text" name="hotkey-addSong" id="hotkey-addSong" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-			  <li>
-				  <label for="hotkey-focus" data-i18n="labelFocusPlayerTab"></label>
-				  <input type="text" name="hotkey-focus" id="hotkey-focus" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-			  <li>
-				  <label for="hotkey-dlPlaylist" data-i18n="labelDlPlaylist"></label>
-				  <input type="text" name="hotkey-dlPlaylist" id="hotkey-dlPlaylist" data-i18n="[placeholder]labelClickHereHotkey"> </li>
-		  </ul>
+<h1>vPause</h1></header>
+<section><h3 data-i18n="headerHotkeys"></h3>
+    <fieldset class="fset-hotkeys"><p data-i18n="hotkeysHint"></p>
+        <ul>
+            <li><label data-i18n="labelHotkeyPlayPause" for="hotkey-togglePlay"></label> <input
+                    data-i18n="[placeholder]labelClickHereHotkey" id="hotkey-togglePlay" name="hotkey-togglePlay"
+                    type="text"/></li>
+            <li><label data-i18n="labelHotkeyNextTrack" for="hotkey-nextTrack"></label> <input
+                    data-i18n="[placeholder]labelClickHereHotkey" id="hotkey-nextTrack" name="hotkey-nextTrack" type="text"/></li>
+            <li><label data-i18n="labelHotkeyPrevTrack" for="hotkey-prevTrack"></label> <input
+                    data-i18n="[placeholder]labelClickHereHotkey" id="hotkey-prevTrack" name="hotkey-prevTrack" type="text"/></li>
+            <li><label data-i18n="labelHotkeyVolUp" for="hotkey-volUp"></label> <input
+                    data-i18n="[placeholder]labelClickHereHotkey" id="hotkey-volUp" name="hotkey-volUp" type="text"/></li>
+            <li><label data-i18n="labelHotkeyVolDown" for="hotkey-volDown"></label> <input
+                    data-i18n="[placeholder]labelClickHereHotkey" id="hotkey-volDown" name="hotkey-volDown" type="text"/>
+            </li>
+            <li><label data-i18n="labelHotkeyRepeat" for="hotkey-toggleRepeat"></label> <input
+                    data-i18n="[placeholder]labelClickHereHotkey" id="hotkey-toggleRepeat" name="hotkey-toggleRepeat"
+                    type="text"/></li>
+            <li><label data-i18n="labelFocusPlayerTab" for="hotkey-focusPlayerTab"></label> <input
+                    data-i18n="[placeholder]labelClickHereHotkey" id="hotkey-focusPlayerTab" name="hotkey-focusPlayerTab" type="text"/>
+            </li>
+            <li><label data-i18n="labelAddSong" for="hotkey-addSong"></label> <input
+                    data-i18n="[placeholder]labelClickHereHotkey" id="hotkey-addSong" name="hotkey-addSong"
+                    type="text"/></li>
+        </ul>
+        <p class="action">
+            <button data-i18n="saveHotkeys" disabled id="save-hotkeys"></button>
+        </p>
+    </fieldset>
+    <h3 data-i18n="headerDblClick"></h3>
+    <fieldset>
+        <p><select id="dblClickAction" name="dblClickAction">
+            <option data-i18n="labelToggleRepeat" selected value="toggleRepeat"></option>
+            <option data-i18n="labelPlayNext" value="nextTrack"></option>
+            <option data-i18n="labelPlayPrev" value="prevTrack"></option>
+            <option data-i18n="labelFocusPlayerTab" value="focusPlayerTab"></option>
+            <option data-i18n="labelAddSong" value="addSong"></option>
+            <!--<option value="none">None</option>--> </select></p>
+    </fieldset>
+    <h3 data-i18n="headerButtonBadge"></h3>
+    <fieldset><p><label><input id="showTime" name="showTime" type="checkbox" value="true"/> <span
+            data-i18n="labelShowTime"></span></label></p></fieldset>
+</section>
+<footer><p><a href="http://vk.com/vpause">vk.com/vpause</a></p></footer>
 
-		  <p class="action">
-			  <button id="save-hotkeys" disabled data-i18n="saveHotkeys"></button>
-		  </p>
-	  </fieldset>
-
-
-	  <h3 data-i18n="headerDblClick"></h3>
-	  <fieldset>
-		  <p>
-			  <select name="dblClickAction" id="dblClickAction">
-				  <option value="rpt" selected data-i18n="labelToggleRepeat"></option>
-				  <option value="next" data-i18n="labelPlayNext"></option>
-				  <option value="prev" data-i18n="labelPlayPrev"></option>
-				  <option value="focus" data-i18n="labelFocusPlayerTab"></option>
-				  <option value="addSong" data-i18n="labelAddSong"></option>
-				  <option value="dlPlaylist" data-i18n="labelDlPlaylist"></option>
-				  <!--<option value="none">None</option>-->
-			  </select>
-		  </p>
-	  </fieldset>
-
-
-
-	  <h3 data-i18n="headerButtonBadge"></h3>
-	  <fieldset>
-		  <p><label><input type="checkbox" name="showTime" id="showTime" value="true">
-			  <span data-i18n="labelShowTime"></span></label></p>
-	  </fieldset>
-
-  </section>
-
-  <footer>
-    <p><a href="http://vk.com/vpause">vk.com/vpause</a></p>
-  </footer>
-
-<script>
-
-
-</script>
-
-  <script src="js/default-options.js"></script>
-  <script src="includes/a_shortcut.js"></script>
-  <script src="js/lang.js"></script>
-  <script src="js/options.js"></script>
-
+<script src="js/shortcut.js"></script>
+<script src="js/lang.js"></script>
+<script src="js/options.js"></script>
 </body>
 </html>

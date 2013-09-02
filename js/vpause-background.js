@@ -1,373 +1,503 @@
-window.addEventListener("load", function() {
-    'use strict';
-    var prefsLocation = widget.preferences;
-    var players = [];
-    var lastPlayer, btnClickAction, pendingAction, noResponse, monitorClose, waitBeforeIconUpdate, monitorIntervalID, timer = [0,0,0];
-    var dblClickTimeout = 300;
-    var defaults = window.vPauseDefaultOptions;
-    var icons = {
-        play:       'img/btn_play.png',
-        play_dis:   'img/btn_play_disabled.png',
-        pause:      'img/btn_pause.png',
-        prev:       'img/btn_prev.png',
-        next:       'img/btn_next.png',
-        repeat:     'img/btn_repeat.png',
-        repeat_dis: 'img/btn_repeat_disabled.png',
-        vol_0:      'img/btn_vol_0.png',
-        vol_1:      'img/btn_vol_1.png',
-        vol_2:      'img/btn_vol_2.png',
-        vol_3:      'img/btn_vol_3.png',
-        vol_4:      'img/btn_vol_4.png',
-        added:      'img/btn_plus.png'
-    };
+var lastPlayer, lastPlayerState, singleClickPending, pendingAction, noResponse, waitBeforeIconUpdate, timer = [0, 0, 0];
+var dblClickTimeout = 300;
+var defaults = {
+  btnTitle:               'vPause',
+  dblClickAction:         'nextTrack',
+  showTime:                false,
+  'hotkey-togglePlay':    'Shift+End',
+  'hotkey-prevTrack':     'Ctrl+Shift+Left',
+  'hotkey-nextTrack':     'Ctrl+Shift+Right',
+  'hotkey-volUp':         'Ctrl+Shift+Up',
+  'hotkey-volDown':       'Ctrl+Shift+Down',
+  'hotkey-toggleRepeat':  'R'
+};
 
-    var button = opera.contexts.toolbar.createItem({
-        disabled:   true,
-        title:      getPref("btnTitle"),
-        icon:       icons.play,
-        onclick:    buttonClicked,
-        badge: {
-            display: "block",
-            textContent: "",
-            color: "#fff",
-            backgroundColor: "rgba(0,0,0,.3)"
+var Player = {
+  STATE_IDLE : -1,
+  STATE_NO_PLAYERS : 0,
+  STATE_PLAYING : 1,
+  STATE_PAUSED : 2
+}
+
+var vPause = (function(){
+  var exports = function(){
+
+    // vPause props:
+
+    this.init = function () {
+      vPause.goIdle();
+      setPrefs(defaults);
+      chrome.runtime.onConnect.addListener(vPause.handlePortConnect);
+      chrome.runtime.onMessage.addListener(vPause.handleMessages);
+
+      /*
+       var port;
+       chrome.extension.onConnect.addListener(function(_port) {
+       // ...optional validation of port.name...
+       port = _port;
+       port.onMessage.addListener(function(message) { });
+       port.onDisconnect.addListener(function() {
+       port = null;
+       });
+       });
+       */
+
+      Button.button.onClicked.addListener(buttonClicked);
+    }
+
+    this.ports = [];
+
+    this.VK_REGEXP = /^https?:\/\/(vk.com|vkontakte.ru)/;
+
+    this.goIdle = function (from) {
+      from && console.log('goIdle from ' + from);
+      Button.setIcon('idle');
+      Button.setTitle(getPref('btnTitle'));
+      Button.setBadge('');
+    }
+
+    this.unIdle = function () {
+      Button.setBadge('');
+      Button.setIcon('play');
+      window.clearTimeout(noResponse);
+      noResponse = null;
+    }
+
+    this.handleMessages = function (message, port, callback) {
+      if (message.type != 'playProgress') console.log(message.type, port.sender.tab.url);
+      var fn = window[message.type];
+      if (fn) {
+        fn.apply(this, arguments);
+      }
+      else {
+        throw new Error(message.type + ' is ' + fn);
+      }
+    }
+
+    this.broadcastMessage = function (message, callback) {
+      //  tag: mes
+      // send to all connected ports
+      var i = 0;
+      vPause.ports.forEach(function (port) {
+        port.postMessage(message, function (arg) {callback(arg)});
+        i++
+      });
+      console.log('broadcast "' + message + '" to ' + i + ' ports');
+    }
+
+    this.handlePortConnect = function (port){
+      if (port.sender.tab.url.match(vPause.VK_REGEXP)) {
+
+        // if all tabs with vk players are closed
+        // or if players never played - set lastPlayer to the last open vk tab
+        // todo what if port is an iframe?
+        if (!lastPlayerState || lastPlayerState == 'idle') {
+          lastPlayer = port;
+          lastPlayerState = 'idle';
         }
-    });
-
-
-    function init () {
-        setPrefs(defaults);
-        opera.extension.onmessage = handleMessages;
+      }
+      port.onMessage.addListener(vPause.handleMessages);
+      port.onDisconnect.addListener(vPause.handlePortDisconnect);
+      vPause.ports.push(port);
     }
 
-    function getPref (pref) {
-        var val = prefsLocation[pref];
-        if (typeof val === 'undefined'){
-            val = defaults[pref];
+    this.handlePortDisconnect = function (port) {
+      var index = vPause.ports.indexOf(port);
+      var disconnected = vPause.ports.splice(index);
+      console.log('PORT DISCONNECTED: ', port);
+      console.log('disconnected port: ', disconnected);
+      if (disconnected === lastPlayer) {
+        lastPlayerState = undefined;
+        vPause.findLastVkTab();
+      }
+    }
+
+    this.findLastVkTab = function (){
+
+      vPause.ports.forEach(function(port){
+
+      })
+    }
+
+    this.tellPlayer = function (fn, args, tabId) {
+      if (!lastPlayer) {
+        vPause.pollForActivePlayer();
+      }
+      else if (fn && lastPlayer || tabId) {
+
+        args = args   || '';
+        tabId = tabId || lastPlayer.sender.tab.id;
+
+        try {
+          if (args) {
+            args = JSON.stringify(args);
+          }
+          var js = 'vPause?vPause.' + fn + '(' + args + '):console.log("no vPause")';
+          chrome.tabs.update(tabId, {url: 'javascript:console.log(' + js + ');' + js });
+
+        } catch (e) {
+          console.log('oops, didn\'t');
+          vPause.goIdle('from tellPlayer');
         }
-        return val;
+      }
+      else {
+        console.error('tellPlayer failed. No lastPlayer? args:', arguments)
+      }
     }
 
-    function setPref (name, val) {
-        prefsLocation[name] = val;
-        tellPlayer('settingsChanged');
+    // Poll all tabs for a vk player
+    // The response from the tabs will trigger playerState fn
+    this.pollForActivePlayer = function (callback) {
+      vPause.broadcastMessage('sendState', callback);
+      noResponse = window.setTimeout(function () {
+        playerState(null);
+      }, dblClickTimeout + 50);
     }
 
-    function setPrefs (opts) {
-        for (var option in opts){
-            // Write defaults to extension options storage if they're not there yet
-            if (prefsLocation[option] === undefined) {
-                setPref(option, opts[option]);
-            }
-        }
-    }
+    this.utils = {
+      isFn: function (fn) {
+        return typeof(v) == "function"
+      },
 
-    function handleMessages (event) {
-        //console.log('ONMESSAGE: '+ JSON.stringify(event.data));
-        if (typeof event.data === 'object'){
-            switch(event.data.type){
-                case 'startedPlaying':
-                    handleStartedPlaying(event);
-                    break;
-                case 'playProgress':
-                    handlePlayProgress(event);
-                    break;
-                case 'justPaused':
-                    handlePause(event);
-                    break;
-                case 'stopped':
-                    handleStop(event);
-                    break;
-                case 'hotkey':
-                    console.log('ONMESSAGE: '+ JSON.stringify(event.data));
-                    handleHotkey(event);
-                    break;
-                case 'updatehotkeys':
-                    handleUpdateHotkeys(event);
-                    break;
-                case 'playerState':
-                    handlePolling(event);
-                    break;
-                case 'icon':
-                    handleIconChange(event);
-                    break;
-                case 'playerOpen':
-                    handleCheckPlayer(event);
-                    break;
-                case 'readyToBeFocused':
-                    focusPlayerTab(event);
-                    break;
-                case 'onLoadProgress':
-                    handleLoadprogress(event);
-                    break;
-            }
-        }
-    }
-
-    function handleUpdateHotkeys(e){
-        //console.log('handleUpdateHotkeys');
-        opera.extension.broadcastMessage({type: 'hotkeys', info: e.data.info});
-    }
-
-    function buttonClicked (){
-        // Handle double click
-        if (btnClickAction){
-            window.clearTimeout(btnClickAction);
-            btnClickAction = null;
-            buttonDblClicked();
-        }
-        // Handle single click
-        else {
-            btnClickAction = window.setTimeout(function(){
-                btnClickAction = null;
-                poll();
-            }, dblClickTimeout);
-        }
-    }
-
-    function buttonDblClicked () {
-        var fn = getPref('dblClickAction');
-        if (fn && fn !== undefined) {
-            tellPlayer(fn);
-        }
-    }
-
-    function poll(){
-        opera.extension.broadcastMessage('wassup?');
-        noResponse = window.setTimeout(function(){
-            handlePolling(null);
-        }, dblClickTimeout + 150);
-    }
-
-	function handlePolling(event) {
-        //console.log('handlePolling e.data: ' + !event ? event : event.data);
-        if (event === null) {
-            goIdle('from handlepolling null');
-        }
-        else {
-            window.clearTimeout(pendingAction);
-            window.clearTimeout(noResponse);
-
-            players.push(event);
-
-            // Wait for all pages to respond
-            pendingAction = setTimeout(function(){
-                var nowPlaying = 0;
-                players.forEach(function(event,k,l){
-                    if(event.data.info === 'playing'){
-                        nowPlaying++;
-                        lastPlayer = event.source; // ??? unnecessary/harmful
-                        tellPlayer('pauseIt');
-                    }
-                });
-                if(!nowPlaying) {
-                    if(lastPlayer){
-                        tellPlayer('playIt');
-                    }
-                }
-                players = []; //reset for next click
-            }, 20);
-        }
-    }
-
-    function handleStartedPlaying(event) {
-        lastPlayer = event.source;
-        changeIcon(icons.pause);
-        unIdle();
-        if (event.data.info) {
-            changeTitle(htmlDecode (event.data.info[5] + ' - ' + event.data.info[6])  + ' (' + htmlDecode(event.data.info[4]) +')' );
-        }
-        startMonitorPlayer();
-    }
-
-    function handlePlayProgress(event) {
-        setBadge ( event.data.info, event);
-        window.clearTimeout(monitorClose);
-    }
-
-    function handleLoadprogress (event) {
-        setBadge(null, event);
-    }
-
-    function setBadge(txt, event) {
-        //txt = null;  //?
-        var waitingTxt = ' ... ';
-
-        if (getPref('showTime') !== 'true' || waitBeforeIconUpdate) return;
-
-
-        // Process loading events
-
-        if (event && event.data.type && event.data.type == 'onLoadProgress') {
-
-            var i = event.data.info;
-            var songDur = i.dur || 0;
-            var bTotal = i.bTotal || 0;
-
-            if (!songDur || !bTotal) return;
-
-            var bLoaded = i.bLoaded || 0;
-            var curSec = timer[0] || 0;
-            var bitrate = (bTotal / songDur).toFixed();
-            var totalSecLoaded = Math.max((bLoaded / bitrate ).toFixed(), 0);
-            var more = totalSecLoaded - curSec;
-
-            /* If less than three more seconds are loaded or the player
-             *  is paused show how many seconds of the track are loaded
-             * */
-
-            if (more < 3 || button.icon == icons.play) {
-
-                var secondsLoaded = Math.max(((bLoaded - bitrate * curSec) / bitrate ).toFixed(), 0);
-                if (secondsLoaded > 60) {
-                    secondsLoaded < 65 ? txt = 'ok': txt = '';
-                }
-                else if (secondsLoaded > 0) {
-                    txt = "+"+ secondsLoaded + "s";
-                }
-                else {
-                    txt = waitingTxt;
-                }
-                button.badge.textContent = txt;
-            }
-
-        } else {
-
-            // Then it's playProgress event
-
-            txt = event.data.info.leftFRM;
-            // don't update if the time is same as last
-            if (timer[0] !== event.data.info.cur ) {
-                button.badge.textContent = txt;
-            }
-            timer.unshift(event.data.info.cur);
-            timer.length = 3;
-        }
-    }
-
-    function handleCheckPlayer(event){
-        if (event.data && event.data.info !== true) {
-            goIdle('from checkPlayerIsClosed')
-        }
-    }
-
-    function checkPlayer() {
-        window.clearTimeout(monitorClose);
-        monitorClose = window.setTimeout(function(){
-            tellPlayer('checkPlayer');
-        }, 1000);
-    }
-
-    function startMonitorPlayer () {
-        stopMonitorPlayer ();
-        monitorIntervalID = window.setInterval(checkPlayer, 1100);
-    }
-
-    function stopMonitorPlayer () {
-        window.clearInterval(monitorIntervalID);
-        //monitorIntervalID = null;
-    }
-
-    function handlePause(event) {
-        //window.clearTimeout(monitorClose);
-        if (event.source === lastPlayer){
-            unIdle();
-            lastPlayer = event.source;
-            changeIcon( icons.play );
-        }
-    }
-
-    function handleStop(event) {
-        checkPlayer();
-    }
-
-    function handleHotkey (event) {
-        var msg = '';
-        if(event.data.info && event.data.info.indexOf('hotkey-') === 0) {
-            msg = event.data.info.substring(7);
-        } else {
-            msg = event.data.info
-        }
-        tellPlayer (msg);
-    }
-
-    function focusPlayerTab (evt) {
-        var tabs = opera.extension.tabs.getAll();
-        // dirty hack to get the tab where the message came from
-		// we've appended three spaces to the title and look for a tab with them
-        for( var tab in tabs ) {
-            window.console.log(tab);
-            if (tabs[tab].title && /\u00a0\u00a0\u00a0$/.test(tabs[tab].title)){
-                tabs[tab].focus();
-            }
-        }
-    }
-
-    function tellPlayer( msg ) {
-        if (msg && lastPlayer) {
-            try {
-                lastPlayer.postMessage( msg );
-            } catch (e){
-                goIdle('from tellPlayer')
-            }
-        }
-    }
-
-    function changeTitle(title) {
-        button.title = title;
-    }
-
-    function handleIconChange (event) {
-        var icon = event.data.info;
-        var restore = true;
-        if (icon === 'play' || icon === 'pause') {
-            restore = false;
-        }
-        changeIcon(icons[icon], restore);
-    }
-
-    function changeIcon(icon, andRestore) {
-        button.icon = icon;
-        button.badge.textContent = '';
-        if (waitBeforeIconUpdate) {
-            window.clearTimeout(waitBeforeIconUpdate);
-            waitBeforeIconUpdate = null;
-        }
-        if (andRestore) {
-            waitBeforeIconUpdate = window.setTimeout(function(){
-                tellPlayer('updateIcon');
-            }, 1500);
-        }
-    }
-
-    function goIdle (from) {
-        //console.log('Gone idle: '+ from);
-        stopMonitorPlayer();
-        changeIcon(icons.play);
-        changeTitle(getPref('btnTitle'));
-        button.badge.textContent = '';
-        opera.contexts.toolbar.removeItem(button);
-    }
-
-    function unIdle () {
-        button.badge.display = 'block';
-        button.disabled = false;
-
-        opera.contexts.toolbar.addItem(button);
-        window.clearTimeout(noResponse);
-        noResponse = null;
-    }
-
-    function htmlDecode(input){
-        var e = window.document.createElement('div');
+      htmlDecode: function (input) {
+        var e = window.document.createElement('a');
         e.innerHTML = input;
         if (e.querySelector('*')) {
-            e.innerHTML = e.textContent
+          e.innerHTML = e.textContent;
         }
         return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+      }
     }
+  }
 
-	// Run extension
-	init();
+  return new exports();
 
-}, false);
+})();
+
+
+
+function buttonClicked(tab) {
+  console.log('buttonClicked');
+  if (singleClickPending) {
+    // Cancel single click
+    clearTimeout(singleClickPending);
+    singleClickPending = null;
+
+    // Run dblClickAction
+    // todo remember fn and change only when settings updated
+    var fn = getPref('dblClickAction');
+    if (fn && fn !== undefined) {
+      vPause.tellPlayer(fn); //todo handle if the action should use vPause.tellPlayer or call bg fn
+    }
+  } else {
+    // Handle single click
+    singleClickPending = setTimeout(function () {
+      singleClickPending = null;
+
+      if (!lastPlayer) {
+        console.log('buttonClicked :: !lastPlayer');
+//      vPause.pollForActivePlayer();
+
+        vPause.ports.forEach(function(tabs){
+
+
+          console.log('tabs: ', tabs);
+          var tab = tabs.pop();
+          if (tab) {
+            vPause.tellPlayer('doPlay')
+          }
+          else {
+            chrome.tabs.create({url: 'http://vk.com/audio'});
+            // todo remember where the user goes
+            // todo make option to choose waht page to open
+          }
+        });
+      }
+      else if (lastPlayerState == 'playing') {
+        vPause.tellPlayer('doPause')
+      }
+      else if (lastPlayerState == 'paused') {
+        vPause.tellPlayer('doPlay')
+      }
+
+    }, dblClickTimeout);
+  }
+}
+
+
+/**
+ * The fn to track player state
+ *
+ * Called when players reply to 'vPause.pollForActivePlayer'
+ * message == null when no tabs replied
+ * */
+function playerState(message, port) {
+
+  console.log('playerState args:',arguments);
+  if (message === null) {
+    vPause.goIdle('from playerState null');
+  } else {
+    clearTimeout(pendingAction);
+    clearTimeout(noResponse);
+
+    // collect all pages with vk player
+    var players = [];
+    message.port = port;
+    players.push(message);
+    pendingAction = setTimeout(function () {
+      var nowPlaying = 0;
+      players.forEach(function (message, k, l) {
+        // pick the playing player
+        if (message.info === 'playing') {
+          nowPlaying++;
+          lastPlayer = message.port; // ??? unnecessary/harmful
+          vPause.tellPlayer('doPause');
+        }
+      });
+      if (!nowPlaying) {
+        if (lastPlayer) {
+          vPause.tellPlayer('doPlay');
+        }
+      }
+      //reset for next click
+      players = [];
+    }, 20);
+  }
+}
+
+function startedPlaying(message, port) {
+  lastPlayer = port;
+  Button.setIcon('pause');
+  vPause.unIdle();
+  if (message.info) {
+    Button.setTitle(vPause.utils.htmlDecode(message.info[5] + ' - ' + message.info[6]) + ' (' + vPause.utils.htmlDecode(message.info[4]) + ')');
+  }
+}
+
+function playProgress(message, port) {
+  Button.setBadge(message);
+}
+
+function loadProgress(message, port) {
+  Button.setBadge(message);
+}
+
+function playerStopped(message, port) {
+  if (port === lastPlayer) {
+    vPause.unIdle();
+    lastPlayer = port;
+    Button.setIcon('play');
+  }
+}
+
+function hotkey(message, port) {
+  var msg = '';
+  if (message.info && message.info.indexOf('hotkey-') === 0) {
+    msg = message.info.substring(7);
+  } else {
+    msg = message.info;
+  }
+
+  if (msg == 'focusPlayerTab') {
+    focusPlayerTab()
+  } else {
+    vPause.tellPlayer(msg);
+  }
+}
+
+
+function getPref(pref) {
+  var val = localStorage[pref];
+  if (typeof val === 'undefined') {
+    val = defaults[pref];
+  }
+  return val;
+}
+
+function setPref(name, val) {
+  localStorage.setItem('name', val);
+  vPause.tellPlayer('settingsChanged');
+}
+
+function setPrefs(opts) {
+  for (var option in opts) {
+    if (localStorage[option] === undefined) {
+      setPref(option, opts[option]);
+    }
+  }
+}
+
+function setHotkeys(message, port, callback) {
+
+  var keys = getHotkeysList();
+  if (callback) {
+    callback(keys);
+  }
+  else {
+    vPause.tellPlayer('setHotkeys', keys, port.sender.tab.id);
+  }
+}
+
+function getHotkeysList(message, port, callback) {
+
+  var keys = {};
+  for (var pref in localStorage) {
+    if (pref.indexOf('hotkey-') === 0) {
+      window.defaults[pref] = localStorage[pref];
+    }
+  }
+
+  for (var pref in defaults) {
+    if (pref.indexOf('hotkey-') === 0) {
+      keys[pref] = window.defaults[pref];
+    }
+  }
+
+  return keys
+}
+
+function updatehotkeys(message, port) {
+  vPause.broadcastMessage({
+    type: 'hotkeys',
+    info: message.info
+  });
+}
+
+function focusTab(tabId){
+  chrome.tabs.update(tabId, {selected: true});
+}
+
+function focusPlayerTab() {
+  lastPlayer ? focusTab( lastPlayer.sender.tab.id ) : console.log('can\'t focus player tab');
+}
+
+function iconChange(message, port) {
+  var icon = message.info;
+  var restore = true;
+  if (icon === 'play' || icon === 'pause') {
+    restore = false;
+  }
+  Button.setIcon(icon, restore);
+}
+
+var Button = (function () {
+
+  var exports = function () {
+    var self = this;
+    this.button = chrome.browserAction;
+    this.icons = {
+      idle:       'img/btn_idle.png',
+      play:       'img/btn_play.png',
+      play_dis:   'img/btn_play_disabled.png',
+      pause:      'img/btn_pause.png',
+      prevTrack:  'img/btn_prev.png',
+      nextTrack:  'img/btn_next.png',
+      repeat:     'img/btn_repeat.png',
+      repeat_dis: 'img/btn_repeat_disabled.png',
+      vol_0:      'img/btn_vol_0.png',
+      vol_1:      'img/btn_vol_1.png',
+      vol_2:      'img/btn_vol_2.png',
+      vol_3:      'img/btn_vol_3.png',
+      vol_4:      'img/btn_vol_4.png',
+      added:      'img/btn_plus.png'
+    };
+
+    this.setBadge = function (message) {
+      var waitingTxt = ' ... ';
+      var txt = '';
+      // if (getPref('showTime') !== 'true' || waitBeforeIconUpdate) return;
+      // Process loading events
+      if (message && message.type == 'loadProgress') {
+
+        var info = message.info;
+        var songDur = info.dur || 0;
+        var bTotal = info.bTotal || 0;
+
+        if (!songDur || !bTotal) return;
+
+        var bLoaded = info.bLoaded || 0;
+        var curSec = timer[0] || 0;
+        var bitrate = (bTotal / songDur).toFixed();
+        var totalSecLoaded = Math.max((bLoaded / bitrate ).toFixed(), 0);
+        var more = totalSecLoaded - curSec;
+
+        /* If less than three more seconds are loaded or the player
+         * is paused show how many seconds of the track are loaded
+         * */
+
+        //console.log(message);
+        if (more < 3 /*|| Button.icon == icons.play*/) { // todo make a player state object to track Button.icon
+
+          var secondsLoaded = Math.max(((bLoaded - bitrate * curSec) / bitrate ).toFixed(), 0);
+          if (secondsLoaded > 60) {
+            secondsLoaded < 65 ? txt = 'ok' : txt = '';
+          }
+          else if (secondsLoaded > 0) {
+            txt = "+" + secondsLoaded + "s";
+          }
+          else {
+            txt = waitingTxt;
+          }
+          this.button.setBadgeText({text: txt});
+        }
+
+      } else if (message && message.type && message.type == 'playProgress') {
+
+        // Then it's a playProgress event
+
+        txt = message.info.timeLeft;
+
+        // don't update if the time is same as last
+        if (timer[0] !== message.info.cur) { //todo check if ~showTimeLeft setting is true
+          this.button.setBadgeText({text: txt});
+        }
+        timer.unshift(message.info.cur);
+        timer.length = 3;
+      }
+      else if (typeof message == 'string') {
+
+        this.button.setBadgeText({text: message});
+
+      }
+    };
+
+    this.setIcon = function (icon, andRestore) {
+      console.log('changeIcon: ', icon);
+
+      if(icon == 'play'){
+        lastPlayerState = 'paused';
+      }
+      else if (icon == 'paused') {
+        lastPlayerState ='playing';
+      }
+      else if (icon == 'idle'){
+        lastPlayerState = undefined;
+      }
+
+      this.button.setIcon({path: self.icons[icon]});
+      // hide badge when changing icons and restore after a while
+      this.button.setBadgeText({text: ''});
+      if (waitBeforeIconUpdate) {
+        window.clearTimeout(waitBeforeIconUpdate);
+        waitBeforeIconUpdate = null;
+      }
+      if (andRestore) {
+        waitBeforeIconUpdate = setTimeout(function () {
+          vPause.tellPlayer('updateIcon');
+        }, 1500);
+      }
+    };
+
+    this.setTitle = function (title) {
+      this.button.setTitle({title: title})
+    };
+
+    this.button.setBadgeBackgroundColor({color: [0, 0, 0, 255]});
+    this.setTitle(getPref('btnTitle')); // todo set title to 'click to open your audio at vk.com'
+  };
+
+  return new exports();
+
+})();
+
+vPause.init();

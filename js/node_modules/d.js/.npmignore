@@ -1,0 +1,5 @@
+djs.komodoproject
+.idea/
+node_modules
+gh-pages
+atlassian-ide-plugin.xml
