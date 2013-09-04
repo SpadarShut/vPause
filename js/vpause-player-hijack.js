@@ -92,7 +92,7 @@ vPause.hijackPlayer = function () {
       }
     });
     //uncomment when player state can be tracked in background script
-    /*plr.onLoadProgress = vPause.addCallListener(plr.onLoadProgress, {
+    plr.onLoadProgress = vPause.addCallListener(plr.onLoadProgress, {
      success: function(props) {
      var bLoaded = props.args[0];
      var bTotal = props.args[1];
@@ -105,7 +105,7 @@ vPause.hijackPlayer = function () {
      }
      });
      }
-     });*/
+     });
 
     plr.isHijacked = true;
 
@@ -147,12 +147,12 @@ vPause.togglePlay = function () {
   else {
     // Copied from global VK headPlayPause fn
     var aid = currentAudioId();
-    //if (!window.audioPadShown && !aid) Pads.show('mus');
+    if (!window.audioPadShown && !aid) Pads.show('mus');
     if (!aid) {
       aid = ls.get('audio_id');
-//      if (aid) {
-//        window.padPlClicked = true;
-//      }
+      if (aid) {
+        window.padPlClicked = true;
+      }
     }
     if (aid) {
       playAudioNew(aid);
@@ -271,6 +271,9 @@ vPause.updateIcon = function () {
   var icon = 'play';
   if (plr && plr.id && plr.player && !plr.player.paused()) {
     icon = 'pause';
+  }
+  else if (plr && plr.id && plr.player && plr.player.paused()) {
+    icon = 'play';
   }
   vPause.mes({
     type: 'iconChange',

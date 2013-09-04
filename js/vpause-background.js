@@ -16,7 +16,17 @@ var Player = {
   STATE_IDLE : -1,
   STATE_NO_PLAYERS : 0,
   STATE_PLAYING : 1,
-  STATE_PAUSED : 2
+  STATE_PAUSED : 2,
+
+  state: 0,
+
+  setState: function(state) {
+    Player.state = state;
+  },
+
+  getState: function (state) {
+    Player.state = state;
+  }
 }
 
 var vPause = (function(){
@@ -66,8 +76,10 @@ var vPause = (function(){
     this.handleMessages = function (message, port, callback) {
       if (message.type != 'playProgress') console.log(message.type, port.sender.tab.url);
       var fn = window[message.type];
+      //console.log(message.type + ' is ', fn), arguments;
       if (fn) {
-        fn.apply(this, arguments);
+        //fn.apply(this, arguments);
+        fn(message, port, callback);
       }
       else {
         throw new Error(message.type + ' is ' + fn);
@@ -93,6 +105,7 @@ var vPause = (function(){
         // todo what if port is an iframe?
         if (!lastPlayerState || lastPlayerState == 'idle') {
           lastPlayer = port;
+          //Button.setIcon('play');
           lastPlayerState = 'idle';
         }
       }
@@ -112,33 +125,45 @@ var vPause = (function(){
       }
     }
 
-    this.findLastVkTab = function (){
+    this.findLastVkPort = function (){
+      var port, activeTab;
+
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        //if (tabs[0].url.match(vPause.VK_REGEXP)){
+          activeTab = tabs[0];
+        //}
+      })
 
       vPause.ports.forEach(function(port){
+        if(port.sender.tab.url.match(vPause.VK_REGEXP)){
 
+        }
       })
     }
 
     this.tellPlayer = function (fn, args, tabId) {
-      if (!lastPlayer) {
+      /*if (!lastPlayer) {
         vPause.pollForActivePlayer();
       }
-      else if (fn && lastPlayer || tabId) {
+      else*/
+      console.log('gonna tellPlayer: ', fn, args);
+      if (fn && lastPlayer || tabId) {
 
         args = args   || '';
         tabId = tabId || lastPlayer.sender.tab.id;
-
-        try {
+/*
+        try {*/
           if (args) {
             args = JSON.stringify(args);
           }
           var js = 'vPause?vPause.' + fn + '(' + args + '):console.log("no vPause")';
-          chrome.tabs.update(tabId, {url: 'javascript:console.log(' + js + ');' + js });
-
+          chrome.tabs.update(tabId, {url: 'javascript:' + js });
+        console.log('told: ', js, 'to ' + lastPlayer.sender.tab.url);
+/*
         } catch (e) {
           console.log('oops, didn\'t');
           vPause.goIdle('from tellPlayer');
-        }
+        }*/
       }
       else {
         console.error('tellPlayer failed. No lastPlayer? args:', arguments)
@@ -147,12 +172,13 @@ var vPause = (function(){
 
     // Poll all tabs for a vk player
     // The response from the tabs will trigger playerState fn
-    this.pollForActivePlayer = function (callback) {
+    // unused. TBD ??
+/*    this.pollForActivePlayer = function (callback) { // = old checkPlayer
       vPause.broadcastMessage('sendState', callback);
       noResponse = window.setTimeout(function () {
         playerState(null);
       }, dblClickTimeout + 50);
-    }
+    }*/
 
     this.utils = {
       isFn: function (fn) {
@@ -194,31 +220,37 @@ function buttonClicked(tab) {
     singleClickPending = setTimeout(function () {
       singleClickPending = null;
 
-      if (!lastPlayer) {
-        console.log('buttonClicked :: !lastPlayer');
-//      vPause.pollForActivePlayer();
+      if (!lastPlayerState) {
 
-        vPause.ports.forEach(function(tabs){
+        // todo check if there are open vk tabs
 
+        // open new tab
+        chrome.tabs.create({url: 'http://vk.com/'}, function(newTab){
+          // wait until the tab loads and starts playing
+          var newTabId = newTab.id;
+          chrome.tabs.onUpdated.addListener(function(id, change, tab, newTabId){
+            if (change.status == 'complete') {
+              if( id == newTab.id) {
+                vPause.tellPlayer('togglePlay')
+              }
 
-          console.log('tabs: ', tabs);
-          var tab = tabs.pop();
-          if (tab) {
-            vPause.tellPlayer('doPlay')
-          }
-          else {
-            chrome.tabs.create({url: 'http://vk.com/audio'});
-            // todo remember where the user goes
-            // todo make option to choose waht page to open
-          }
+            }
+          })
+          console.log(tab);
         });
+
+        // todo remember where the user goes
+        // todo make option to choose what page to open
       }
-      else if (lastPlayerState == 'playing') {
+      else {
+        vPause.tellPlayer('togglePlay')
+      }
+/*      else if (lastPlayerState == 'playing') {
         vPause.tellPlayer('doPause')
       }
-      else if (lastPlayerState == 'paused') {
+      else if (lastPlayerState == 'paused' || lastPlayerState == 'idle') {
         vPause.tellPlayer('doPlay')
-      }
+      }*/
 
     }, dblClickTimeout);
   }
@@ -230,8 +262,10 @@ function buttonClicked(tab) {
  *
  * Called when players reply to 'vPause.pollForActivePlayer'
  * message == null when no tabs replied
+ *
+ * unused. TBD??
  * */
-function playerState(message, port) {
+/*function playerState(message, port) {
 
   console.log('playerState args:',arguments);
   if (message === null) {
@@ -263,7 +297,7 @@ function playerState(message, port) {
       players = [];
     }, 20);
   }
-}
+}*/
 
 function startedPlaying(message, port) {
   lastPlayer = port;
@@ -291,6 +325,8 @@ function playerStopped(message, port) {
 }
 
 function hotkey(message, port) {
+  console.log('oh, hotkey! args: ', arguments);
+  //debugger;
   var msg = '';
   if (message.info && message.info.indexOf('hotkey-') === 0) {
     msg = message.info.substring(7);
@@ -374,7 +410,7 @@ function focusPlayerTab() {
 function iconChange(message, port) {
   var icon = message.info;
   var restore = true;
-  if (icon === 'play' || icon === 'pause') {
+  if (icon === 'play' || icon === 'pause' || icon === 'idle') {
     restore = false;
   }
   Button.setIcon(icon, restore);

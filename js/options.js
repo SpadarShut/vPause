@@ -204,7 +204,7 @@ addEventListener('DOMContentLoaded', function() {
                     el[attr] = val;
                 } else {
                     el.innerHTML = dic[prop] || '';
-                    if (!dic[prop]) {
+                    if (dic[prop] === undefined) {
                         console.log('vPause :: No such value in locale ' + locale.locale + ': ' + prop);
                     }
                 }

@@ -28,8 +28,7 @@ function handleBgMessaging(message, sender, callback) { // message, extId? , cal
         }
     } else if (typeof message === 'object') {
         console.log('contentscript :: message is object o_O');
-        switch (message.type) {
-        }
+
     }
 }
 
@@ -43,7 +42,7 @@ function mes(msg, callback) {
 }
 
 function mesPage(mes) {
-    console.log('mes to injected:', mes);
+    console.log('contentscript :: mes to injected:', mes);
 /*    var evt = document.createEvent("CustomEvent");
     evt.initEvent("vpause-contentscript-message", true, true, mes);
     evt.detail = JSON.stringify(mes); // todo tbd
@@ -58,7 +57,7 @@ function handlePlayerEvents(e){
     if ( e.data.origin == 'vpause-player-message'){
 
       if(e.data.info.type !== 'playProgress'){
-        console.log('contentscript :: got message from page: ', e.data);
+        console.log('contentscript :: got message from page: ', e.data.info);
       }
       mes(e.data.info);
     }

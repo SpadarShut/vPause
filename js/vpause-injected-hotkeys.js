@@ -24,7 +24,7 @@ vPause.handleBgMessaging = function  (message) {
         }*/
 };
 
-
+/*
 vPause.sendState = function () {
   var plr = window.audioPlayer;
   if (plr && plr.player && plr.id) {
@@ -33,7 +33,7 @@ vPause.sendState = function () {
       info: plr.player.paused() ? 'paused' : 'playing'
     });
   }
-};
+};*/
 
 /*
 vPause.playerState = function  () { // todo tbd?
@@ -69,11 +69,8 @@ vPause.setHotkeys = function (keys) {
     for (var key in keys) {
         if (key && keys[key]) {
             (function (key) {
-
-                console.log('contentscript : setHotkeys : vPause.Shortcut is: ', vPause.Shortcut);
-
+                //console.log('injected : setHotkeys : vPause.Shortcut is: ', vPause.Shortcut);
                 //if( !vPause.Shortcut) return;
-
                 window.vPause.Shortcut.add(
                     keys[key],
                     function (e) {
@@ -84,7 +81,6 @@ vPause.setHotkeys = function (keys) {
                         'propagate': true
                     }
                 );
-
             })(key);
         }
     }
@@ -92,7 +88,7 @@ vPause.setHotkeys = function (keys) {
 
 
 window.addEventListener('message', function (e) {
-  //if (e.origin !== window) return;
+  if (e.origin !== window) return; // ???
 //  debugger;
   if (e.data && e.data.origin && e.data.origin == 'vpause-contentscript-message') {
       console.log('injected :: vpause-contentscript-message event: ', e.data.info);
