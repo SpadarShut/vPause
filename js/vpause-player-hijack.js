@@ -145,31 +145,7 @@ vPause.togglePlay = function () {
     }
   }
   else {
-    // Copied from global VK headPlayPause fn
-    var aid = currentAudioId();
-    if (!window.audioPadShown && !aid) Pads.show('mus');
-    if (!aid) {
-      aid = ls.get('audio_id');
-      if (aid) {
-        window.padPlClicked = true;
-      }
-    }
-    if (aid) {
-      playAudioNew(aid);
-    } else {
-      var plist = padAudioPlaylist();
-      if (plist && plist.start) {
-        playAudioNew(plist.start);
-      } else {
-        addClass(ge('head_play_btn'), 'playing');
-        window.onPlaylistLoaded = function() {
-          var plist = padAudioPlaylist();
-          if (plist && plist.start) {
-            playAudioNew(plist.start);
-          }
-        }
-      }
-    }
+    headPlayPause();
   }
 };
 
