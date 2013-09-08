@@ -131,54 +131,49 @@ vPause.doPlay = function () {
   if (plr && plr.player) {
     plr.playTrack();
   } else {
-    //headPlayPause();
-
-    //function headPlayPause(event) {
-      var aid = currentAudioId();
-      if (!window.audioPadShown && !aid) Pads.show('mus');
-      if (!aid) {
-        aid = ls.get('audio_id');
-        if (aid) {
-          window.padPlClicked = true;
-        }
-      }
-      if (aid) {
-        playAudioNew(aid);
-      } else {
-        var plist = padAudioPlaylist();
-        if (plist && plist.start) {
-          playAudioNew(plist.start);
-        } else {
-          addClass(ge('head_play_btn'), 'playing');
-          window.onPlaylistLoaded = function() {
-            var plist = padAudioPlaylist();
-            if (plist && plist.start) {
-              playAudioNew(plist.start);
-
-              Pads.hide(); // my
-            }
-          }
-        }
-      }
-
-      Pads.hide(); // my
-    alert();
-    //  if (event) cancelEvent(event);
-    //}
   }
 };
 
 vPause.togglePlay = function () {
   var plr = window.audioPlayer;
   if (plr && plr.player) {
-    if (plr.player.paused()) {
-      plr.playTrack();
-    } else {
-      plr.pauseTrack();
-    }
+    plr.operate();
   }
   else {
-    headPlayPause();
+    //headPlayPause();
+
+    //function headPlayPause(event) {
+    var aid = currentAudioId();
+    if (!window.audioPadShown && !aid) Pads.show('mus');
+    if (!aid) {
+      aid = ls.get('audio_id');
+      if (aid) {
+        //window.padPlClicked = true;
+      }
+    }
+    if (aid) {
+      playAudioNew(aid);
+    } else {
+      var plist = padAudioPlaylist();
+      if (plist && plist.start) {
+        playAudioNew(plist.start); //playAudioNew(plist.start);
+        Pads.hide('mus'); // my
+      } else {
+        addClass(ge('head_play_btn'), 'playing');
+        window.onPlaylistLoaded = function() {
+          var plist = padAudioPlaylist();
+          if (plist && plist.start) {
+            Pads.hide(); // my
+            playAudioNew(plist.start);
+          }
+        }
+      }
+    }
+
+    //Pads.hide(); // my
+    //alert();
+    //  if (event) cancelEvent(event);
+    //}
   }
 };
 

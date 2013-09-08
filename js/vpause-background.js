@@ -54,7 +54,7 @@ var vPause = (function(){
     }
 
     this.handleMessages = function (message, port, callback) {
-      if (message.type != 'playProgress') console.log(message.type, port.sender.tab.url);
+      if (message.type != 'playProgress') console.log(message.type, port.sender && port.sender.tab.url);
       var fn = window[message.type];
       //console.log(message.type + ' is ', fn), arguments;
       if (fn) {
@@ -183,7 +183,7 @@ var vPause = (function(){
           if (args) {
             args = JSON.stringify(args);
           }
-          var js = 'vPause?vPause.' + fn + '(' + args + '):void(0)';
+          var js = 'vPause?vPause.' + fn + '(' + args + '):console.log("'+ fn +'")';
           chrome.tabs.update(tabId, {url: 'javascript:' + js });
           console.log('told player: ', js, 'to ' + lastPlayer.sender.tab.url);
 /*
@@ -233,7 +233,9 @@ function buttonClicked(tab) {
     if (fn && fn !== undefined) {
       vPause.tellPlayer(fn); //todo handle if the action should use vPause.tellPlayer or call bg fn
     }
+
   } else {
+
     // Handle single click
     singleClickPending = setTimeout(function () {
       singleClickPending = null;
@@ -244,8 +246,8 @@ function buttonClicked(tab) {
 
         // open new tab
         chrome.tabs.create({url: 'http://vk.com/'}, function(newTab){
-          // wait until the tab loads and starts playing
-          var newTabId = newTab.id;
+          //todo wait until the tab loads and starts playing
+/*          var newTabId = newTab.id;
           chrome.tabs.onUpdated.addListener(function(id, change, tab, newTabId){
             if (change.status == 'complete') {
               if( id == newTab.id) {
@@ -254,7 +256,7 @@ function buttonClicked(tab) {
 
             }
           })
-          console.log(tab);
+          console.log(tab);*/
         });
 
         // todo remember where the user goes
@@ -400,7 +402,7 @@ var Button = (function () {
     this.setBadge = function (message) {
       var waitingTxt = ' ... ';
       var txt = '';
-      // if (getPref('showTime') !== 'true' || waitBeforeIconUpdate) return;
+       if (getPref('showTime') !== 'true' || waitBeforeIconUpdate) return;
       // Process loading events
       if (message && message.type == 'loadProgress') {
 
