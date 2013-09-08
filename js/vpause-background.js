@@ -1,4 +1,4 @@
-var lastPlayer, lastPlayerState, singleClickPending, pendingAction, noResponse, waitBeforeIconUpdate, timer = [0, 0, 0];
+var lastPlayer, lastPlayerState, singleClickPending, pendingAction, waitBeforeIconUpdate, trackTicker = [0, 0, 0];
 var dblClickTimeout = 300;
 var defaults = {
   btnTitle:               'vPause',
@@ -39,19 +39,6 @@ var vPause = (function(){
       setPrefs(defaults);
       chrome.runtime.onConnect.addListener(vPause.handlePortConnect);
       chrome.runtime.onMessage.addListener(vPause.handleMessages);
-
-      /*
-       var port;
-       chrome.extension.onConnect.addListener(function(_port) {
-       // ...optional validation of port.name...
-       port = _port;
-       port.onMessage.addListener(function(message) { });
-       port.onDisconnect.addListener(function() {
-       port = null;
-       });
-       });
-       */
-
       Button.button.onClicked.addListener(buttonClicked);
     }
 
@@ -64,13 +51,6 @@ var vPause = (function(){
       Button.setIcon('idle');
       Button.setTitle(getPref('btnTitle'));
       Button.setBadge('');
-    }
-
-    this.unIdle = function () {
-      Button.setBadge('');
-      Button.setIcon('play');
-      window.clearTimeout(noResponse);
-      noResponse = null;
     }
 
     this.handleMessages = function (message, port, callback) {
@@ -98,15 +78,17 @@ var vPause = (function(){
     }
 
     this.handlePortConnect = function (port){
+      if(!port) {
+        console.warn('WTF? port is ', port)
+      }
       if (port.sender.tab.url.match(vPause.VK_REGEXP)) {
 
         // if all tabs with vk players are closed
         // or if players never played - set lastPlayer to the last open vk tab
-        // todo what if port is an iframe?
         if (!lastPlayerState || lastPlayerState == 'idle') {
-          lastPlayer = port;
-          //Button.setIcon('play');
-          lastPlayerState = 'idle';
+          vPause.setLastPlayer(port);
+          vPause.setLastPlayerState('idle');
+          Button.setIcon('play');
         }
       }
       port.onMessage.addListener(vPause.handleMessages);
@@ -116,17 +98,53 @@ var vPause = (function(){
 
     this.handlePortDisconnect = function (port) {
       var index = vPause.ports.indexOf(port);
-      var disconnected = vPause.ports.splice(index);
+      var disconnected = vPause.ports.splice(index)[0];
       console.log('PORT DISCONNECTED: ', port);
-      console.log('disconnected port: ', disconnected);
+      console.log('disconnected port: ', disconnected, port.sender.url);
+      console.log('lastPlayer is: ', lastPlayer);
+
       if (disconnected === lastPlayer) {
-        lastPlayerState = undefined;
-        vPause.findLastVkTab();
+        vPause.setLastPlayer(null);
+        vPause.setLastPlayerState(null);
+        vPause.findNewLastPlayer();
       }
+      delete disconnected;
     }
 
-    this.findLastVkPort = function (){
-      var port, activeTab;
+    this.setLastPlayer = function (port) {
+//      debugger;
+      console.log('and the LAST PLAYER is... ', port);
+      lastPlayer = port;
+    }
+
+    this.setLastPlayerState = function (state) {
+      console.log('setLastPlayerState :: ', state);
+      lastPlayerState = state;
+
+      var icon = 'idle';
+      if (state == 'playing') {
+        icon = 'pause'
+      }
+      else if (state == 'paused' || state == 'idle') {
+        icon = 'play'
+      }
+
+      Button.setIcon(icon);
+      Button.setBadge('');
+    }
+
+    this.getLastPlayer = function (port) {
+      return lastPlayer;
+    }
+
+    this.getLastPlayerState = function (state) {
+      return lastPlayerState
+    }
+
+
+    this.findNewLastPlayer = function (){
+      // todo find last vk tab, set lastPlayer, reset button
+      var lastPort = null, playerState = null, activeTab;
 
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
         //if (tabs[0].url.match(vPause.VK_REGEXP)){
@@ -134,19 +152,28 @@ var vPause = (function(){
         //}
       })
 
-      vPause.ports.forEach(function(port){
+      for (var port in vPause.ports) {
         if(port.sender.tab.url.match(vPause.VK_REGEXP)){
 
+          lastPort = port; // todo pick the las
+
+          if (port.sender.tab === activeTab) {
+            lastPort = activeTab;
+            break;
+          }
+
+          playerState = 'idle'
         }
-      })
+      }
+
+      vPause.setLastPlayer(lastPort);
+      vPause.setLastPlayerState(playerState);
+      Button.setBadge('');
+      Button.setTitle('vPause')
     }
 
     this.tellPlayer = function (fn, args, tabId) {
-      /*if (!lastPlayer) {
-        vPause.pollForActivePlayer();
-      }
-      else*/
-      console.log('gonna tellPlayer: ', fn, args);
+
       if (fn && lastPlayer || tabId) {
 
         args = args   || '';
@@ -156,9 +183,9 @@ var vPause = (function(){
           if (args) {
             args = JSON.stringify(args);
           }
-          var js = 'vPause?vPause.' + fn + '(' + args + '):console.log("no vPause")';
+          var js = 'vPause?vPause.' + fn + '(' + args + '):void(0)';
           chrome.tabs.update(tabId, {url: 'javascript:' + js });
-        console.log('told: ', js, 'to ' + lastPlayer.sender.tab.url);
+          console.log('told player: ', js, 'to ' + lastPlayer.sender.tab.url);
 /*
         } catch (e) {
           console.log('oops, didn\'t');
@@ -169,16 +196,6 @@ var vPause = (function(){
         console.error('tellPlayer failed. No lastPlayer? args:', arguments)
       }
     }
-
-    // Poll all tabs for a vk player
-    // The response from the tabs will trigger playerState fn
-    // unused. TBD ??
-/*    this.pollForActivePlayer = function (callback) { // = old checkPlayer
-      vPause.broadcastMessage('sendState', callback);
-      noResponse = window.setTimeout(function () {
-        playerState(null);
-      }, dblClickTimeout + 50);
-    }*/
 
     this.utils = {
       isFn: function (fn) {
@@ -205,6 +222,7 @@ var vPause = (function(){
 function buttonClicked(tab) {
   console.log('buttonClicked');
   if (singleClickPending) {
+
     // Cancel single click
     clearTimeout(singleClickPending);
     singleClickPending = null;
@@ -245,64 +263,14 @@ function buttonClicked(tab) {
       else {
         vPause.tellPlayer('togglePlay')
       }
-/*      else if (lastPlayerState == 'playing') {
-        vPause.tellPlayer('doPause')
-      }
-      else if (lastPlayerState == 'paused' || lastPlayerState == 'idle') {
-        vPause.tellPlayer('doPlay')
-      }*/
-
     }, dblClickTimeout);
   }
 }
 
-
-/**
- * The fn to track player state
- *
- * Called when players reply to 'vPause.pollForActivePlayer'
- * message == null when no tabs replied
- *
- * unused. TBD??
- * */
-/*function playerState(message, port) {
-
-  console.log('playerState args:',arguments);
-  if (message === null) {
-    vPause.goIdle('from playerState null');
-  } else {
-    clearTimeout(pendingAction);
-    clearTimeout(noResponse);
-
-    // collect all pages with vk player
-    var players = [];
-    message.port = port;
-    players.push(message);
-    pendingAction = setTimeout(function () {
-      var nowPlaying = 0;
-      players.forEach(function (message, k, l) {
-        // pick the playing player
-        if (message.info === 'playing') {
-          nowPlaying++;
-          lastPlayer = message.port; // ??? unnecessary/harmful
-          vPause.tellPlayer('doPause');
-        }
-      });
-      if (!nowPlaying) {
-        if (lastPlayer) {
-          vPause.tellPlayer('doPlay');
-        }
-      }
-      //reset for next click
-      players = [];
-    }, 20);
-  }
-}*/
-
 function startedPlaying(message, port) {
-  lastPlayer = port;
+  vPause.setLastPlayer(port);
+  vPause.setLastPlayerState('playing');
   Button.setIcon('pause');
-  vPause.unIdle();
   if (message.info) {
     Button.setTitle(vPause.utils.htmlDecode(message.info[5] + ' - ' + message.info[6]) + ' (' + vPause.utils.htmlDecode(message.info[4]) + ')');
   }
@@ -318,8 +286,8 @@ function loadProgress(message, port) {
 
 function playerStopped(message, port) {
   if (port === lastPlayer) {
-    vPause.unIdle();
-    lastPlayer = port;
+    vPause.setLastPlayer(port); // ? needed ???
+    vPause.setLastPlayerState('paused'); // ? needed ???
     Button.setIcon('play');
   }
 }
@@ -404,16 +372,7 @@ function focusTab(tabId){
 }
 
 function focusPlayerTab() {
-  lastPlayer ? focusTab( lastPlayer.sender.tab.id ) : console.log('can\'t focus player tab');
-}
-
-function iconChange(message, port) {
-  var icon = message.info;
-  var restore = true;
-  if (icon === 'play' || icon === 'pause' || icon === 'idle') {
-    restore = false;
-  }
-  Button.setIcon(icon, restore);
+  lastPlayer ? focusTab( lastPlayer.sender.tab.id ) : console.error('can\'t focus player tab');
 }
 
 var Button = (function () {
@@ -452,7 +411,7 @@ var Button = (function () {
         if (!songDur || !bTotal) return;
 
         var bLoaded = info.bLoaded || 0;
-        var curSec = timer[0] || 0;
+        var curSec = trackTicker[0] || 0;
         var bitrate = (bTotal / songDur).toFixed();
         var totalSecLoaded = Math.max((bLoaded / bitrate ).toFixed(), 0);
         var more = totalSecLoaded - curSec;
@@ -484,11 +443,11 @@ var Button = (function () {
         txt = message.info.timeLeft;
 
         // don't update if the time is same as last
-        if (timer[0] !== message.info.cur) { //todo check if ~showTimeLeft setting is true
+        if (trackTicker[0] !== message.info.cur) { //todo check if ~showTimeLeft setting is true
           this.button.setBadgeText({text: txt});
         }
-        timer.unshift(message.info.cur);
-        timer.length = 3;
+        trackTicker.unshift(message.info.cur);
+        trackTicker.length = 3;
       }
       else if (typeof message == 'string') {
 
@@ -499,16 +458,6 @@ var Button = (function () {
 
     this.setIcon = function (icon, andRestore) {
       console.log('changeIcon: ', icon);
-
-      if(icon == 'play'){
-        lastPlayerState = 'paused';
-      }
-      else if (icon == 'paused') {
-        lastPlayerState ='playing';
-      }
-      else if (icon == 'idle'){
-        lastPlayerState = undefined;
-      }
 
       this.button.setIcon({path: self.icons[icon]});
       // hide badge when changing icons and restore after a while
@@ -535,5 +484,28 @@ var Button = (function () {
   return new exports();
 
 })();
+
+function iconChange(message, port) {
+  var icon = message.info;
+  var restore = true;
+
+  if (icon === 'play' || icon === 'pause' || icon === 'idle') {
+    restore = false;
+  }
+  if (icon == 'play'){
+    vPause.setLastPlayerState('paused'); // ???
+    vPause.setLastPlayer(port);
+  }
+  else if (icon == 'paused') {
+    vPause.setLastPlayerState('playing'); // ???
+    vPause.setLastPlayer(port);
+  }
+  else if (icon == 'idle'){
+    console.warn('iconChane :: icon is IDLE. WTF?')
+    vPause.setLastPlayerState(null);
+    vPause.setLastPlayer(null);
+  }
+  Button.setIcon(icon, restore);
+}
 
 vPause.init();

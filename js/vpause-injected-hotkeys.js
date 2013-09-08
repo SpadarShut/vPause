@@ -24,26 +24,6 @@ vPause.handleBgMessaging = function  (message) {
         }*/
 };
 
-/*
-vPause.sendState = function () {
-  var plr = window.audioPlayer;
-  if (plr && plr.player && plr.id) {
-    vPause.mes({
-      type: 'playerState',
-      info: plr.player.paused() ? 'paused' : 'playing'
-    });
-  }
-};*/
-
-/*
-vPause.playerState = function  () { // todo tbd?
-    var plr = window.audioPlayer;
-    vPause.mes({
-        type: 'playerOpen',
-        info: !!(plr && plr.player && plr.id)
-    })
-};*/
-
 vPause.updateHotkeys = function(message) {
     console.log('removingHotkeys', JSON.stringify(message.info));
     try {
