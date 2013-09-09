@@ -72,7 +72,7 @@ addEventListener('DOMContentLoaded', function() {
             if (prefsLocation[name] == undefined) {
                 changedElement(element);
             }
-            element.addEventListener('input', changedElement, true);
+            element.addEventListener('change', changedElement, true);
         });
     }
 
