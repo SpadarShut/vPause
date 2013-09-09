@@ -78,14 +78,24 @@ fieldset {
 }
 
 fieldset button {
-    border-radius: 3px;
+    /*
+    border-radius: 2px;
     border: 1px solid rgba(80,80,130,0.5);
     box-shadow: 0 1px 1px rgba(121,153,166,0.75), inset 0 1px rgba(255,255,255,0.25), inset 0 0 1px rgba(255,255,255,0.75);
-    transition: 0.25s;
     color: rgba(0,0,0,0.75);
     text-shadow: 0 1px rgba(255,255,255,0.25);
+    */
+    transition: 0.25s;
     line-height: 22px;
     padding: .3em 25px;
+}
+
+fieldset button:disabled {
+    /*
+    background: rgba(173,181,217,0.75);
+    box-shadow: 0 1px 1px rgba(121,153,166,0.75), inset 0 1px rgba(255,255,255,0.25), inset 0 0 1px rgba(255,255,255,0.75) !important;
+    opacity: .5;
+    */
 }
 fieldset *:disabled {
   opacity: 0.5;
@@ -105,7 +115,7 @@ fieldset *:disabled {
 .fset-hotkeys li > * {
 	display: table-cell;
 	vertical-align:top;
-	width: 50%;
+	width: 39%;
 	margin: 0 0 .8em;
 	}
 
@@ -148,11 +158,6 @@ select {
     }
 */
 
-    fieldset button:disabled {
-      background: rgba(173,181,217,0.75);
-      box-shadow: 0 1px 1px rgba(121,153,166,0.75), inset 0 1px rgba(255,255,255,0.25), inset 0 0 1px rgba(255,255,255,0.75) !important;
-        opacity: .5;
-    }
 
 .msg {
     padding: .4em;

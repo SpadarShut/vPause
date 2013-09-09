@@ -182,35 +182,50 @@ addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function localize() {
-        var els = document.querySelectorAll('[data-i18n]');
-        var dic = window.locale;
-        for (var i in els) {
-            var el = els[i];
-            if (!(el instanceof HTMLElement)) {
-                continue;
-            }
-            var propsToLze = el.dataset.i18n.split(';');
-            for (var prop in propsToLze) {
-                if (!propsToLze.hasOwnProperty(prop)) {
-                    continue;
-                }
-                prop = propsToLze[prop].replace(/\s/g, '');
-                if (prop.indexOf('[') === 0) {
-                    var hash = prop.match(/\[(.*)\](.*)/);
-                    var attr = hash[1];
-                    var val = '';
-                    if (dic[hash[2]]) val = dic[hash[2]];
-                    el[attr] = val;
-                } else {
-                    el.innerHTML = dic[prop] || '';
-                    if (dic[prop] === undefined) {
-                        console.log('vPause :: No such value in locale ' + locale.locale + ': ' + prop);
-                    }
-                }
-            }
+  function localize() {
+    var els = document.querySelectorAll('[data-i18n]');
+
+    for (var i in els) {
+      var el = els[i];
+      if (!(el instanceof HTMLElement)) {
+        continue;
+      }
+      var propsToLze = el.dataset.i18n.split(';');
+      for (var prop in propsToLze) {
+        if (!propsToLze.hasOwnProperty(prop)) {
+          continue;
         }
+        prop = propsToLze[prop].replace(/\s/g, '');
+
+        // parse els with localized attributes
+        if (prop.indexOf('[') === 0) {
+
+          var hash = prop.match(/\[(.*)\](.*)/);
+          var attr = hash[1];
+          var val = chrome.i18n.getMessage(hash[2]);
+
+          console.log(prop, msg);
+          if (val === undefined) {
+            el[attr] = val;
+          }
+          else {
+            console.log('vPause :: No such value in locale: ' + hash[2]);
+          }
+
+        } else {
+          // parse translations for innerHTML
+          var msg = chrome.i18n.getMessage(prop);
+          console.log(prop, msg);
+          if (msg !== undefined){
+            el.innerHTML = msg;
+          }
+          else {
+            console.log('vPause :: No such value in locale: ' + hash[2]);
+          }
+        }
+      }
     }
+  }
 
     function init() {
         console.log(JSON.stringify(getHotkeysList()));

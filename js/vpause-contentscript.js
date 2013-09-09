@@ -56,7 +56,7 @@ function handlePlayerEvents(e){
   window.addEventListener('message', function (e) {
     if ( e.data.origin == 'vpause-player-message'){
 
-      if(e.data.info.type !== 'playProgress'){
+      if(e.data.info.type !== 'playProgress' && e.data.info.type !== 'loadProgress' ){
         console.log('contentscript :: got message from page: ', e.data.info);
       }
       mes(e.data.info);
