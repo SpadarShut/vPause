@@ -19,6 +19,6 @@ var locale = window["locale"] = {
   'labelPlayPrev': 'Папярэдні запіс',
   'labelFocusPlayerTab': 'Пераключыцца на ўкладку з плэерам',
   'headerButtonBadge': 'Надпіс на кнопцы',
-  'labelShowTime': 'Паказваць час прайгравання'
+  'labelShowBadge': 'Паказваць напісы на кнопцы'
 };
 });

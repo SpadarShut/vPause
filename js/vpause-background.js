@@ -3,7 +3,7 @@ var dblClickTimeout = 300;
 var defaults = {
   btnTitle:               'vPause',
   dblClickAction:         'nextTrack',
-  showTime:                false,
+  showBadge:                false,
   'hotkey-togglePlay':    'Shift+End',
   'hotkey-prevTrack':     'Ctrl+Shift+Left',
   'hotkey-nextTrack':     'Ctrl+Shift+Right',
@@ -402,7 +402,7 @@ var Button = (function () {
     this.setBadge = function (message) {
       var waitingTxt = ' ... ';
       var txt = '';
-       if (getPref('showTime') !== 'true' || waitBeforeIconUpdate) return;
+       if (getPref('showBadge') !== 'true' || waitBeforeIconUpdate) return;
       // Process loading events
       if (message && message.type == 'loadProgress') {
 
@@ -445,7 +445,7 @@ var Button = (function () {
         txt = message.info.timeLeft;
 
         // don't update if the time is same as last
-        if (trackTicker[0] !== message.info.cur) { //todo check if ~showTimeLeft setting is true
+        if (trackTicker[0] !== message.info.cur) { //todo check if ~showBadgeLeft setting is true
           this.button.setBadgeText({text: txt});
         }
         trackTicker.unshift(message.info.cur);

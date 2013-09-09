@@ -18,5 +18,5 @@ var locale = window["locale"] = {
   'labelPlayPrev': 'Play previous track',
   'labelFocusPlayerTab': 'Focus player tab',
   'headerButtonBadge': 'Button badge',
-  'labelShowTime': 'Show track time'
+  'labelShowBadge': 'Show button badge'
 };

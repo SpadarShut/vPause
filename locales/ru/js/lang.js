@@ -19,6 +19,6 @@ var locale = window["locale"] = {
   'labelPlayPrev': 'Предыдущая запись',
   'labelFocusPlayerTab': 'Переключиться на вкладку с плеером',
   'headerButtonBadge': 'Надпись на кнопке',
-  'labelShowTime': 'Показывать время воспроизведения'
+  'labelShowBadge': 'Показывать надписи на кнопке'
 };
 });
