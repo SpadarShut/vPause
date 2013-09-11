@@ -54,7 +54,7 @@ var vPause = (function(){
     }
 
     this.handleMessages = function (message, port, callback) {
-      if (message.type != 'playProgress') console.log(message.type, port.sender && port.sender.tab.url);
+      if (message.type != 'playProgress') console.log(message.type, port.sender && port.sender.url);
       var fn = window[message.type];
       //console.log(message.type + ' is ', fn), arguments;
       if (fn) {
@@ -81,7 +81,7 @@ var vPause = (function(){
       if(!port) {
         console.warn('WTF? port is ', port)
       }
-      if (port.sender.tab.url.match(vPause.VK_REGEXP)) {
+      if (port.sender.url.match(vPause.VK_REGEXP)) {
 
         // if all tabs with vk players are closed
         // or if players never played - set lastPlayer to the last open vk tab
@@ -104,8 +104,6 @@ var vPause = (function(){
       console.log('lastPlayer is: ', lastPlayer);
 
       if (disconnected === lastPlayer) {
-        vPause.setLastPlayer(null);
-        vPause.setLastPlayerState(null);
         vPause.findNewLastPlayer();
       }
       delete disconnected;
@@ -144,24 +142,24 @@ var vPause = (function(){
 
     this.findNewLastPlayer = function (){
       // todo find last vk tab, set lastPlayer, reset button
-      var lastPort = null, playerState = null, activeTab;
+      var lastPort = null;
+      var playerState = null;
+      var activeTab = null;
 
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-        //if (tabs[0].url.match(vPause.VK_REGEXP)){
           activeTab = tabs[0];
-        //}
       })
 
-      for (var port in vPause.ports) {
-        if(port.sender.tab.url.match(vPause.VK_REGEXP)){
-
+      for (var i in vPause.ports) {
+        // filter vk tabs
+        var port = vPause.ports[i];
+        if(port.sender && port.sender.url.match(vPause.VK_REGEXP)){
+          // last opened vk tab will be set
           lastPort = port; // todo pick the las
-
           if (port.sender.tab === activeTab) {
-            lastPort = activeTab;
+            // if current tab is vk - make it new last player
             break;
           }
-
           playerState = 'idle'
         }
       }
