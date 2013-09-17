@@ -89,23 +89,27 @@ vPause.hijackPlayer = function () {
             cur: cur
           }
         });
+      },
+      error: function (props){
+        console.error('error in playprogress', props);
+        debugger;
       }
     });
     //uncomment when player state can be tracked in background script
     plr.onLoadProgress = vPause.addCallListener(plr.onLoadProgress, {
      success: function(props) {
-     var bLoaded = props.args[0];
-     var bTotal = props.args[1];
-     vPause.mes({
-     type: 'loadProgress',
-     info: {
-     bLoaded: props.args[0],
-     bTotal: props.args[1],
-     dur: plr.duration
+       var bLoaded = props.args[0];
+       var bTotal = props.args[1];
+       vPause.mes({
+       type: 'loadProgress',
+       info: {
+         bLoaded: props.args[0],
+         bTotal: props.args[1],
+         dur: plr.duration
+       }
+       });
      }
-     });
-     }
-     });
+   });
 
     plr.isHijacked = true;
 

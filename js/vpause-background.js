@@ -2,13 +2,15 @@ var lastPlayer, lastPlayerState, singleClickPending, pendingAction, waitBeforeIc
 var dblClickTimeout = 300;
 var defaults = {
   btnTitle:               'vPause',
-  dblClickAction:         'nextTrack',
+  dblClickAction:         'focusPlayerTab',
   showBadge:                false,
   'hotkey-togglePlay':    'Shift+End',
   'hotkey-prevTrack':     'Ctrl+Shift+Left',
   'hotkey-nextTrack':     'Ctrl+Shift+Right',
   'hotkey-volUp':         'Ctrl+Shift+Up',
   'hotkey-volDown':       'Ctrl+Shift+Down',
+  'hotkey-addSong':       'D',
+  'hotkey-focusPlayerTab':'F',
   'hotkey-toggleRepeat':  'R'
 };
 
@@ -91,21 +93,25 @@ var vPause = (function(){
           Button.setIcon('play');
         }
       }
+      console.log('new port connected');
       port.onMessage.addListener(vPause.handleMessages);
       port.onDisconnect.addListener(vPause.handlePortDisconnect);
       vPause.ports.push(port);
+      console.log('ports left: ', vPause.ports);
     }
 
     this.handlePortDisconnect = function (port) {
       var index = vPause.ports.indexOf(port);
       var disconnected = vPause.ports.splice(index)[0];
+      console.log('lastPlayer is: ', lastPlayer);
       console.log('PORT DISCONNECTED: ', port);
       console.log('disconnected port: ', disconnected, port.sender.url);
-      console.log('lastPlayer is: ', lastPlayer);
+      //console.log('lastPlayer before : ', lastPlayer);
 
       if (disconnected === lastPlayer) {
         vPause.findNewLastPlayer();
       }
+      console.log('ports left: ', vPause.ports);
       delete disconnected;
     }
 
@@ -141,7 +147,6 @@ var vPause = (function(){
 
 
     this.findNewLastPlayer = function (){
-      // todo find last vk tab, set lastPlayer, reset button
       var lastPort = null;
       var playerState = null;
       var activeTab = null;
@@ -155,19 +160,19 @@ var vPause = (function(){
         var port = vPause.ports[i];
         if(port.sender && port.sender.url.match(vPause.VK_REGEXP)){
           // last opened vk tab will be set
-          lastPort = port; // todo pick the las
+          lastPort = port;
+          playerState = 'idle';
           if (port.sender.tab === activeTab) {
-            // if current tab is vk - make it new last player
+            // if current tab is vk - make it new last player and stop the loop
             break;
           }
-          playerState = 'idle'
         }
       }
 
       vPause.setLastPlayer(lastPort);
       vPause.setLastPlayerState(playerState);
       Button.setBadge('');
-      Button.setTitle('vPause')
+      Button.setTitle('vPause'); // use i18n
     }
 
     this.tellPlayer = function (fn, args, tabId) {
@@ -228,7 +233,10 @@ function buttonClicked(tab) {
     // Run dblClickAction
     // todo remember fn and change only when settings updated
     var fn = getPref('dblClickAction');
-    if (fn && fn !== undefined) {
+    if (fn && fn == 'focusPlayerTab') {
+      focusPlayerTab()
+    }
+    else if (fn && fn !== undefined) {
       vPause.tellPlayer(fn); //todo handle if the action should use vPause.tellPlayer or call bg fn
     }
 
