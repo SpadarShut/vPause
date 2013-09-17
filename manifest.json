@@ -5,7 +5,7 @@
         "url": "http://vk.com/spadarshut/"
     },
     "description": "__MSG_extensionDecription__",
-    "default_locale": "en",
+    "default_locale": "ru",
     "manifest_version": 2,
     "version": "3.0",
     "icons": {
