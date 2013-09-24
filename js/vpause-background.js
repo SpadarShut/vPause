@@ -44,7 +44,7 @@ var vPause = (function(){
       Button.button.onClicked.addListener(buttonClicked);
     }
 
-    this.ports = [];
+    this.ports = {};
 
     this.VK_REGEXP = /^https?:\/\/(vk.com|vkontakte.ru)/;
 
@@ -56,7 +56,7 @@ var vPause = (function(){
     }
 
     this.handleMessages = function (message, port, callback) {
-      if (message.type != 'playProgress') console.log(message.type, port.sender && port.sender.url);
+      if (message.type != 'playProgress' && message.type != 'loadProgress') console.log(message.type, port.sender && port.sender.url);
       var fn = window[message.type];
       //console.log(message.type + ' is ', fn), arguments;
       if (fn) {
@@ -72,10 +72,10 @@ var vPause = (function(){
       //  tag: mes
       // send to all connected ports
       var i = 0;
-      vPause.ports.forEach(function (port) {
-        port.postMessage(message, function (arg) {callback(arg)});
+      for (var port in vPause.ports){
+        vPause.ports[port].postMessage(message, function (arg) {callback(arg)});
         i++
-      });
+      }
       console.log('broadcast "' + message + '" to ' + i + ' ports');
     }
 
@@ -96,28 +96,26 @@ var vPause = (function(){
       console.log('new port connected');
       port.onMessage.addListener(vPause.handleMessages);
       port.onDisconnect.addListener(vPause.handlePortDisconnect);
-      vPause.ports.push(port);
-      console.log('ports left: ', vPause.ports);
+      vPause.ports[port.portId_] = port;
+      console.log('ports: ', vPause.ports);
     }
 
     this.handlePortDisconnect = function (port) {
-      var index = vPause.ports.indexOf(port);
-      var disconnected = vPause.ports.splice(index)[0];
-      console.log('lastPlayer is: ', lastPlayer);
-      console.log('PORT DISCONNECTED: ', port);
-      console.log('disconnected port: ', disconnected, port.sender.url);
-      //console.log('lastPlayer before : ', lastPlayer);
+      console.log('handlePortDisconnect :: lastPlayer is: ', lastPlayer);
+      console.log('handlePortDisconnect :: ports: ', vPause.ports);
+      console.log('handlePortDisconnect :: PORT DISCONNECTED: ', port);
 
-      if (disconnected === lastPlayer) {
+      delete vPause.ports[port.portId_];
+      if (port === lastPlayer) {
         vPause.findNewLastPlayer();
       }
-      console.log('ports left: ', vPause.ports);
-      delete disconnected;
+      console.log('handlePortDisconnect :: ports left: ', vPause.ports);
     }
 
     this.setLastPlayer = function (port) {
 //      debugger;
-      console.log('and the LAST PLAYER is... ', port);
+      console.log('and the LAST PLAYER is... ');
+      console.dir( port);
       lastPlayer = port;
     }
 
@@ -155,10 +153,10 @@ var vPause = (function(){
           activeTab = tabs[0];
       })
 
-      for (var i in vPause.ports) {
+      for (var id in vPause.ports) {
         // filter vk tabs
-        var port = vPause.ports[i];
-        if(port.sender && port.sender.url.match(vPause.VK_REGEXP)){
+        var port = vPause.ports[id];
+        if (port.sender && port.sender.url.match(vPause.VK_REGEXP)){
           // last opened vk tab will be set
           lastPort = port;
           playerState = 'idle';
@@ -168,6 +166,9 @@ var vPause = (function(){
           }
         }
       }
+
+      //  console.log('findNewLastPlayer:: lastplayer will be: ', lastPort);
+      console.log('findNewLastPlayer:: lastplayer state will be: ', playerState);
 
       vPause.setLastPlayer(lastPort);
       vPause.setLastPlayerState(playerState);
@@ -188,7 +189,10 @@ var vPause = (function(){
           }
           var js = 'vPause?vPause.' + fn + '(' + args + '):console.log("'+ fn +'")';
           chrome.tabs.update(tabId, {url: 'javascript:' + js });
-          console.log('told player: ', js, 'to ' + lastPlayer.sender.tab.url);
+
+         lastPlayer.sender
+             ? console.log('told player: ', js, 'to ' + lastPlayer.sender.tab.url)
+             : console.log('Didnt tell:'+ js , 'lastPlayer is: ', lastPlayer );
 /*
         } catch (e) {
           console.log('oops, didn\'t');
@@ -233,6 +237,7 @@ function buttonClicked(tab) {
     // Run dblClickAction
     // todo remember fn and change only when settings updated
     var fn = getPref('dblClickAction');
+    // todo fix this trash
     if (fn && fn == 'focusPlayerTab') {
       focusPlayerTab()
     }
