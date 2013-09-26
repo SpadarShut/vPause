@@ -92,7 +92,7 @@ vPause.hijackPlayer = function () {
       },
       error: function (props){
         console.error('error in playprogress', props);
-        debugger;
+        // debugger;
       }
     });
     //uncomment when player state can be tracked in background script

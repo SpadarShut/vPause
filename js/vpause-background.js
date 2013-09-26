@@ -486,7 +486,7 @@ var Button = (function () {
       }
     };
 
-    this.setTitle = function (title) {
+      this.setTitle = function (title) {
       this.button.setTitle({title: title})
     };
 
