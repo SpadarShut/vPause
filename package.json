@@ -1,0 +1,29 @@
+{
+  "name": "vPause",
+  "version": "3.0.0",
+  "description": "Opera and Chrome extension to control vk.com player from any tab",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SpadarShut/vPause.git"
+  },
+  "keywords": [
+    "extension",
+    "chromium",
+    "opera",
+    "vk.com"
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.3",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-zip": "~0.9.2",
+    "grunt-clean": "~0.4.0"
+  },
+  "author": "Pavel Shut",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}
