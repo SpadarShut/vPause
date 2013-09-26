@@ -1,0 +1,22 @@
+{
+  "locale": {"message": "be"},
+  "extensionDecription": {"message": "Кіраванне аўдыёплэерам vk.com з любой уклдадкі"},
+  "headerHotkeys": {"message": "Гарачыя клавішы"},
+  "hotkeysHint": {"message": ""},
+  "labelHotkeyPlayPause": {"message": "Прайграванне/паўза"},
+  "labelHotkeyNextTrack": {"message": "Наступны запіс"},
+  "labelHotkeyPrevTrack": {"message": "Папярэдні запіс"},
+  "labelHotkeyVolUp": {"message": "Гучней"},
+  "labelHotkeyVolDown": {"message": "Цішэй"},
+  "labelHotkeyRepeat": {"message": "Укл/выкл паўтарэнне"},
+  "labelClickHereHotkey": {"message": "Націсніце тут пажаданыя клавішы"},
+  "saveHotkeys": {"message": "Захаваць гарачыя клавішы"},
+  "labelAddSong": {"message": "Дадаць да маіх аўдыёзапісаў"},
+  "headerDblClick": {"message": "Дзеянне на падвойнае націсканне кнопкі"},
+  "labelToggleRepeat": {"message": "Укл/выкл паўтарэнне"},
+  "labelPlayNext": {"message": "Наступны запіс"},
+  "labelPlayPrev": {"message": "Папярэдні запіс"},
+  "labelFocusPlayerTab": {"message": "Пераключыцца на ўкладку з плэерам"},
+  "headerButtonBadge": {"message": "Надпіс на кнопцы"},
+  "labelShowBadge": {"message": "Паказваць надпісы на кнопцы"}
+}

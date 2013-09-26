@@ -1,0 +1,22 @@
+{
+  "locale": {"message": "en"},
+  "extensionDecription": {"message": "Control vk.com audioplayer form any tab"},
+  "headerHotkeys": {"message": "Hotkeys"},
+  "hotkeysHint": {"message": ""},
+  "labelHotkeyPlayPause": {"message": "Play/pause"},
+  "labelHotkeyNextTrack": {"message": "Next track"},
+  "labelHotkeyPrevTrack": {"message": "Previous track"},
+  "labelHotkeyVolUp": {"message": "Volume up"},
+  "labelHotkeyVolDown": {"message": "Volume down"},
+  "labelHotkeyRepeat": {"message": "Toggle repeat"},
+  "labelClickHereHotkey": {"message": "Click here and press your hotkey"},
+  "saveHotkeys": {"message": "Save hotkeys"},
+  "labelAddSong": {"message": "Add to my music"},
+  "headerDblClick": {"message": "Double click action"},
+  "labelToggleRepeat": {"message": "Toggle repeat"},
+  "labelPlayNext": {"message": "Play next track"},
+  "labelPlayPrev": {"message": "Play previous track"},
+  "labelFocusPlayerTab": {"message": "Focus player tab"},
+  "headerButtonBadge": {"message": "Button badge"},
+  "labelShowBadge": {"message": "Show button badge"}
+}
