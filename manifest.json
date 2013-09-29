@@ -28,7 +28,7 @@
             "include_globs": ["*"],
             "exclude_globs": [],
             "run_at": "document_end",
-            "all_frames": true //??
+            "all_frames": true
         }
     ],
     "web_accessible_resources": [
