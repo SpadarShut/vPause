@@ -19,4 +19,6 @@
   ,"labelFocusPlayerTab": {"message": "Focus player tab"}
   ,"headerButtonBadge": {"message": "Button badge"}
   ,"labelShowBadge": {"message": "Show button badge"}
+  ,"openVK": {"message": "vPause – open vk.com"}
+  ,"startPlaying": {"message": "vPause – start playing"}
 }

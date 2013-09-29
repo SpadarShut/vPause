@@ -19,4 +19,6 @@
   ,"labelFocusPlayerTab": {"message": "Переключиться на вкладку с плеером"}
   ,"headerButtonBadge": {"message": "Надпись на кнопке"}
   ,"labelShowBadge": {"message": "Показывать надписи на кнопке"}
+  ,"openVK": {"message": "vPause – открыть vk.com"}
+  ,"startPlaying": {"message": "vPause – начать воспроизведение"}
 }
