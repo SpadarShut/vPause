@@ -1,19 +1,19 @@
 var lastPlayer, lastPlayerState, singleClickPending, pendingAction, waitBeforeIconUpdate, trackTicker = [0, 0, 0];
 var dblClickTimeout = 300;
 var defaults = {
-  btnTitle:               'vPause',
-  dblClickAction:         'focusPlayerTab',
-  showBadge:                false,
+   dblClickAction:        'focusPlayerTab',
+   showBadge:              false,
   'hotkey-togglePlay':    'Shift+End',
   'hotkey-prevTrack':     'Ctrl+Shift+Left',
   'hotkey-nextTrack':     'Ctrl+Shift+Right',
   'hotkey-volUp':         'Ctrl+Shift+Up',
   'hotkey-volDown':       'Ctrl+Shift+Down',
   'hotkey-addSong':       'D',
-  'hotkey-focusPlayerTab':'F',
+  'hotkey-focusPlayerTab':'T',
   'hotkey-toggleRepeat':  'R'
 };
 
+/*
 var Player = {
   STATE_IDLE : -1,
   STATE_NO_PLAYERS : 0,
@@ -29,7 +29,7 @@ var Player = {
   getState: function (state) {
     Player.state = state;
   }
-}
+}*/
 
 var vPause = (function(){
   var exports = function(){
@@ -51,7 +51,7 @@ var vPause = (function(){
     this.goIdle = function (from) {
       from && console.log('goIdle from ' + from);
       Button.setIcon('idle');
-      Button.setTitle(getPref('btnTitle'));
+      Button.setTitle(chrome.i18n.getMessage('openVK'));
       Button.setBadge('');
     }
 
@@ -91,13 +91,12 @@ var vPause = (function(){
           vPause.setLastPlayer(port);
           vPause.setLastPlayerState('idle');
           Button.setIcon('play');
+          Button.setTitle(chrome.i18n.getMessage('startPlaying'));
         }
       }
-      console.log('new port connected');
       port.onMessage.addListener(vPause.handleMessages);
       port.onDisconnect.addListener(vPause.handlePortDisconnect);
       vPause.ports[port.portId_] = port;
-      console.log('ports: ', vPause.ports);
     }
 
     this.handlePortDisconnect = function (port) {
@@ -166,14 +165,12 @@ var vPause = (function(){
           }
         }
       }
-
-      //  console.log('findNewLastPlayer:: lastplayer will be: ', lastPort);
       console.log('findNewLastPlayer:: lastplayer state will be: ', playerState);
 
       vPause.setLastPlayer(lastPort);
       vPause.setLastPlayerState(playerState);
       Button.setBadge('');
-      Button.setTitle('vPause'); // use i18n
+      Button.setTitle(playerState ? chrome.i18n.getMessage('startPlaying'): chrome.i18n.getMessage('openVK')); // use i18n
     }
 
     this.tellPlayer = function (fn, args, tabId) {
@@ -486,12 +483,12 @@ var Button = (function () {
       }
     };
 
-      this.setTitle = function (title) {
+    this.setTitle = function (title) {
       this.button.setTitle({title: title})
     };
 
     this.button.setBadgeBackgroundColor({color: [0, 0, 0, 255]});
-    this.setTitle(getPref('btnTitle')); // todo set title to 'click to open your audio at vk.com'
+    this.setTitle(chrome.i18n.getMessage('openVK'));
   };
 
   return new exports();
@@ -514,7 +511,7 @@ function iconChange(message, port) {
     vPause.setLastPlayer(port);
   }
   else if (icon == 'idle'){
-    console.warn('iconChane :: icon is IDLE. WTF?')
+    console.warn('iconChange :: icon is IDLE. WTF?')
     vPause.setLastPlayerState(null);
     vPause.setLastPlayer(null);
   }
