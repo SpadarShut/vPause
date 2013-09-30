@@ -44,7 +44,7 @@ vPause.hijackPlayer = function () {
       success: function (props) {
         //debugger;
         var icon = props.args[0];
-        console.log('change icon to: ' + icon);
+        //console.log('change icon to: ' + icon);
 
         if (icon === 'pauseicon') {
           vPause.mes({
@@ -59,7 +59,7 @@ vPause.hijackPlayer = function () {
         }
       },
       error: function (props) {
-        console.log('error in setIcon: ', props);
+        //console.log('error in setIcon: ', props);
       }
     });
     plr.stop = vPause.addCallListener(plr.stop, {
@@ -69,7 +69,7 @@ vPause.hijackPlayer = function () {
         });
       },
       error: function (props) {
-        console.log('error in stop: ', props);
+        //console.log('error in stop: ', props);
       }
     });
 
@@ -91,7 +91,7 @@ vPause.hijackPlayer = function () {
         });
       },
       error: function (props){
-        console.error('error in playprogress', props);
+        //console.error('error in playprogress', props);
         // debugger;
       }
     });
@@ -252,7 +252,7 @@ vPause.setVol = function (delta) {
   } else {
 
     var newVol = curVol + delta > 100 ? 100 : (curVol + delta < 0 ? 0 : curVol + delta);
-    window.console.log(newVol);
+    //window.console.log(newVol);
     plr.player.setVolume(newVol / 100);
   }
   if (newVol == 0) {

@@ -12,9 +12,8 @@
 var port = null;
 var reconnect;
 
-function handleBgMessaging(message, sender, callback) { // message, extId? , callback?
-    //console.log(arguments);
-    console.log('got from bg: ' , arguments);
+function handleBgMessaging(message, sender, callback) {
+    //console.log('got from bg: ' , arguments);
     if (typeof message === 'string') {
         switch (message) {
             case 'hotkeys':
@@ -28,7 +27,6 @@ function handleBgMessaging(message, sender, callback) { // message, extId? , cal
         }
     } else if (typeof message === 'object') {
         console.log('contentscript :: message is object o_O');
-
     }
 }
 
@@ -42,7 +40,7 @@ function mes(msg, callback) {
 }
 
 function mesPage(mes) {
-    console.log('contentscript :: mes to injected:', mes);
+    //console.log('contentscript :: mes to injected:', mes);
 /*    var evt = document.createEvent("CustomEvent");
     evt.initEvent("vpause-contentscript-message", true, true, mes);
     evt.detail = JSON.stringify(mes); // todo tbd
@@ -57,7 +55,7 @@ function handlePlayerEvents(e){
     if ( e.data.origin == 'vpause-player-message'){
 
       if(e.data.info.type !== 'playProgress' && e.data.info.type !== 'loadProgress' ){
-        console.log('contentscript :: got message from page: ', e.data.info);
+        //console.log('contentscript :: got message from page: ', e.data.info);
       }
       mes(e.data.info);
     }
@@ -81,17 +79,16 @@ function injectScript(script, callback) {
 function connectToBg (){
     try {
         clearTimeout(reconnect);
-//        console.log('trying to reconnect to BG');
         port = chrome.runtime.connect({name: "vpause"});
 
         port.onMessage.addListener(function(a,b,c){
             handleBgMessaging(a,b,c)
         });
-        console.log('connected to BG');
+        //console.log('connected to BG');
     }
     catch (e) {
         reconnect = setTimeout(function(){
-            console.log('reconnecting to bg');
+            //console.log('reconnecting to bg');
             connectToBg();
         }, 100)
     }
