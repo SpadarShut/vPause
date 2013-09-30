@@ -25,7 +25,7 @@ module.exports = function(grunt) {
     },
     zip: {
       zip: {
-        compression: 'DEFLATE',
+        /*compression: 'DEFLATE',*/
         cwd: 'build/src/',
         src: 'build/src/**',
         dest: 'build/vpause-<%= pkg.version %>.zip'
