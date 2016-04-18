@@ -1,6 +1,6 @@
 {
   "locale": {"message": "ru"}
-  ,"extensionDecription": {"message": "Управление аудиоплеером vk.com с любой вкладки"}
+  ,"extensionDecription": {"message": "Управление аудиоплеером vk.com (vkontakte) с любой вкладки"}
   ,"headerHotkeys": {"message": "Горячие клавиши"}
   ,"hotkeysHint": {"message": ""}
   ,"labelHotkeyPlayPause": {"message": "Воспроизведение/пауза"}

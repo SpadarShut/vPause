@@ -1,6 +1,6 @@
 {
   "locale": {"message": "en"}
-  ,"extensionDecription": {"message": "Control vk.com audioplayer form any tab"}
+  ,"extensionDecription": {"message": "Control vk.com (vkontakte) audioplayer form any tab: hotkeys, toolbar button"}
   ,"headerHotkeys": {"message": "Hotkeys"}
   ,"hotkeysHint": {"message": ""}
   ,"labelHotkeyPlayPause": {"message": "Play/pause"}
