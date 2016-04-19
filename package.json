@@ -17,11 +17,13 @@
     "vk.com"
   ],
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.6.3",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-compress": "~0.5.2",
-    "grunt-clean": "~0.4.0"
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-less": "^3.0.5",
+    "gulp-sequence": "^0.4.4",
+    "gulp-watch": "^4.3.5",
+    "gulp-zip": "^3.1.0",
+    "less": "^2.5.3"
   },
   "author": "Pavel Shut",
   "license": "BSD",
