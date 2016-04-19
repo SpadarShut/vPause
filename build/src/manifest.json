@@ -1,13 +1,14 @@
 {
-    "name": "vPause",
+    "name": "vPause - vk.com player hotkeys",
+    "short_name ": "vPause",
     "developer": {
         "name": "Pavel Shut",
-        "url": "http://vk.com/spadarshut/"
+        "url": "http://vk.com/spadarshut"
     },
     "description": "__MSG_extensionDecription__",
     "default_locale": "ru",
     "manifest_version": 2,
-    "version": "3.0",
+    "version": "3.1",
     "icons": {
         "16": "img/btn_play.png",
         "48": "img/icon48.png",

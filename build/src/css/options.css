@@ -14,7 +14,7 @@ html {
 }
 
 body {
-    font: 13px/24px sans-serif;
+    font: 15px/24px sans-serif;
     color: #1e3853;
     max-width: 700px;
     overflow-x: hidden;
@@ -32,11 +32,29 @@ a {
 }
 header {
   display: block;
-  text-align: center;
-  padding: 20px 50px 15px;
+  overflow: hidden;
+  padding: 24px 0;
   margin: 0 50px 3rem;
   border-bottom: 1px solid rgba(0,0,0,0.15);
   box-shadow: 0 1px #fff;
+}
+.logo {
+    float: left;
+    margin-right: 1.5em;
+}
+.header-txt {
+    overflow: hidden;
+}
+.page-title {
+    margin: 6px 0 5px;
+    font-size: 24px;
+}
+.header__subtitle {
+    margin: 0;
+    color: #666;
+}
+.header__subtitle a {
+    color: #888;
 }
 
 section {
@@ -78,58 +96,56 @@ fieldset {
 }
 
 fieldset button {
-    /*
-    border-radius: 2px;
-    border: 1px solid rgba(80,80,130,0.5);
-    box-shadow: 0 1px 1px rgba(121,153,166,0.75), inset 0 1px rgba(255,255,255,0.25), inset 0 0 1px rgba(255,255,255,0.75);
-    color: rgba(0,0,0,0.75);
-    text-shadow: 0 1px rgba(255,255,255,0.25);
-    */
     transition: 0.25s;
     line-height: 22px;
     padding: .3em 25px;
 }
 
-fieldset button:disabled {
-    /*
-    background: rgba(173,181,217,0.75);
-    box-shadow: 0 1px 1px rgba(121,153,166,0.75), inset 0 1px rgba(255,255,255,0.25), inset 0 0 1px rgba(255,255,255,0.75) !important;
-    opacity: .5;
-    */
-}
 fieldset *:disabled {
   opacity: 0.5;
 }
 
 .fset-hotkeys ul {
-	display: table;
-	width: 100%;
 	padding: 0;
 	margin: 0;
-	}
-
-.fset-hotkeys li {
-	display: table-row;
+    list-style: none;
+}
+.fset-hotkeys li:after {
+    content: '';
+    display: table;
+    width: 100%;
 }
 
-.fset-hotkeys li > * {
-	display: table-cell;
-	vertical-align:top;
-	width: 39%;
-	margin: 0 0 .8em;
-	}
-
-select {
-	padding: .3em;
-	}
+.fset-hotkeys li > label {
+    float: left;
+    width: 57%;
+    box-sizing: border-box;
+    padding-right: 1em;
+    margin: 0 0 1em;
+    padding-top: .5em;
+    overflow: hidden;
+    white-space: nowrap;
+}
+    .fset-hotkeys li > label:after {
+        content: ' . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .';
+        color: #ddd;
+    }
 
 .fset-hotkeys input {
+    width: 40%;
+    float: right;
+    box-sizing: border-box;
     border: 1px solid rgba(160, 160, 160, 0.6);
     padding: .5em .5em .5em 30px;
-	width: 23em;
 	vertical-align: middle;
     border-radius: 3px;
     background: #fff no-repeat 6px 50%;
+}
+select {
+    padding: .3em;
+}
+select, input {
+    fon-size: inherit;
 }
 
 

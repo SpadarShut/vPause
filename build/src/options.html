@@ -7,8 +7,11 @@
 <body>
 
 <header>
-    <img src="img/icon.png"/>
-    <h1>vPause</h1>
+    <img src="img/icon.png" class="logo"/>
+    <div class="header-txt">
+        <h1 class="page-title">vPause 3.0</h1>
+        <p class="header__subtitle"><a href="http://vk.com/vpause">vk.com/vpause</a></p>
+    </div>
 </header>
 
 <section><h2 data-i18n="headerHotkeys"></h2>
@@ -16,48 +19,53 @@
         <p data-i18n="hotkeysHint"></p>
         <ul>
             <li>
-                <label data-i18n="labelHotkeyPlayPause" for="hotkey-togglePlay"></label>
                 <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                        id="hotkey-togglePlay"
-                       name="hotkey-togglePlay"/></li>
+                       name="hotkey-togglePlay"/>
+                <label data-i18n="labelHotkeyPlayPause" for="hotkey-togglePlay"></label>
+            </li>
             <li>
-                <label data-i18n="labelHotkeyNextTrack" for="hotkey-nextTrack"></label>
-                <input data-i18n="[placeholder]labelClickHereHotkey"  spellcheck="false"
+                <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                        id="hotkey-nextTrack"
-                       name="hotkey-nextTrack"/></li>
+                       name="hotkey-nextTrack"/>
+                <label data-i18n="labelHotkeyNextTrack" for="hotkey-nextTrack"></label>
+            </li>
             <li>
-                <label data-i18n="labelHotkeyPrevTrack" for="hotkey-prevTrack"></label>
-                <input data-i18n="[placeholder]labelClickHereHotkey"  spellcheck="false"
+                <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                        id="hotkey-prevTrack"
-                       name="hotkey-prevTrack"/></li>
+                       name="hotkey-prevTrack"/>
+                <label data-i18n="labelHotkeyPrevTrack" for="hotkey-prevTrack"></label>
+            </li>
             <li>
-                <label data-i18n="labelHotkeyVolUp" for="hotkey-volUp"></label>
-                <input data-i18n="[placeholder]labelClickHereHotkey"  spellcheck="false"
+                <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                        id="hotkey-volUp"
                        name="hotkey-volUp"/>
+                <label data-i18n="labelHotkeyVolUp" for="hotkey-volUp"></label>
             </li>
             <li>
-                <label data-i18n="labelHotkeyVolDown" for="hotkey-volDown"></label>
-                <input data-i18n="[placeholder]labelClickHereHotkey"  spellcheck="false"
+                <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                        id="hotkey-volDown"
                        name="hotkey-volDown"/>
+                <label data-i18n="labelHotkeyVolDown" for="hotkey-volDown"></label>
             </li>
             <li>
-                <label data-i18n="labelHotkeyRepeat" for="hotkey-toggleRepeat"></label>
-                <input data-i18n="[placeholder]labelClickHereHotkey"  spellcheck="false"
+                <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                        id="hotkey-toggleRepeat"
-                       name="hotkey-toggleRepeat"/></li>
+                       name="hotkey-toggleRepeat"/>
+                <label data-i18n="labelHotkeyRepeat" for="hotkey-toggleRepeat"></label>
+            </li>
             <li>
-                <label data-i18n="labelFocusPlayerTab" for="hotkey-focusPlayerTab"></label>
-                <input data-i18n="[placeholder]labelClickHereHotkey"  spellcheck="false"
+                <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                        id="hotkey-focusPlayerTab"
                        name="hotkey-focusPlayerTab"/>
+                <label data-i18n="labelFocusPlayerTab" for="hotkey-focusPlayerTab"></label>
             </li>
             <li>
-                <label data-i18n="labelAddSong" for="hotkey-addSong"></label>
                 <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                        id="hotkey-addSong"
-                       name="hotkey-addSong"/></li>
+                       name="hotkey-addSong"/>
+                <label data-i18n="labelAddSong" for="hotkey-addSong"></label>
+            </li>
         </ul>
         <p class="action">
             <button data-i18n="saveHotkeys" disabled id="save-hotkeys"></button>
@@ -91,9 +99,6 @@
     </fieldset>
 
 </section>
-
-
-<footer><p><a href="http://vk.com/vpause">vk.com/vpause</a></p></footer>
 
 <script src="js/shortcut.js"></script>
 <script src="js/options.js"></script>
