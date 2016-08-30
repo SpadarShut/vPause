@@ -1,10 +1,6 @@
 vPause = window.vPause || {};
 
 vPause.mes = function  (msg) {
-    /*var evt = document.createEvent("CustomEvent");
-    evt.initCustomEvent("vpause-player-message", true, false, msg);
-    document.dispatchEvent(evt);
-*/
   window.postMessage(
       {
         origin: 'vpause-player-message',
@@ -14,18 +10,12 @@ vPause.mes = function  (msg) {
 };
 
 vPause.handleBgMessaging = function  (message) {
-
-    vPause[message.type]()
-
-/*        switch (message.type) {
-            case 'hotkeys':
-                vPause.updateHotkeys(event);
-                break;
-        }*/
+    vPause[message.type]();
 };
 
 vPause.updateHotkeys = function(message) {
     console.log('removingHotkeys', JSON.stringify(message.info));
+
     try {
         message = JSON.stringify(message);
         if ( message.toString() == '[object Object]') {
@@ -37,6 +27,7 @@ vPause.updateHotkeys = function(message) {
             vPause.setHotkeys();
         }
     }
+
     catch(e){ }
 };
 

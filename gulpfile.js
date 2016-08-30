@@ -4,14 +4,6 @@ var del = require('del');
 const zip = require('gulp-zip');
 var gulpSequence = require('gulp-sequence');
 
-
-//gulp.task('less', function () {
-//  return gulp.src('./less/**/*.less')
-//      .pipe(less({
-//        paths: [ path.join(__dirname, 'less', 'includes') ]
-//      }))
-//      .pipe(gulp.dest('./public/css'));
-//});
 gulp.task('build', gulpSequence(['clean', 'copy', 'zip']));
 
 gulp.task('clean', function(cb) {
@@ -39,7 +31,7 @@ gulp.task('zip', function(cb) {
 });
 
 gulp.task('watch', function(){
-  gulp.watch(['./**', '!./build/**'], ['copy']);
+  gulp.watch(['js/*'], ['copy']);
   // Other watchers
 });
 

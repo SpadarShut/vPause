@@ -104,8 +104,9 @@ function init() {
     injectScript('js/shortcut.js', function(){
         injectScript('js/vpause-injected-hotkeys.js', function(){
             if ((window.location.host === 'vkontakte.ru' || window.location.host === 'vk.com') && window.self === window.top) {
-                injectScript('js/vpause-player-hijack.js');
+                //injectScript('js/vpause-inj.js');
             }
+
             mes({type: 'setHotkeys'});
         });
     });
