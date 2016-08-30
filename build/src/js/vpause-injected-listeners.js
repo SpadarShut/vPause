@@ -31,7 +31,7 @@
             if (e.data && e.data.origin && e.data.origin == 'vpause-button-event') {
                 console.log('injected :: message from background script (button)', e.data);
 
-                vPause.addToMyMusic();
+                vPause.toggleRepeat();
             }
         }, false);
     }
@@ -72,7 +72,6 @@
         vPause.addToMyMusic = function(){
             var $currentAudioRow = document.querySelectorAll('.audio_row[data-is-current="1"]');
 
-            console.log($currentAudioRow);
         };
 
         vPause.toggleRepeat = function(){

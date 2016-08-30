@@ -16,6 +16,7 @@
         });
     });
 
+
     function handleInjectedMessages (e) {
         if ( e.data && e.data.origin && e.data.origin == 'vpause-injected-listeners-message' ) {
             port.postMessage(e.data);

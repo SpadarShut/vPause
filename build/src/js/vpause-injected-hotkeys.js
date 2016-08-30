@@ -13,6 +13,7 @@ vPause.handleBgMessaging = function  (message) {
     vPause[message.type]();
 };
 
+
 vPause.updateHotkeys = function(message) {
     console.log('removingHotkeys', JSON.stringify(message.info));
 
