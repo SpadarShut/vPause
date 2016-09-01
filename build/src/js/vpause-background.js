@@ -1,6 +1,5 @@
 (function(){
-    var waitBeforeIconUpdate,
-        latestEvent = "idle",
+    var latestEvent = "idle",
         players = [],
         ports = {},
         utils = {};
@@ -18,12 +17,10 @@
     }
 
     function handleMessage (msg, port) {
-        console.log(msg);
-
         switch ( msg.event ) {
             case 'play' :
                 handlePlayMessage(msg.song);
-                maybeAddPlayer(port._vpausePortID);
+                maybeAddPlayerID(port._vpausePortID);
             break;
             case 'pause' :
                 handlePauseMessage(msg.song);
@@ -31,8 +28,23 @@
             case 'volume' :
                 handleVolumeMessage(msg.volume);
             break;
+            case 'nextSong' :
+                handleNextSongMessage();
+            break;
+            case 'prevSong' :
+                handlePrevSongMessage();
+            break;
+            case 'songAdded' :
+                handleSongAddedMessage();
+            break;
+            case 'songRemoved' :
+                handleSongRemovedMessage();
+            break;
             case 'progress' :
                 handleProgressMessage(msg.song[5], msg.progressData, msg.reversed);
+            break;
+            case 'focus' :
+                handleFocusMessage();
             break;
             default : break;
         }
@@ -44,7 +56,7 @@
         });
     }
 
-    function maybeAddPlayer(portID) {
+    function maybeAddPlayerID(portID) {
         if( players.length > 0 ) {
             if( players[0] !== portID ) {
                 players.unshift(portID);
@@ -55,14 +67,15 @@
     }
 
     function handlePlayMessage(song) {
-        Button.setIcon('play');
-        Button.setTitle(formatSongTitle(song));
+        button.setIcon('play');
+        button.setTitle(formatSongTitle(song));
+        button.setBadgeText('');
 
         latestEvent = 'play';
     }
 
     function handlePauseMessage () {
-        Button.setIcon('pause');
+        button.setIcon('pause');
 
         latestEvent = 'pause';
     }
@@ -82,80 +95,147 @@
             icon += '0'
         }
 
-        Button.setIcon(icon, true);
+        button.setIcon(icon, true);
+    }
+
+    function handleNextSongMessage() {
+        button.setIcon('nextTrack', true);
+    }
+
+    function handlePrevSongMessage() {
+        button.setIcon('prevTrack', true);
+    }
+
+    function handleSongAddedMessage() {
+        button.setIcon('added', true);
+    }
+
+    function handleSongRemovedMessage() {
+        button.setIcon('added', true); //todo: add the remove icon
     }
 
     function handleProgressMessage(total, percent, reversed) {
-        Button.setBadgeText(utils.tick(total, percent, reversed));
+        button.setBadgeText(utils.tick(total, percent, reversed));
+    }
+
+    function handleFocusMessage(){
+        var tabId = 0;
+
+        if( players.length > 0 ) {
+            tabId = Number(players[0].split('-')[1])
+        }
+
+        if( tabId > 0 ) {
+            chrome.tabs.update(tabId, { selected: true });
+        } else {
+            //todo: add a user setting on what to do when no players
+            console.warn("Can't focus player tab");
+        }
+
+        button.setIcon('tab', true);
     }
 
     function formatSongTitle(song) {
-        return song[4] + " - " + song[3];
+        return utils.htmlDecode(song[4] + " - " + song[3] + " (" + utils.formatTime(song[5]) + ")");
     }
 
-    var Button = (function () {
-        var exports = function () {
-            var self = this;
+    var button = {
+        singleClickPending: false,
+        waitBeforeIconUpdate: false,
+        dblClickTimeout: 300,
+        thing: chrome.browserAction,
+        setIcon: function(icon, andRestore){
+            this.thing.setIcon({
+                path: this.icons[icon]
+            });
 
-            this.button = chrome.browserAction;
-            this.icons = {
-                idle:       'img/btn_idle.png',
-                play:       'img/btn_play.png',
-                play_dis:   'img/btn_play_disabled.png',
-                pause:      'img/btn_pause.png',
-                prevTrack:  'img/btn_prev.png',
-                nextTrack:  'img/btn_next.png',
-                repeat:     'img/btn_repeat.png',
-                repeat_dis: 'img/btn_repeat_disabled.png',
-                vol_0:      'img/btn_vol_0.png',
-                vol_1:      'img/btn_vol_1.png',
-                vol_2:      'img/btn_vol_2.png',
-                vol_3:      'img/btn_vol_3.png',
-                vol_4:      'img/btn_vol_4.png',
-                added:      'img/btn_plus.png'
-            };
+            if ( this.waitBeforeIconUpdate ) {
+                window.clearTimeout(this.waitBeforeIconUpdate);
+                this.waitBeforeIconUpdate = null;
+            }
 
-            this.setIcon = function (icon, andRestore) {
-                this.button.setIcon({
-                    path: self.icons[icon]
-                });
+            if ( andRestore ) {
+                this.waitBeforeIconUpdate = setTimeout(function () {
+                    this.thing.setIcon({
+                        path: this.icons[latestEvent]
+                    });
+                }.bind(this), 1500);
+            }
+        },
+        setBadgeText: function (text) {
+            this.thing.setBadgeText({ text: text });
+        },
+        setTitle: function (title) {
+            this.thing.setTitle({ title: title })
+        },
+        icons: {
+            idle:       'img/btn_idle.png',
+            play:       'img/btn_play.png',
+            play_dis:   'img/btn_play_disabled.png',
+            pause:      'img/btn_pause.png',
+            prevTrack:  'img/btn_prev.png',
+            nextTrack:  'img/btn_next.png',
+            repeat:     'img/btn_repeat.png',
+            repeat_dis: 'img/btn_repeat_disabled.png',
+            vol_0:      'img/btn_vol_0.png',
+            vol_1:      'img/btn_vol_1.png',
+            vol_2:      'img/btn_vol_2.png',
+            vol_3:      'img/btn_vol_3.png',
+            vol_4:      'img/btn_vol_4.png',
+            tab:        'img/btn_tab.png',
+            added:      'img/btn_plus.png'
+        }
+    };
 
-                if ( waitBeforeIconUpdate ) {
-                    clearTimeout(waitBeforeIconUpdate);
-
-                    waitBeforeIconUpdate = null;
-                }
-
-                if ( andRestore ) {
-                    waitBeforeIconUpdate = setTimeout(function () {
-                        self.button.setIcon({
-                            path: self.icons[latestEvent]
-                        });
-                    }, 1500);
-                }
-            };
-
-            this.setBadgeText = function (text) {
-                this.button.setBadgeText({ text: text });
-            };
-
-            this.setTitle = function (title) {
-                this.button.setTitle({ title: title })
-            };
-        };
-
-        return new exports();
-    })();
-
-    Button.setIcon('idle');
-    Button.setBadgeText('...');
-    Button.button.onClicked.addListener(buttonClicked);
+    button.setIcon(latestEvent);
+    button.setBadgeText('...');
+    button.thing.onClicked.addListener(buttonClicked);
 
     function buttonClicked(){
+        if ( button.singleClickPending ) {
+            clearTimeout(button.singleClickPending);
+            button.singleClickPending = null;
+
+            if( players.length > 0 ) {
+                handleDoubleClickWithPlayer();
+            } else {
+                handleDoubleClickWithNoPlayers();
+            }
+        } else {
+            button.singleClickPending = setTimeout(function () {
+                button.singleClickPending = null;
+
+                if( players.length > 0 ) {
+                    handleSingleClickWithPlayer();
+                } else {
+                    handleSingleClickWithNoPlayers();
+                }
+            }, button.dblClickTimeout);
+        }
+    }
+
+    function handleSingleClickWithPlayer() {
         ports[players[0]].postMessage({
             origin: 'vpause-button-event',
-            event: 'click'
+            event: 'single-click',
+            action: 'togglePlay'
         });
+    }
+
+    function handleDoubleClickWithPlayer() {
+        ports[players[0]].postMessage({
+            origin: 'vpause-button-event',
+            event: 'double-click',
+            action: 'nextTrack'
+        });
+    }
+
+    function handleSingleClickWithNoPlayers() {
+        console.warn("Single click with no players");
+    }
+
+    function handleDoubleClickWithNoPlayers() {
+        console.warn("Double click with no players");
     }
 
     utils.formatTime = typeof window.formatTime === 'function' ? window.formatTime : function (t, forceHours) {
@@ -179,5 +259,14 @@
 
     utils.tick = function(duration, progress, reverse){
         return reverse == 1 ? "-" + utils.formatTime(Math.round(duration - progress * duration)) : utils.formatTime(Math.round(progress * duration));
+    };
+
+    utils.htmlDecode = function (input) {
+        var e = window.document.createElement('a');
+        e.innerHTML = input;
+        if (e.querySelector('*')) {
+            e.innerHTML = e.textContent;
+        }
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
     }
 })();

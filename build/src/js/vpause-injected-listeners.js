@@ -15,25 +15,26 @@
         'pause': 'pause',
         'progress': 'progress',
         'volume': 'volume',
-        'buffered': 'buffered'
+        'buffered': 'buffered',
+        'added': 'added',
+        'removed': 'removed'
     };
 
     listenForContentScriptMessages();
     listenForPlayerEvents();
     initTriggerMethods();
+    createSongShell();
 
     function listenForContentScriptMessages() {
         window.addEventListener('message', function (e) {
-            if (e.data && e.data.origin && e.data.origin == 'vpause-background-script') {
-                console.log('injected :: message from background script', e.data);
-            }
-
-            if (e.data && e.data.origin && e.data.origin == 'vpause-button-event') {
-                console.log('injected :: message from background script (button)', e.data);
-
-                vPause.toggleRepeat();
+            if (isVpauseEvent(e)) {
+                vPause[e.data.action].call();
             }
         }, false);
+    }
+
+    function isVpauseEvent(e) {
+        return e.data && e.data.origin && e.data.origin == 'vpause-hotkey-event' || e.data && e.data.origin && e.data.origin == 'vpause-button-event'
     }
 
     function listenForPlayerEvents() {
@@ -42,6 +43,17 @@
         player.on(player, events.progress, handleProgress);
         player.on(player, events.volume, handleVolumeChange);
         player.on(player, events.buffered, handleBufferedData);
+        player.on(player, events.added, handleSongAdded);
+        player.on(player, events.removed, handleSongRemoved);
+    }
+
+    function createSongShell() {
+        vPause.songShell = document.createElement("div");
+
+        vPause.songShell.setAttribute('id', 'vPause_song_shell');
+        vPause.songShell.setAttribute('style', 'display: none');
+
+        document.body.appendChild(vPause.songShell);
     }
 
     function initTriggerMethods() {
@@ -59,10 +71,18 @@
 
         vPause.prevTrack = function () {
             player.playPrev();
+
+            notifyContentScript({
+                event: "prevSong"
+            });
         };
 
         vPause.nextTrack = function () {
             player.playNext();
+
+            notifyContentScript({
+                event: "nextSong"
+            });
         };
 
         vPause.setVolume = function(volume){
@@ -70,12 +90,14 @@
         };
 
         vPause.addToMyMusic = function(){
-            var $currentAudioRow = document.querySelectorAll('.audio_row[data-is-current="1"]');
+            tweakSongShell(player.getCurrentAudio());
 
+            //todo: trigger the click event in another way if this fails
+            vPause.songShell.querySelector('#add').click();
         };
 
-        vPause.toggleRepeat = function(){
-            player.toggleRepeatCurrentAudio();
+        vPause.toggleMute = function(){
+            //[7:00:00 PM] Shut Pavel: гэта фіча можа і пачакаць
         }
     }
 
@@ -84,6 +106,11 @@
             event: "play",
             song: song
         });
+    }
+
+    function tweakSongShell(song) {
+        vPause.songShell.innerHTML = "";
+        vPause.songShell.innerHTML = "<div class='audio_row _audio_row' data-audio='" + JSON.stringify(song) + "' data-is-current='1'><div class='audio_act' id='add' onclick='return addAudio(this, event)'></div></div>";
     }
 
     function handlePause(song) {
@@ -107,6 +134,18 @@
             event: "volume",
             song: song,
             volume: eventData
+        });
+    }
+
+    function handleSongAdded() {
+        notifyContentScript({
+            event: "songAdded"
+        });
+    }
+
+    function handleSongRemoved() {
+        notifyContentScript({
+            event: "songRemoved"
         });
     }
 
