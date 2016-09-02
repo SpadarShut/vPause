@@ -10,7 +10,7 @@
                 port._vpausePortID = port.sender.tab.windowId + "-" + port.sender.tab.id;
                 ports[port._vpausePortID] = port;
 
-                port.onDisconnect.addListener(maybePrunePlayers);
+                port.onDisconnect.addListener(handlePortDisconnect);
             }
 
             port.onMessage.addListener(handleMessage);
@@ -47,6 +47,12 @@
             case 'focus' :
                 handleFocusMessage();
             break;
+            case 'shuffle' :
+                handleShuffleMessage();
+            break;
+            case 'unshuffle' :
+                handleUnShuffleMessage();
+            break;
             case 'sendHotkeys' :
                 sendHotkeys(port);
             break;
@@ -76,8 +82,7 @@
                     action: action
                 });
             } else {
-                //handle hotkey behaviour for no-players situation
-                console.log('handling action', action);
+                guessWhatTheUserWants();
             }
         }
     }
@@ -97,7 +102,9 @@
         };
     }
 
-    function maybePrunePlayers(port) {
+    function handlePortDisconnect(port){
+        delete ports[port._vpausePortID];
+
         players = players.filter(function(item){
             return item !== port._vpausePortID
         });
@@ -173,13 +180,24 @@
         }
 
         if( tabId > 0 ) {
-            chrome.tabs.update(tabId, { selected: true });
+            focusTab(tabId);
         } else {
-            //todo: add a user setting on what to do when no players
-            console.warn("Can't focus player tab");
+            guessWhatTheUserWants();
         }
 
         button.setIcon('tab', true);
+    }
+
+    function handleShuffleMessage() {
+        button.setIcon('added', true); //todo: replace with shuffle
+    }
+
+    function handleUnShuffleMessage() {
+        button.setIcon('added', true); //todo: replace with unshuffle
+    }
+
+    function focusTab(id) {
+        chrome.tabs.update(id, { selected: true });
     }
 
     function formatSongTitle(song) {
@@ -247,7 +265,7 @@
             if( players.length > 0 ) {
                 handleDoubleClickWithPlayer();
             } else {
-                handleDoubleClickWithNoPlayers();
+                guessWhatTheUserWants();
             }
         } else {
             button.singleClickPending = setTimeout(function () {
@@ -256,7 +274,7 @@
                 if( players.length > 0 ) {
                     handleSingleClickWithPlayer();
                 } else {
-                    handleSingleClickWithNoPlayers();
+                    guessWhatTheUserWants();
                 }
             }, button.dblClickTimeout);
         }
@@ -278,12 +296,20 @@
         });
     }
 
-    function handleSingleClickWithNoPlayers() {
-        console.warn("Single click with no players");
-    }
+    function guessWhatTheUserWants() {
+        var portsIDs = Object.keys(ports);
 
-    function handleDoubleClickWithNoPlayers() {
-        console.warn("Double click with no players");
+        if( portsIDs.length === 0 ) {
+            chrome.tabs.create({ url: 'https://vk.com/' });
+        } else {
+            var lastVkTab = portsIDs[portsIDs.length - 1]; //may not be the last but I don't care much in this case
+
+            ports[lastVkTab].postMessage({
+                origin: 'vpause-button-event',
+                event: 'single-click',
+                action: 'startTheParty'
+            });
+        }
     }
 
     utils.formatTime = typeof window.formatTime === 'function' ? window.formatTime : function (t, forceHours) {

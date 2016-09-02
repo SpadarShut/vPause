@@ -57,7 +57,7 @@
                 vPause.makeItLouder();
             break;
             case 'volDown' :
-                vPause.makeItLouder();
+                vPause.makeItQuieter();
             break;
         }
     }
@@ -116,12 +116,51 @@
         };
 
         vPause.makeItLouder = function(){
+            var volume = player.getVolume();
 
+            volume += .1;
+
+            if( volume > 1 ) {
+                volume = 1;
+            }
+
+            player.setVolume(volume);
+        };
+
+        vPause.makeItQuieter = function() {
+            var volume = player.getVolume();
+
+            volume -= .1;
+
+            if( volume < 0 ) {
+                volume = 0;
+            }
+
+            player.setVolume(volume);
         };
 
         vPause.toggleShuffle = function(){
+            var shuffled = false,
+                event = "";
 
+            if( shuffled ) {
+                event = 'shuffle'
+            } else {
+                event = 'unshuffle'
+            }
+
+            notifyContentScript({
+                event: event
+            });
         };
+
+        vPause.startTheParty = function(){
+            console.log('starting the party');
+
+            //if has playlist - start music
+
+            //else - open playlist
+        }
     }
 
     function handlePlay(song) {
@@ -129,11 +168,6 @@
             event: "play",
             song: song
         });
-    }
-
-    function tweakSongShell(song) {
-        vPause.songShell.innerHTML = "";
-        vPause.songShell.innerHTML = "<div class='audio_row _audio_row' data-audio='" + JSON.stringify(song) + "' data-is-current='1'><div class='audio_act' id='add' onclick='return addAudio(this, event)'></div></div>";
     }
 
     function handlePause(song) {
@@ -178,6 +212,11 @@
             song: song,
             buffered: eventData
         });
+    }
+
+    function tweakSongShell(song) {
+        vPause.songShell.innerHTML = "";
+        vPause.songShell.innerHTML = "<div class='audio_row _audio_row' data-audio='" + JSON.stringify(song) + "' data-is-current='1'><div class='audio_act' id='add' onclick='return addAudio(this, event)'></div></div>";
     }
 
     function notifyContentScript (msg) {
