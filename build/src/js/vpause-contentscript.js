@@ -4,7 +4,7 @@
     var port;
 
     port = chrome.runtime.connect({ name: "vpause-contentscript" });
-    port.onMessage.addListener(notifyInjectedScript);
+    port.onMessage.addListener(notifyInjectedScripts);
 
     window.addEventListener('message', handleInjectedMessages, false);
 
@@ -16,14 +16,17 @@
         });
     });
 
-
     function handleInjectedMessages (e) {
-        if ( e.data && e.data.origin && e.data.origin == 'vpause-injected-listeners-message' ) {
+        if ( isValidInjectedMessage(e) ) {
             port.postMessage(e.data);
         }
     }
 
-    function notifyInjectedScript(msg){
+    function isValidInjectedMessage(e) {
+        return e.data && e.data.origin && e.data.origin == 'vpause-injected-listeners' || e.data && e.data.origin && e.data.origin == 'vpause-injected-hotkeys'
+    }
+
+    function notifyInjectedScripts(msg){
         window.postMessage(msg, window.location.href );
     }
 

@@ -1,70 +1,133 @@
-vPause = window.vPause || {};
+(function(window){
+    var vPause = {};
 
-vPause.mes = function  (msg) {
-  window.postMessage(
-      {
-        origin: 'vpause-player-message',
-        info: msg
-      },
-      document.location.href );
-};
+    vPause.shortcut = {
+        all_shortcuts: {},
+        'add': function(shortcut_combination, callback, opt) {
+            var default_options = {
+                'type': 'keydown',
+                'propagate': false,
+                'disable_in_input': false,
+                'target': document,
+                'keycode': false
+            };
 
-vPause.handleBgMessaging = function  (message) {
-    vPause[message.type]();
-};
-
-
-vPause.updateHotkeys = function(message) {
-    console.log('removingHotkeys', JSON.stringify(message.info));
-
-    try {
-        message = JSON.stringify(message);
-        if ( message.toString() == '[object Object]') {
-            // info is old hotkeys object
-            for (var k in message.info) {
-                // todo make with postmessage:
-                window.vPause.Shortcut.remove(message.info[k]);
+            if (!opt) opt = default_options; else {
+                for (var dfo in default_options) {
+                    if (typeof opt[dfo] == 'undefined') opt[dfo] = default_options[dfo];
+                }
             }
-            vPause.setHotkeys();
-        }
-    }
 
-    catch(e){ }
-};
+            var ele = opt.target;
 
-vPause.setHotkeys = function (keys) {
+            if (typeof opt.target == 'string') ele = document.getElementById(opt.target);
 
-    if (!keys) {
-        console.log('no keys!');
-        debugger;
-    }
-    for (var key in keys) {
-        if (key && keys[key]) {
-            (function (key) {
-                //console.log('injected : setHotkeys : vPause.Shortcut is: ', vPause.Shortcut);
-                //if( !vPause.Shortcut) return;
-                window.vPause.Shortcut.add(
-                    keys[key],
-                    function (e) {
-                        vPause.mes({ type: 'hotkey', info: key });
-                    }, {
-                        'type': 'keydown',
-                        'disable_in_input': true,
-                        'propagate': true
+            var ths = this;
+
+            shortcut_combination = shortcut_combination.toLowerCase();
+
+            var func = function(e) {
+                e = e || window.event;
+
+                if (opt['disable_in_input']) {
+                    var element;
+
+                    if (e.target) element = e.target; else if (e.srcElement) element = e.srcElement;
+                    if (element.nodeType == 3) element = element.parentNode;
+                    if (element.tagName == 'INPUT' || element.tagName == 'TEXTAREA' || element.contentEditable == 'true') return;
+                }
+
+                var key = ths.KeyCode.hot_key(ths.KeyCode.translate_event(e));
+
+                if (key.toLowerCase() === shortcut_combination) {
+                    callback(e);
+
+                    if (!opt['propagate']) {
+                        e.cancelBubble = true;
+                        e.returnValue = false;
+
+                        if (e.stopPropagation) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                        }
+
+                        return false;
                     }
-                );
-            })(key);
+                }
+            };
+
+            this.all_shortcuts[shortcut_combination] = {
+                'callback': func,
+                'target': ele,
+                'event': opt['type']
+            };
+
+            ele.addEventListener(opt['type'], func, false);
+        },
+        'remove': function(shortcut_combination) {
+            shortcut_combination = shortcut_combination.toLowerCase();
+
+            var binding = this.all_shortcuts[shortcut_combination];
+
+            delete this.all_shortcuts[shortcut_combination];
+
+            if ( !binding ) return;
+
+            var type = binding['event'];
+            var ele = binding['target'];
+            var callback = binding['callback'];
+
+            ele.removeEventListener(type, callback, false);
+        },
+        'KeyCode': window.KeyCode.no_conflict()
+    };
+
+    notifyContentScript({
+        event: "sendHotkeys"
+    });
+
+    window.addEventListener('message', function (e) {
+        if (e.data && e.data.origin && e.data.origin == 'vpause-background-event') {
+            switch( e.data.action ) {
+                case 'addKeys' :
+                    addHotkeys(e.data.keys);
+                    break;
+                case 'updateKeys' :
+                    updateHotkeys(e.data.keys);
+                    break;
+            }
+        }
+    }, false);
+
+    function addHotkeys(keys) {
+        for( var key in keys ) {
+            if( keys.hasOwnProperty(key) ) {
+                (function(key){
+                    vPause.shortcut.add(
+                        keys[key],
+                        function () {
+                            notifyContentScript({
+                                event: 'hotkey',
+                                action: key.slice(7)
+                            });
+                        }, {
+                            'type': 'keydown',
+                            'disable_in_input': true,
+                            'propagate': true
+                        }
+                    );
+                })(key);
+            }
         }
     }
-};
 
+    function updateHotkeys(keys) {
 
-window.addEventListener('message', function (e) {
-  if (e.origin !== window) return; // ???
-//  debugger;
-  if (e.data && e.data.origin && e.data.origin == 'vpause-contentscript-message') {
-      console.log('injected :: vpause-contentscript-message event: ', e.data.info);
-      vPause.handleBgMessaging(e.data.info)
-  }
-}, false);
+    }
 
+    function notifyContentScript(msg) {
+        msg.origin = 'vpause-injected-hotkeys';
+
+        window.postMessage(msg, window.location.href );
+    }
+})(window);

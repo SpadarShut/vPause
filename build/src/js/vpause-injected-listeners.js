@@ -27,14 +27,18 @@
 
     function listenForContentScriptMessages() {
         window.addEventListener('message', function (e) {
-            if (isVpauseEvent(e)) {
-                vPause[e.data.action].call();
+            if ( isVpauseEvent(e) ) {
+                if( typeof vPause[e.data.action] === 'function' ) {
+                    vPause[e.data.action].call();
+                } else {
+                    normaliseHotkeyEvents(e.data);
+                }
             }
         }, false);
     }
 
     function isVpauseEvent(e) {
-        return e.data && e.data.origin && e.data.origin == 'vpause-hotkey-event' || e.data && e.data.origin && e.data.origin == 'vpause-button-event'
+        return e.data && e.data.origin && e.data.origin == 'vpause-button-event' || e.data && e.data.origin && e.data.origin == 'vpause-background-event'
     }
 
     function listenForPlayerEvents() {
@@ -45,6 +49,17 @@
         player.on(player, events.buffered, handleBufferedData);
         player.on(player, events.added, handleSongAdded);
         player.on(player, events.removed, handleSongRemoved);
+    }
+
+    function normaliseHotkeyEvents(data) {
+        switch( data.action ) {
+            case 'volUp' :
+                vPause.makeItLouder();
+            break;
+            case 'volDown' :
+                vPause.makeItLouder();
+            break;
+        }
     }
 
     function createSongShell() {
@@ -98,7 +113,15 @@
 
         vPause.toggleMute = function(){
             //[7:00:00 PM] Shut Pavel: гэта фіча можа і пачакаць
-        }
+        };
+
+        vPause.makeItLouder = function(){
+
+        };
+
+        vPause.toggleShuffle = function(){
+
+        };
     }
 
     function handlePlay(song) {
@@ -158,7 +181,7 @@
     }
 
     function notifyContentScript (msg) {
-        msg.origin = 'vpause-injected-listeners-message';
+        msg.origin = 'vpause-injected-listeners';
 
         window.postMessage(msg, window.location.href );
     }
