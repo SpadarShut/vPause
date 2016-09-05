@@ -22,6 +22,7 @@
   ,"headerButtonBadge": {"message": "Button badge"}
   ,"labelShowBadge": {"message": "Show button badge"}
   ,"labelBadgeOpacity": {"message": "Badge opacity"}
+  ,"labelBadgeColor": {"message": "Badge background color"}
   ,"openVK": {"message": "vPause – open vk.com"}
   ,"startPlaying": {"message": "vPause – start playing"}
 }

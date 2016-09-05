@@ -6,6 +6,8 @@
         settings = {},
         defaults = {
             'dblClickAction': 'focusPlayerTab',
+            'badgeOpacity': 100,
+            'badgeColor': [0, 0, 0],
             'showBadge': false,
             'hotkey-togglePlay': 'Shift+End',
             'hotkey-prevTrack': 'Ctrl+Shift+Left',
@@ -63,20 +65,15 @@
                 }
             }
 
-            if( settings.showBadge ) {
-                button.setBadgeText('...');
-
-                setTimeout(function(){
-                    if( 'idle' === latestEvent ) {
-                        button.setBadgeText('');
-                    }
-                }, 1500)
-            }
-
             if( Object.keys(hotkeysToUpdate).length > 0 ) {
                 kindlyUpdateHotkeys(hotkeysToUpdate);
             }
+
+            maybeHideBadge();
+            updateBadgeColor();
         });
+
+        initBrowserAction();
     });
 
     function kindlyUpdateHotkeys(hotkeys) {
@@ -91,6 +88,20 @@
         });
     }
 
+    function maybeHideBadge() {
+        if( settings.showBadge ) {
+            button.setBadgeText('...');
+
+            setTimeout(function(){
+                if( 'idle' === latestEvent ) {
+                    button.setBadgeText('');
+                }
+            }, 1500)
+        } else {
+            button.setBadgeText('');
+        }
+    }
+
     function handleMessage (msg, port) {
         switch ( msg.event ) {
             case 'play' :
@@ -102,6 +113,9 @@
             break;
             case 'volume' :
                 handleVolumeMessage(msg.volume);
+            break;
+            case 'mute' :
+                handleMuteMessage();
             break;
             case 'nextSong' :
                 handleNextSongMessage();
@@ -214,7 +228,7 @@
     function handlePlayMessage(song) {
         button.setIcon('pause');
         button.setTitle(formatSongTitle(song));
-        button.setBadgeText('');
+        //button.setBadgeText('');
 
         latestEvent = 'pause';
     }
@@ -243,12 +257,18 @@
         button.setIcon(icon, true);
     }
 
+    function handleMuteMessage() {
+        button.setIcon('vol_0');
+    }
+
     function handleNextSongMessage() {
         button.setIcon('nextTrack', true);
+        button.setBadgeText('');
     }
 
     function handlePrevSongMessage() {
         button.setIcon('prevTrack', true);
+        button.setBadgeText('');
     }
 
     function handleSongAddedMessage() {
@@ -319,7 +339,7 @@
             }
         },
         setBadgeText: function (text) {
-            if (! settings.showBadge || this.waitBeforeIconUpdate) {
+            if ( ! settings.showBadge ) {
                 this.thing.setBadgeText({ text: "" });
 
                 return;
@@ -329,6 +349,19 @@
         },
         setTitle: function (title) {
             this.thing.setTitle({ title: title })
+        },
+        calculateColor: function(rgb, opacity){
+            console.log(rgb);
+
+            var colorArr = [];
+
+            rgb.forEach(function(color){
+                colorArr.push(color);
+            });
+
+            colorArr.push(opacity);
+
+            return colorArr;
         },
         icons: {
             idle: 'img/btn_idle.png',
@@ -349,33 +382,40 @@
         }
     };
 
-    button.setIcon(latestEvent);
-    button.setBadgeText('');
-    button.thing.setBadgeBackgroundColor({
-        color: [0, 0, 0, 100]
-    });
-    button.thing.onClicked.addListener(function(){
-        if ( button.singleClickPending ) {
-            clearTimeout(button.singleClickPending);
-            button.singleClickPending = null;
+    function initBrowserAction(){
+        updateBadgeColor();
 
-            if( players.length > 0 ) {
-                handleDoubleClickWithPlayer();
-            } else {
-                guessWhatTheUserWants();
-            }
-        } else {
-            button.singleClickPending = setTimeout(function () {
+        button.setIcon(latestEvent);
+        button.setBadgeText('');
+        button.thing.onClicked.addListener(function(){
+            if ( button.singleClickPending ) {
+                clearTimeout(button.singleClickPending);
                 button.singleClickPending = null;
 
                 if( players.length > 0 ) {
-                    handleSingleClickWithPlayer();
+                    handleDoubleClickWithPlayer();
                 } else {
                     guessWhatTheUserWants();
                 }
-            }, button.dblClickTimeout);
-        }
-    });
+            } else {
+                button.singleClickPending = setTimeout(function () {
+                    button.singleClickPending = null;
+
+                    if( players.length > 0 ) {
+                        handleSingleClickWithPlayer();
+                    } else {
+                        guessWhatTheUserWants();
+                    }
+                }, button.dblClickTimeout);
+            }
+        });
+    }
+
+    function updateBadgeColor() {
+        button.thing.setBadgeBackgroundColor({
+            color: button.calculateColor(settings.badgeColor, settings.badgeOpacity)
+        });
+    }
 
     function handleSingleClickWithPlayer() {
         ports[players[0]].postMessage({

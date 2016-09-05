@@ -7,7 +7,9 @@
         return;
     }
 
-    var vPause = {};
+    var vPause = {
+        isMuted: false
+    };
 
     //todo: maybe utilise the AudioPlayer function to search for events
     var events = {
@@ -112,7 +114,21 @@
         };
 
         vPause.toggleMute = function(){
-            //[7:00:00 PM] Shut Pavel: гэта фіча можа і пачакаць
+            if( ! vPause.isMuted ) {
+                vPause.volume = player.getVolume();
+
+                player.setVolume(0);
+
+                notifyContentScript({
+                    event: "mute"
+                });
+            }
+
+            if( vPause.isMuted ) {
+                player.setVolume(vPause.volume);
+            }
+
+            vPause.isMuted = !vPause.isMuted;
         };
 
         vPause.makeItLouder = function(){

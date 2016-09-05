@@ -22,6 +22,7 @@
   ,"headerButtonBadge": {"message": "Надпис на кнопці"}
   ,"labelShowBadge": {"message": "Показувати надписи на кнопці"}
   ,"labelBadgeOpacity": {"message": "Badge opacity"}
+  ,"labelBadgeColor": {"message": "Badge background color"}
   ,"openVK": {"message": "vPause – відкрити vk.com"}
   ,"startPlaying": {"message": "vPause – запустити плеєр"}
 }
