@@ -194,16 +194,12 @@
     function sendHotkeyToListeners(action) {
         if( 'focusPlayerTab' === action ) {
             handleFocusMessage();
-        } else {
-            if( players.length > 0 ) {
-                ports[players[0]].postMessage({
-                    origin: 'vpause-background-event',
-                    event: 'hotkey',
-                    action: action
-                });
-            } else {
-                guessWhatTheUserWants();
-            }
+        } else if( players.length > 0 ) {
+            ports[players[0]].postMessage({
+                origin: 'vpause-background-event',
+                event: 'hotkey',
+                action: action
+            });
         }
     }
 
@@ -384,7 +380,9 @@
         updateBadgeColor();
 
         button.setIcon(latestEvent);
+        button.setTitle('vPause - Open vk.com');
         button.setBadgeText('');
+
         button.thing.onClicked.addListener(function(){
             if ( button.singleClickPending ) {
                 clearTimeout(button.singleClickPending);
@@ -444,6 +442,8 @@
 
         if( portsIDs.length === 0 ) {
             chrome.tabs.create({ url: 'https://vk.com/' });
+
+            button.setTitle('vPause');
         } else {
             var lastVkTab = portsIDs[portsIDs.length - 1]; //may not be the last but I don't care much in this case
 

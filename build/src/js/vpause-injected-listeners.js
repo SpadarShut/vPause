@@ -9,7 +9,8 @@
 
     var vPause = {
         isMuted: false,
-        partyStarted: false
+        partyStarted: false,
+        isShuffled: false
     };
 
     //todo: maybe utilise the AudioPlayer function to search for events
@@ -49,7 +50,7 @@
         player.on(player, events.pause, handlePause);
         player.on(player, events.progress, handleProgress);
         player.on(player, events.volume, handleVolumeChange);
-        player.on(player, events.buffered, handleBufferedData);
+        //player.on(player, events.buffered, handleBufferedData);
         player.on(player, events.added, handleSongAdded);
         player.on(player, events.removed, handleSongRemoved);
     }
@@ -157,18 +158,13 @@
         };
 
         vPause.toggleShuffle = function(){
-            var shuffled = false,
-                event = "";
-
-            if( shuffled ) {
-                event = 'shuffle'
-            } else {
-                event = 'unshuffle'
-            }
+            var event = vPause.isShuffled ? 'shuffle' : 'unshuffle';
 
             notifyContentScript({
                 event: event
             });
+
+            vPause.isShuffled = ! vPause.isShuffled;
         };
 
         vPause.startTheParty = function(){
@@ -177,8 +173,6 @@
             if( vPause.partyStarted ) {
                 //run if called the second time
             }
-
-
 
             vPause.partyStarted = true;
         }
