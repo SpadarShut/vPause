@@ -55,6 +55,8 @@
                         if( maybeInput ) {
                             if( maybeInput.type.toLowerCase() === 'checkbox' ) {
                                 maybeInput.checked = items[setting];
+
+                                maybeHideBadgeSettings(maybeInput);
                             } else if( maybeInput.type.toLowerCase() === 'color' ) {
                                 maybeInput.value = vPause.rgbToHex(items[setting][0], items[setting][1], items[setting][2]);
                             } else {
@@ -72,8 +74,7 @@
             $hotkeyInputs = $inputs.filter(function(input){
                 return input.id.indexOf('hotkey-') !== -1
             }),
-            settings = {},
-            badgeSettings = {};
+            settings = {};
 
         listenSetHotkeys($hotkeyInputs);
 
@@ -88,11 +89,7 @@
                 if( e.target.type.toLowerCase() === 'checkbox' ) {
                     settings[e.target.id] = e.target.checked;
 
-                    if( e.target.checked ) {
-                        vPause.badgeSettings.style.display = 'block';
-                    } else {
-                        vPause.badgeSettings.style.display = 'none';
-                    }
+                    maybeHideBadgeSettings(e.target);
 
                     saveSettings(settings);
                 }
@@ -124,6 +121,14 @@
 
             vPause.saveButton.disabled = true;
         });
+    }
+
+    function maybeHideBadgeSettings(checkbox) {
+        if( checkbox.checked ) {
+            vPause.badgeSettings.style.display = 'block';
+        } else {
+            vPause.badgeSettings.style.display = 'none';
+        }
     }
 
     function getBadgeColor(hex) {
