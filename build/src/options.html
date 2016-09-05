@@ -10,7 +10,7 @@
     <img src="img/icon.png" class="logo"/>
     <div class="header-txt">
         <h1 class="page-title">vPause 3.0</h1>
-        <p class="header__subtitle"><a href="http://vk.com/vpause">vk.com/vpause</a></p>
+        <p class="header__subtitle"><a href="https://vk.com/vpause">vk.com/vpause</a></p>
     </div>
 </header>
 
@@ -66,6 +66,18 @@
                        name="hotkey-addSong"/>
                 <label data-i18n="labelAddSong" for="hotkey-addSong"></label>
             </li>
+            <li>
+                <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
+                       id="hotkey-toggleMute"
+                       name="hotkey-toggleMute"/>
+                <label data-i18n="labelToggleMute" for="hotkey-toggleMute"></label>
+            </li>
+            <li>
+                <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
+                       id="hotkey-toggleShuffle"
+                       name="hotkey-toggleShuffle"/>
+                <label data-i18n="labelToggleShuffle" for="hotkey-toggleShuffle"></label>
+            </li>
         </ul>
         <p class="action">
             <button data-i18n="saveHotkeys" disabled id="save-hotkeys"></button>
@@ -77,10 +89,12 @@
     <fieldset>
         <p>
             <select id="dblClickAction" name="dblClickAction" aria-labelledby="hdr-headerDblClick">
-                <option data-i18n="labelToggleRepeat" selected value="toggleRepeat"></option>
-                <option data-i18n="labelPlayNext" value="nextTrack"></option>
+                <option data-i18n="labelToggleRepeat" value="toggleRepeat"></option>
+                <option data-i18n="labelPlayNext" selected value="nextTrack"></option>
                 <option data-i18n="labelPlayPrev" value="prevTrack"></option>
                 <option data-i18n="labelFocusPlayerTab" value="focusPlayerTab"></option>
+                <option data-i18n="labelToggleMute" value="toggleMute"></option>
+                <option data-i18n="labelToggleShuffle" value="toggleShuffle"></option>
                 <option data-i18n="labelAddSong" value="addSong"></option>
                 <!--<option value="none">None</option>-->
             </select>
@@ -92,8 +106,14 @@
     <fieldset>
         <p>
             <label>
-                <input id="showBadge" name="showBadge" type="checkbox" value="true"/>
+                <input id="showBadge" name="showBadge" type="checkbox" checked />
                 <span data-i18n="labelShowBadge"></span>
+            </label>
+        </p>
+        <p>
+            <label>
+                <input id="badgeOpacity" name="badgeOpacity" type="range" min="0" max="255" value="100" />
+                <span data-i18n="labelBadgeOpacity"></span>
             </label>
         </p>
     </fieldset>

@@ -14,11 +14,14 @@
   ,"labelAddSong": {"message": "Add to my music"}
   ,"headerDblClick": {"message": "Double click action"}
   ,"labelToggleRepeat": {"message": "Toggle repeat"}
+  ,"labelToggleShuffle": {"message": "Toggle shuffle"}
+,"labelToggleMute": {"message": "Toggle mute"}
   ,"labelPlayNext": {"message": "Play next track"}
   ,"labelPlayPrev": {"message": "Play previous track"}
   ,"labelFocusPlayerTab": {"message": "Focus player tab"}
   ,"headerButtonBadge": {"message": "Button badge"}
   ,"labelShowBadge": {"message": "Show button badge"}
+  ,"labelBadgeOpacity": {"message": "Badge opacity"}
   ,"openVK": {"message": "vPause – open vk.com"}
   ,"startPlaying": {"message": "vPause – start playing"}
 }

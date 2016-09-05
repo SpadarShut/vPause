@@ -157,6 +157,7 @@ select, input {
 #hotkey-toggleRepeat { background-image: url(../img/btn_repeat.png)}
 #hotkey-addSong { background-image: url(../img/btn_plus.png)}
 #hotkey-focusPlayerTab { background-image: url(../img/btn_tab.png)}
+#hotkey-toggleMute { background-image: url(../img/btn_vol_0.png)}
 
 .action {
     text-align: center;

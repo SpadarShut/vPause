@@ -6,6 +6,9 @@
     port = chrome.runtime.connect({ name: "vpause-contentscript" });
     port.onMessage.addListener(notifyInjectedScripts);
 
+    // fires when somebody uses chrome.tabs.sendMessage
+    chrome.runtime.onMessage.addListener(notifyInjectedScripts);
+
     window.addEventListener('message', handleInjectedMessages, false);
 
     injectScript('js/shortcut.js', function(){

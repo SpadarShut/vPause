@@ -14,11 +14,14 @@
   ,"labelAddSong": {"message": "Дадаць да маіх аўдыёзапісаў"}
   ,"headerDblClick": {"message": "Дзеянне на падвойнае націсканне кнопкі"}
   ,"labelToggleRepeat": {"message": "Укл/выкл паўтарэнне"}
+  ,"labelToggleShuffle": {"message": "Укл/выкл рандамайзер"}
+  ,"labelToggleMute": {"message": "Укл/выкл гук"}
   ,"labelPlayNext": {"message": "Наступны запіс"}
   ,"labelPlayPrev": {"message": "Папярэдні запіс"}
   ,"labelFocusPlayerTab": {"message": "Пераключыцца на ўкладку з плэерам"}
   ,"headerButtonBadge": {"message": "Надпіс на кнопцы"}
   ,"labelShowBadge": {"message": "Паказваць надпісы на кнопцы"}
+  ,"labelBadgeOpacity": {"message": "Празрыстасць надпісу"}
   ,"openVK": {"message": "vPause – адчыніць vk.com"}
   ,"startPlaying": {"message": "vPause – пачаць прайграванне"}
 }

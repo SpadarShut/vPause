@@ -2,20 +2,90 @@
     var latestEvent = "idle",
         players = [],
         ports = {},
-        utils = {};
+        utils = {},
+        settings = {},
+        defaults = {
+            'dblClickAction': 'focusPlayerTab',
+            'showBadge': false,
+            'hotkey-togglePlay': 'Shift+End',
+            'hotkey-prevTrack': 'Ctrl+Shift+Left',
+            'hotkey-nextTrack': 'Ctrl+Shift+Right',
+            'hotkey-volUp': 'Ctrl+Shift+Up',
+            'hotkey-volDown': 'Ctrl+Shift+Down',
+            'hotkey-addSong': 'D',
+            'hotkey-focusPlayerTab': 'T',
+            'hotkey-toggleRepeat': 'R',
+            'hotkey-toggleMute': 'M',
+            'hotkey-toggleShuffle': 'S'
+        };
 
-    chrome.runtime.onConnect.addListener(function (port) {
-        if( port.name == "vpause-contentscript" ) {
-            if( port.sender.url.match(/^https?:\/\/(vk.com|vkontakte.ru)/) ) {
-                port._vpausePortID = port.sender.tab.windowId + "-" + port.sender.tab.id;
-                ports[port._vpausePortID] = port;
+    chrome.storage.sync.get(null, function(items) {
+        settings = Object.keys(items).length > 0
+            ? mergeSettings(items, defaults)
+            : mergeSettings(window.localStorage, defaults);
 
-                port.onDisconnect.addListener(handlePortDisconnect);
+        chrome.storage.sync.set(settings);
+
+        chrome.runtime.onConnect.addListener(function (port) {
+            if( port.name == "vpause-contentscript" ) {
+                if( port.sender.url.match(/^https?:\/\/(vk.com|vkontakte.ru)/) ) {
+                    port._vpausePortID = port.sender.tab.windowId + "-" + port.sender.tab.id;
+                    ports[port._vpausePortID] = port;
+
+                    port.onDisconnect.addListener(handlePortDisconnect);
+                }
+
+                port.onMessage.addListener(handleMessage);
+            } else if( port.name == "vpause-options" ) {
+                port.onMessage.addListener(function(msg, port) {
+                    if( 'gimmeSavedSettingsPlz' === msg.event ) {
+                        port.postMessage({
+                            origin: 'vpause-background-event',
+                            keys: settings
+                        });
+                    }
+                });
+            }
+        });
+
+        chrome.storage.onChanged.addListener(function(changes) {
+            var hotkeysToUpdate = {};
+
+            for (var key in changes) {
+                if( changes.hasOwnProperty(key) ) {
+                    var storageChange = changes[key];
+
+                    settings[key] = storageChange.newValue;
+
+                    if( key.indexOf('hotkey-') !== -1 ) {
+                        hotkeysToUpdate[key] = storageChange.newValue;
+                    }
+
+                    if( 'dblClickAction' === key ) {
+                        button.dblClickAction = storageChange.newValue;
+                    }
+                }
             }
 
-            port.onMessage.addListener(handleMessage);
-        }
+            console.log(button.dblClickAction);
+
+            if( Object.keys(hotkeysToUpdate).length > 0 ) {
+                kindlyUpdateHotkeys(hotkeysToUpdate);
+            }
+        });
     });
+
+    function kindlyUpdateHotkeys(hotkeys) {
+        chrome.tabs.query({ currentWindow: true }, function(tabs) {
+            tabs.forEach(function(tab){
+                chrome.tabs.sendMessage(tab.id, {
+                    origin: 'vpause-background-event',
+                    action: 'updateKeys',
+                    keys: hotkeys
+                });
+            });
+        });
+    }
 
     function handleMessage (msg, port) {
         switch ( msg.event ) {
@@ -67,8 +137,40 @@
         port.postMessage({
             origin: 'vpause-background-event',
             action: 'addKeys',
-            keys: getSavedHotkeys()
+            keys: pruneHotkeys(settings)
         });
+    }
+
+    function pruneHotkeys(settings) {
+        var hotkeys = {};
+
+        for( var option in settings ) {
+            if( settings.hasOwnProperty(option) && option.indexOf('hotkey-') !== -1 ) {
+                hotkeys[option] = settings[option];
+            }
+        }
+
+        return hotkeys;
+    }
+
+    function mergeSettings(saved, defaults) {
+        var settings = {};
+
+        for( var option in saved ) {
+            if( saved.hasOwnProperty(option) ) {
+                settings[option] = saved[option];
+            }
+        }
+
+        for( var defaultOption in defaults ) {
+            if( defaults.hasOwnProperty(defaultOption) ) {
+                if( ! settings[defaultOption] ) {
+                    settings[defaultOption] = defaults[defaultOption];
+                }
+            }
+        }
+
+        return settings;
     }
 
     function sendHotkeyToListeners(action) {
@@ -85,21 +187,6 @@
                 guessWhatTheUserWants();
             }
         }
-    }
-
-    function getSavedHotkeys() {
-        return {
-            'hotkey-togglePlay': 'Shift+End',
-            'hotkey-prevTrack': 'Ctrl+Shift+Left',
-            'hotkey-nextTrack': 'Ctrl+Shift+Right',
-            'hotkey-volUp': 'Ctrl+Shift+Up',
-            'hotkey-volDown': 'Ctrl+Shift+Down',
-            'hotkey-addSong': 'D',
-            'hotkey-focusPlayerTab': 'T',
-            'hotkey-toggleRepeat': 'R',
-            'hotkey-toggleMute': 'M',
-            'hotkey-toggleShuffle': 'S'
-        };
     }
 
     function handlePortDisconnect(port){
@@ -208,6 +295,7 @@
         singleClickPending: false,
         waitBeforeIconUpdate: false,
         dblClickTimeout: 300,
+        dblClickAction: 'nextTrack',
         thing: chrome.browserAction,
         setIcon: function(icon, andRestore){
             this.thing.setIcon({
@@ -289,11 +377,19 @@
     }
 
     function handleDoubleClickWithPlayer() {
-        ports[players[0]].postMessage({
-            origin: 'vpause-button-event',
-            event: 'double-click',
-            action: 'nextTrack'
-        });
+        if( 'focusPlayerTab' === button.dblClickAction ) {
+            handleFocusMessage();
+        } else {
+            if( players.length > 0 ) {
+                ports[players[0]].postMessage({
+                    origin: 'vpause-button-event',
+                    event: 'double-click',
+                    action: button.dblClickAction
+                });
+            } else {
+                guessWhatTheUserWants();
+            }
+        }
     }
 
     function guessWhatTheUserWants() {

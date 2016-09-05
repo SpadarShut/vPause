@@ -90,16 +90,16 @@
         if (e.data && e.data.origin && e.data.origin == 'vpause-background-event') {
             switch( e.data.action ) {
                 case 'addKeys' :
-                    addHotkeys(e.data.keys);
-                    break;
+                    addHotKeys(e.data.keys);
+                break;
                 case 'updateKeys' :
-                    updateHotkeys(e.data.keys);
-                    break;
+                    updateHotKeys(e.data.keys);
+                break;
             }
         }
     }, false);
 
-    function addHotkeys(keys) {
+    function addHotKeys(keys) {
         for( var key in keys ) {
             if( keys.hasOwnProperty(key) ) {
                 (function(key){
@@ -121,8 +121,19 @@
         }
     }
 
-    function updateHotkeys(keys) {
+    function updateHotKeys(keys) {
+        removeHotKeys(keys);
+        addHotKeys(keys);
+    }
 
+    function removeHotKeys(keys) {
+        for( var key in keys ) {
+            if( keys.hasOwnProperty(key) ) {
+                (function(key){
+                    vPause.shortcut.remove(keys[key]);
+                })(key);
+            }
+        }
     }
 
     function notifyContentScript(msg) {
