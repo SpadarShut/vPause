@@ -202,17 +202,17 @@
     }
 
     function handlePlayMessage(song) {
-        button.setIcon('play');
+        button.setIcon('pause');
         button.setTitle(formatSongTitle(song));
         button.setBadgeText('');
 
-        latestEvent = 'play';
+        latestEvent = 'pause';
     }
 
     function handlePauseMessage () {
-        button.setIcon('pause');
+        button.setIcon('play');
 
-        latestEvent = 'pause';
+        latestEvent = 'play';
     }
 
     function handleVolumeMessage(volume) {
