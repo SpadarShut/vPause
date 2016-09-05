@@ -351,8 +351,6 @@
             this.thing.setTitle({ title: title })
         },
         calculateColor: function(rgb, opacity){
-            console.log(rgb);
-
             var colorArr = [];
 
             rgb.forEach(function(color){
@@ -448,6 +446,8 @@
             chrome.tabs.create({ url: 'https://vk.com/' });
         } else {
             var lastVkTab = portsIDs[portsIDs.length - 1]; //may not be the last but I don't care much in this case
+
+            focusTab(Number(lastVkTab.split('-')[1]));
 
             ports[lastVkTab].postMessage({
                 origin: 'vpause-button-event',

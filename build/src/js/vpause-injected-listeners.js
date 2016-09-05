@@ -8,7 +8,8 @@
     }
 
     var vPause = {
-        isMuted: false
+        isMuted: false,
+        partyStarted: false
     };
 
     //todo: maybe utilise the AudioPlayer function to search for events
@@ -173,9 +174,13 @@
         vPause.startTheParty = function(){
             console.log('starting the party');
 
-            //if has playlist - start music
+            if( vPause.partyStarted ) {
+                //run if called the second time
+            }
 
-            //else - open playlist
+
+
+            vPause.partyStarted = true;
         }
     }
 
