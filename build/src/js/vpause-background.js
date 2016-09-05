@@ -441,7 +441,13 @@
         var portsIDs = Object.keys(ports);
 
         if( portsIDs.length === 0 ) {
-            chrome.tabs.create({ url: 'https://vk.com/' });
+            chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+                if( 'chrome://startpage/' === tabs[0].url || 'chrome://newtab/' === tabs[0].url ) {
+                    chrome.tabs.update({ url: 'https://vk.com/' });
+                } else {
+                    chrome.tabs.create({ url: 'https://vk.com/' });
+                }
+            });
 
             button.setTitle('vPause');
         } else {
