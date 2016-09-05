@@ -63,6 +63,16 @@
                 }
             }
 
+            if( settings.showBadge ) {
+                button.setBadgeText('...');
+
+                setTimeout(function(){
+                    if( 'idle' === latestEvent ) {
+                        button.setBadgeText('');
+                    }
+                }, 1500)
+            }
+
             if( Object.keys(hotkeysToUpdate).length > 0 ) {
                 kindlyUpdateHotkeys(hotkeysToUpdate);
             }
@@ -309,7 +319,11 @@
             }
         },
         setBadgeText: function (text) {
-            if (! settings.showBadge || this.waitBeforeIconUpdate) return;
+            if (! settings.showBadge || this.waitBeforeIconUpdate) {
+                this.thing.setBadgeText({ text: "" });
+
+                return;
+            }
 
             this.thing.setBadgeText({ text: text });
         },

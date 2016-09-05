@@ -21,7 +21,11 @@
                         var maybeInput = document.getElementById(setting);
 
                         if( maybeInput ) {
-                            maybeInput.value = items[setting];
+                            if( maybeInput.type.toLowerCase() === 'checkbox' ) {
+                                maybeInput.checked = items[setting];
+                            } else {
+                                maybeInput.value = items[setting];
+                            }
                         }
                     }
                 }
@@ -42,6 +46,12 @@
             input.addEventListener('change', function(e){
                 if( e.target.tagName === 'SELECT' ) {
                     settings[e.target.id] = e.target.value;
+
+                    saveSettings(settings);
+                }
+
+                if( e.target.type.toLowerCase() === 'checkbox' ) {
+                    settings[e.target.id] = e.target.checked;
 
                     saveSettings(settings);
                 }
