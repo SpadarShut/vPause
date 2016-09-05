@@ -60,14 +60,8 @@
                     if( key.indexOf('hotkey-') !== -1 ) {
                         hotkeysToUpdate[key] = storageChange.newValue;
                     }
-
-                    if( 'dblClickAction' === key ) {
-                        button.dblClickAction = storageChange.newValue;
-                    }
                 }
             }
-
-            console.log(button.dblClickAction);
 
             if( Object.keys(hotkeysToUpdate).length > 0 ) {
                 kindlyUpdateHotkeys(hotkeysToUpdate);
@@ -295,7 +289,6 @@
         singleClickPending: false,
         waitBeforeIconUpdate: false,
         dblClickTimeout: 300,
-        dblClickAction: 'nextTrack',
         thing: chrome.browserAction,
         setIcon: function(icon, andRestore){
             this.thing.setIcon({
@@ -316,6 +309,8 @@
             }
         },
         setBadgeText: function (text) {
+            if (! settings.showBadge || this.waitBeforeIconUpdate) return;
+
             this.thing.setBadgeText({ text: text });
         },
         setTitle: function (title) {
@@ -341,7 +336,7 @@
     };
 
     button.setIcon(latestEvent);
-    button.setBadgeText('...');
+    button.setBadgeText('');
     button.thing.setBadgeBackgroundColor({
         color: [0, 0, 0, 100]
     });
@@ -377,14 +372,14 @@
     }
 
     function handleDoubleClickWithPlayer() {
-        if( 'focusPlayerTab' === button.dblClickAction ) {
+        if( 'focusPlayerTab' === settings.dblClickAction ) {
             handleFocusMessage();
         } else {
             if( players.length > 0 ) {
                 ports[players[0]].postMessage({
                     origin: 'vpause-button-event',
                     event: 'double-click',
-                    action: button.dblClickAction
+                    action: settings.dblClickAction
                 });
             } else {
                 guessWhatTheUserWants();

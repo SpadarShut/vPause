@@ -165,14 +165,14 @@
 
     function handlePlay(song) {
         notifyContentScript({
-            event: "play",
+            event: "pause",
             song: song
         });
     }
 
     function handlePause(song) {
         notifyContentScript({
-            event: "pause",
+            event: "play",
             song: song
         });
     }
