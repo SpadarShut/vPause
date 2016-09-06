@@ -215,7 +215,7 @@
             button.setTitle('vPause');
         } else {
             button.setIcon('idle');
-            button.setTitle('vPause - Open vk.com');
+            button.setTitle(chrome.i18n.getMessage("openVK"));
         }
 
         button.setBadgeText('');
@@ -390,7 +390,7 @@
         updateBadgeColor();
 
         button.setIcon(latestEvent);
-        button.setTitle('vPause - Open vk.com');
+        button.setTitle(chrome.i18n.getMessage("openVK"));
         button.setBadgeText('');
 
         button.thing.onClicked.addListener(function(){
