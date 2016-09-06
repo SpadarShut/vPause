@@ -85,6 +85,11 @@
 
         vPause.toggleRepeat = function () {
             player.toggleRepeatCurrentAudio();
+
+            notifyContentScript({
+                event: 'repeat',
+                reversed: player.isRepeatCurrentAudio()
+            });
         };
 
         vPause.prevTrack = function () {
@@ -189,17 +194,15 @@
         var $shuffleBtns = document.querySelectorAll('.audio_page_player_shuffle');
 
         if( $shuffleBtns[0] ) {
-            var playlist = player.getCurrentPlaylist(),
-                isShuffled = playlist.isShuffled();
-
-            var event = isShuffled ? 'unshuffle' : 'shuffle';
-
-            notifyContentScript({
-                event: event
-            });
+            var playlist = player.getCurrentPlaylist();
 
             //todo: trigger the click event in another way if this fails
             $shuffleBtns[0].click();
+
+            notifyContentScript({
+                event: 'shuffle',
+                reversed: playlist.isShuffled()
+            });
 
             return "clicked";
         } else {

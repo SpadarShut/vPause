@@ -136,10 +136,10 @@
                 handleFocusMessage();
             break;
             case 'shuffle' :
-                handleShuffleMessage();
+                handleShuffleMessage(msg.reversed);
             break;
-            case 'unshuffle' :
-                handleUnShuffleMessage();
+            case 'repeat' :
+                handleRepeatMessage(msg.reversed);
             break;
             case 'sendHotkeys' :
                 sendHotkeys(port);
@@ -305,12 +305,24 @@
         button.setIcon('tab', true);
     }
 
-    function handleShuffleMessage() {
-        button.setIcon('added', true); //todo: replace with shuffle
+    function handleShuffleMessage(reverse) {
+        reverse = reverse || false;
+
+        if( ! reverse ) {
+            button.setIcon('repeat_dis', true);
+        } else {
+            button.setIcon('repeat', true);
+        }
     }
 
-    function handleUnShuffleMessage() {
-        button.setIcon('added', true); //todo: replace with unshuffle
+    function handleRepeatMessage(reverse) {
+        reverse = reverse || false;
+
+        if( ! reverse ) {
+            button.setIcon('repeat_dis', true);
+        } else {
+            button.setIcon('repeat', true);
+        }
     }
 
     function focusTab(id) {
