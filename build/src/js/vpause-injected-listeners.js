@@ -9,8 +9,7 @@
 
     var vPause = {
         isMuted: false,
-        partyStarted: false,
-        isShuffled: false
+        partyStarted: false
     };
 
     //todo: maybe utilise the AudioPlayer function to search for events
@@ -158,13 +157,21 @@
         };
 
         vPause.toggleShuffle = function(){
-            var event = vPause.isShuffled ? 'shuffle' : 'unshuffle';
+            if( "" === findShuffleButtonAndClick() ) {
+                var fake = document.createElement("div");
 
-            notifyContentScript({
-                event: event
-            });
+                fake.setAttribute('style', 'display: none');
 
-            vPause.isShuffled = ! vPause.isShuffled;
+                document.body.appendChild(fake);
+
+                AudioUtils.showAudioLayer(fake);
+
+                setTimeout(findShuffleButtonAndClick, 2000);
+
+                setTimeout(function(){
+                    AudioUtils.showAudioLayer(vPause.shuffleShell);
+                }, 3000);
+            }
         };
 
         vPause.startTheParty = function(){
@@ -175,6 +182,28 @@
             }
 
             vPause.partyStarted = true;
+        }
+    }
+
+    function findShuffleButtonAndClick() {
+        var $shuffleBtns = document.querySelectorAll('.audio_page_player_shuffle');
+
+        if( $shuffleBtns[0] ) {
+            var playlist = player.getCurrentPlaylist(),
+                isShuffled = playlist.isShuffled();
+
+            var event = isShuffled ? 'unshuffle' : 'shuffle';
+
+            notifyContentScript({
+                event: event
+            });
+
+            //todo: trigger the click event in another way if this fails
+            $shuffleBtns[0].click();
+
+            return "clicked";
+        } else {
+            return "";
         }
     }
 
