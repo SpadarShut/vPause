@@ -103,37 +103,35 @@
         for( var key in keys ) {
             if( keys.hasOwnProperty(key) ) {
                 (function(key){
-                    vPause.shortcut.add(
-                        keys[key],
-                        function () {
-                            notifyContentScript({
-                                event: 'hotkey',
-                                action: key.slice(7)
-                            });
-                        }, {
-                            'type': 'keydown',
-                            'disable_in_input': true,
-                            'propagate': true
-                        }
-                    );
+                    if( "" !== keys[key] ) {
+                        vPause.shortcut.add(
+                            keys[key],
+                            function () {
+                                notifyContentScript({
+                                    event: 'hotkey',
+                                    action: key.slice(7)
+                                });
+                            }, {
+                                'type': 'keydown',
+                                'disable_in_input': true,
+                                'propagate': true
+                            }
+                        );
+                    }
                 })(key);
             }
         }
     }
 
     function updateHotKeys(keys) {
-        removeHotKeys(keys);
+        removeHotKeys();
         addHotKeys(keys);
+
+        console.log('shortcuts now are', vPause.shortcut.all_shortcuts);
     }
 
-    function removeHotKeys(keys) {
-        for( var key in keys ) {
-            if( keys.hasOwnProperty(key) ) {
-                (function(key){
-                    vPause.shortcut.remove(keys[key]);
-                })(key);
-            }
-        }
+    function removeHotKeys() {
+        vPause.shortcut.all_shortcuts = {};
     }
 
     function notifyContentScript(msg) {

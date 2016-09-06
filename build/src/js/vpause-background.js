@@ -51,26 +51,29 @@
         });
 
         chrome.storage.onChanged.addListener(function(changes) {
-            var hotkeysToUpdate = {};
+            //todo: use the changes variable instead - shortcode.add function needs some "ol'-school fix-it"
+            chrome.storage.sync.get(null, function(items) {
+                var hotkeysToUpdate = {};
 
-            for (var key in changes) {
-                if( changes.hasOwnProperty(key) ) {
-                    var storageChange = changes[key];
+                for (var key in items) {
+                    if( items.hasOwnProperty(key) ) {
+                        var storageChange = items[key];
 
-                    settings[key] = storageChange.newValue;
+                        settings[key] = storageChange;
 
-                    if( key.indexOf('hotkey-') !== -1 ) {
-                        hotkeysToUpdate[key] = storageChange.newValue;
+                        if( key.indexOf('hotkey-') !== -1 ) {
+                            hotkeysToUpdate[key] = storageChange;
+                        }
                     }
                 }
-            }
 
-            if( Object.keys(hotkeysToUpdate).length > 0 ) {
-                kindlyUpdateHotkeys(hotkeysToUpdate);
-            }
+                if( Object.keys(hotkeysToUpdate).length > 0 ) {
+                    kindlyUpdateHotkeys(hotkeysToUpdate);
+                }
 
-            maybeHideBadge();
-            updateBadgeColor();
+                maybeHideBadge();
+                updateBadgeColor();
+            });
         });
 
         initBrowserAction();
@@ -210,7 +213,10 @@
             return item !== port._vpausePortID
         });
 
-        if( players.length > 0 || Object.keys(ports).length > 0 ) {
+        if( players.length > 0 ) {
+            button.setIcon(latestEvent);
+            button.setTitle('vPause');
+        } else if( Object.keys(ports).length > 0 ) {
             button.setIcon('play');
             button.setTitle('vPause');
         } else {
