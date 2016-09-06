@@ -126,12 +126,18 @@
     function updateHotKeys(keys) {
         removeHotKeys();
         addHotKeys(keys);
-
-        console.log('shortcuts now are', vPause.shortcut.all_shortcuts);
     }
 
     function removeHotKeys() {
-        vPause.shortcut.all_shortcuts = {};
+        var keys = vPause.shortcut.all_shortcuts;
+
+        for( var key in keys ) {
+            if( keys.hasOwnProperty(key) ) {
+                (function(key){
+                    vPause.shortcut.remove(key);
+                })(key);
+            }
+        }
     }
 
     function notifyContentScript(msg) {
