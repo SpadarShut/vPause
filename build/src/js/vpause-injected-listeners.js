@@ -30,7 +30,7 @@
 
     if( player.getCurrentAudio() ) {
         notifyContentScript({
-            event: "pause",
+            event: "connection",
             song: player.getCurrentAudio()
         });
     }
@@ -182,15 +182,26 @@
 
         vPause.startTheParty = function(){
             if( vPause.partyStarted ) {
-                var $playBtn = document.querySelectorAll('._audio_page_player_play, .top_audio_player_play');
+                var $playBtn = document.querySelectorAll('._audio_page_player_play');
+                var $topPlayBtn = document.querySelectorAll('.top_audio_player_play');
 
                 if( $playBtn ) {
                     $playBtn[0].click();
+                } else if( $topPlayBtn ) {
+                    $topPlayBtn[0].click();
+                } else {
+                    notifyContentScript({
+                        event: 'focus'
+                    });
                 }
             } else {
                 if( player.getCurrentAudio() ) {
                     player.play();
                 } else {
+                    notifyContentScript({
+                        event: 'focus'
+                    });
+
                     fakeOpenTheTopPlayer();
                 }
             }

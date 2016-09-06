@@ -19,7 +19,8 @@
             'hotkey-toggleRepeat': 'R',
             'hotkey-toggleMute': 'M',
             'hotkey-toggleShuffle': 'S'
-        };
+        },
+        knowsWhatWeDidLastSummer = false;
 
     chrome.storage.sync.get(null, function(items) {
         settings = Object.keys(items).length > 0
@@ -146,6 +147,9 @@
             case 'repeat' :
                 handleRepeatMessage(msg.reversed);
             break;
+            case 'connection' :
+                handleConnectionMessage(msg.song);
+            break;
             case 'sendHotkeys' :
                 sendHotkeys(port);
             break;
@@ -242,7 +246,6 @@
     function handlePlayMessage(song) {
         button.setIcon('pause');
         button.setTitle(formatSongTitle(song));
-        //button.setBadgeText('');
 
         latestEvent = 'pause';
     }
@@ -303,6 +306,8 @@
 
         if( players.length > 0 ) {
             tabId = Number(players[0].split('-')[1])
+        } else if ( Object.keys(ports).length > 0 ) {
+            tabId = Number(Object.keys(ports)[Object.keys(ports).length - l].split('-')[1])
         }
 
         if( tabId > 0 ) {
@@ -312,6 +317,20 @@
         }
 
         button.setIcon('tab', true);
+    }
+
+    function handleConnectionMessage(song) {
+        if( song.length > 0 ) {
+            knowsWhatWeDidLastSummer = true;
+        }
+
+        if( players[0] && latestEvent !== 'pause' ) {
+            button.setIcon('play');
+            button.setTitle(formatSongTitle(song));
+        } else if( Object.keys(ports).length > 0 && song.length > 0 && players.length == 0 ) {
+            button.setIcon('play');
+            button.setTitle(formatSongTitle(song));
+        }
     }
 
     function handleShuffleMessage(reverse) {
@@ -484,7 +503,9 @@
         } else {
             var lastVkTab = portsIDs[portsIDs.length - 1]; //may not be the last but I don't care much in this case
 
-            focusTab(Number(lastVkTab.split('-')[1]));
+            if( ! knowsWhatWeDidLastSummer ) {
+                focusTab(Number(lastVkTab.split('-')[1]));
+            }
 
             ports[lastVkTab].postMessage({
                 origin: 'vpause-button-event',
