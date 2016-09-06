@@ -210,13 +210,14 @@
             return item !== port._vpausePortID
         });
 
-        if( players.length > 0 ) {
+        if( players.length > 0 || Object.keys(ports).length > 0 ) {
             button.setIcon('play');
+            button.setTitle('vPause');
         } else {
             button.setIcon('idle');
+            button.setTitle('vPause - Open vk.com');
         }
 
-        button.setTitle('vPause');
         button.setBadgeText('');
     }
 
