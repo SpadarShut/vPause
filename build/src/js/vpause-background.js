@@ -45,6 +45,8 @@
                             origin: 'vpause-background-event',
                             keys: settings
                         });
+                    } else if( msg.origin == 'vpause-options' ) {
+                        sendHotkeyToListeners(msg.action);
                     }
                 });
             }
