@@ -56,7 +56,6 @@
         player.on(player, events.pause, handlePause);
         player.on(player, events.progress, handleProgress);
         player.on(player, events.volume, handleVolumeChange);
-        //player.on(player, events.buffered, handleBufferedData);
         player.on(player, events.added, handleSongAdded);
         player.on(player, events.removed, handleSongRemoved);
     }
@@ -285,14 +284,6 @@
     function handleSongRemoved() {
         notifyContentScript({
             event: "songRemoved"
-        });
-    }
-
-    function handleBufferedData(song, eventData) {
-        notifyContentScript({
-            event: "buffer",
-            song: song,
-            buffered: eventData
         });
     }
 
