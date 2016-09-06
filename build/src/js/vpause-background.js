@@ -209,6 +209,15 @@
         players = players.filter(function(item){
             return item !== port._vpausePortID
         });
+
+        if( players.length > 0 ) {
+            button.setIcon('play');
+        } else {
+            button.setIcon('idle');
+        }
+
+        button.setTitle('vPause');
+        button.setBadgeText('');
     }
 
     function maybeAddPlayerID(portID) {
