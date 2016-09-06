@@ -247,8 +247,9 @@
         latestEvent = 'pause';
     }
 
-    function handlePauseMessage () {
+    function handlePauseMessage (song) {
         button.setIcon('play');
+        button.setTitle(formatSongTitle(song));
 
         latestEvent = 'play';
     }

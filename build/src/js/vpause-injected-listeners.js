@@ -28,6 +28,13 @@
     initTriggerMethods();
     createSongShell();
 
+    if( player.getCurrentAudio() ) {
+        notifyContentScript({
+            event: "pause",
+            song: player.getCurrentAudio()
+        });
+    }
+
     function listenForContentScriptMessages() {
         window.addEventListener('message', function (e) {
             if ( isVpauseEvent(e) ) {
@@ -175,13 +182,17 @@
 
         vPause.startTheParty = function(){
             if( vPause.partyStarted ) {
-                var $playBtn = document.querySelectorAll('._audio_page_player_play');
+                var $playBtn = document.querySelectorAll('._audio_page_player_play, .top_audio_player_play');
 
                 if( $playBtn ) {
                     $playBtn[0].click();
                 }
             } else {
-                fakeOpenTheTopPlayer();
+                if( player.getCurrentAudio() ) {
+                    player.play();
+                } else {
+                    fakeOpenTheTopPlayer();
+                }
             }
 
             vPause.partyStarted = true;
