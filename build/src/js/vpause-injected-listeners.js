@@ -69,6 +69,9 @@
             case 'volDown' :
                 vPause.makeItQuieter();
             break;
+            case 'addSong' :
+                vPause.addToMyMusic();
+            break;
         }
     }
 
@@ -120,6 +123,8 @@
         };
 
         vPause.addToMyMusic = function(){
+            console.log('adding', player.getCurrentAudio());
+
             tweakSongShell(player.getCurrentAudio());
 
             //todo: trigger the click event in another way if this fails
