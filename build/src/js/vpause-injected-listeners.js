@@ -163,31 +163,39 @@
 
         vPause.toggleShuffle = function(){
             if( "" === findShuffleButtonAndClick() ) {
-                var fake = document.createElement("div");
-
-                fake.setAttribute('style', 'display: none');
-
-                document.body.appendChild(fake);
-
-                AudioUtils.showAudioLayer(fake);
+                fakeOpenTheTopPlayer();
 
                 setTimeout(findShuffleButtonAndClick, 2000);
 
                 setTimeout(function(){
-                    AudioUtils.showAudioLayer(vPause.shuffleShell);
+                    AudioUtils.showAudioLayer();
                 }, 3000);
             }
         };
 
         vPause.startTheParty = function(){
-            console.log('starting the party');
-
             if( vPause.partyStarted ) {
-                //run if called the second time
+                var $playBtn = document.querySelectorAll('._audio_page_player_play');
+
+                if( $playBtn ) {
+                    $playBtn[0].click();
+                }
+            } else {
+                fakeOpenTheTopPlayer();
             }
 
             vPause.partyStarted = true;
         }
+    }
+
+    function fakeOpenTheTopPlayer(){
+        var fake = document.createElement("div");
+
+        fake.setAttribute('style', 'display: none');
+
+        document.body.appendChild(fake);
+
+        AudioUtils.showAudioLayer(fake);
     }
 
     function findShuffleButtonAndClick() {
