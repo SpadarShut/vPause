@@ -19,11 +19,18 @@
   "devDependencies": {
     "del": "^2.2.0",
     "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.0.12",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-imagemin": "^3.0.3",
+    "gulp-json-minify": "^1.0.5",
     "gulp-less": "^3.0.5",
     "gulp-sequence": "^0.4.4",
+    "gulp-uglify": "^2.0.0",
     "gulp-watch": "^4.3.5",
     "gulp-zip": "^3.1.0",
-    "less": "^2.5.3"
+    "less": "^2.5.3",
+    "pump": "^1.0.1",
+    "yargs": "^5.0.0"
   },
   "author": "Pavel Shut",
   "license": "BSD",
