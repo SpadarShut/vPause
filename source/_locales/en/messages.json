@@ -15,10 +15,12 @@
   ,"headerDblClick": {"message": "Double click action"}
   ,"labelToggleRepeat": {"message": "Toggle repeat"}
   ,"labelToggleShuffle": {"message": "Toggle shuffle"}
-,"labelToggleMute": {"message": "Toggle mute"}
+  ,"labelToggleMute": {"message": "Toggle mute"}
   ,"labelPlayNext": {"message": "Play next track"}
   ,"labelPlayPrev": {"message": "Play previous track"}
   ,"labelFocusPlayerTab": {"message": "Focus player tab"}
+  ,"labelHotkeysExcludedFrom": {"message": "Exclude hotkeys from these sites"}
+  ,"labelUseHotkeys": {"message": "Use hotkeys"}
   ,"headerButtonBadge": {"message": "Button badge"}
   ,"labelShowBadge": {"message": "Show button badge"}
   ,"labelBadgeOpacity": {"message": "Badge opacity"}

@@ -9,6 +9,8 @@
             'badgeOpacity': 100,
             'badgeColor': [0, 0, 0],
             'showBadge': false,
+            'useHotkeys': true,
+            'hotkeysExcludedFrom': [],
             'hotkey-togglePlay': 'Shift+End',
             'hotkey-prevTrack': 'Ctrl+Shift+Left',
             'hotkey-nextTrack': 'Ctrl+Shift+Right',
@@ -74,6 +76,14 @@
                     kindlyUpdateHotkeys(hotkeysToUpdate);
                 }
 
+                if( ! settings.useHotkeys ) {
+                    kindlyUpdateHotkeys({});
+                }
+
+                if( settings.hotkeysExcludedFrom.length > 0 ) {
+                    excludeHotkeysFrom(settings.hotkeysExcludedFrom);
+                }
+
                 maybeHideBadge();
                 updateBadgeColor();
             });
@@ -89,6 +99,22 @@
                     origin: 'vpause-background-event',
                     action: 'updateKeys',
                     keys: hotkeys
+                });
+            });
+        });
+    }
+
+    function excludeHotkeysFrom(sites) {
+        chrome.tabs.query({ currentWindow: true }, function(tabs) {
+            tabs.forEach(function(tab){
+                sites.forEach(function(site){
+                    if( tab.url.indexOf(site) !== -1 ) {
+                        chrome.tabs.sendMessage(tab.id, {
+                            origin: 'vpause-background-event',
+                            action: 'updateKeys',
+                            keys: {}
+                        });
+                    }
                 });
             });
         });
@@ -307,7 +333,7 @@
         if( players.length > 0 ) {
             tabId = Number(players[0].split('-')[1])
         } else if ( Object.keys(ports).length > 0 ) {
-            tabId = Number(Object.keys(ports)[Object.keys(ports).length - l].split('-')[1])
+            tabId = Number(Object.keys(ports)[Object.keys(ports).length - 1].split('-')[1])
         }
 
         if( tabId > 0 ) {

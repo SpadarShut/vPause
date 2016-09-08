@@ -131,7 +131,8 @@ fieldset *:disabled {
         color: #ddd;
     }
 
-.fset-hotkeys input {
+.fset-hotkeys input,
+.fset-hotkeys textarea {
     width: 40%;
     float: right;
     box-sizing: border-box;
@@ -141,11 +142,18 @@ fieldset *:disabled {
     border-radius: 3px;
     background: #fff no-repeat 6px 50%;
 }
+
+.fset-hotkeys textarea {
+    resize: vertical;
+    min-height: 100px;
+    padding-left: .8em;
+}
+
 select {
     padding: .3em;
 }
 select, input {
-    fon-size: inherit;
+    font-size: inherit;
 }
 
 

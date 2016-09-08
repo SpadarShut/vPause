@@ -83,8 +83,13 @@
         },
         'KeyCode': vPause.KeyCode
     };
+    vPause.elements = {
+        saveButton: document.getElementById('save-hotkeys'),
+        hotkeysSettings: document.getElementById('hotkeysSettings'),
+        badgeSettings: document.getElementById('badgeSettings'),
+        hotkeysExcludedFrom: document.getElementById('hotkeysExcludedFrom')
+    };
 
-    vPause.saveButton = document.getElementById('save-hotkeys');
     vPause.badgeSettings = document.getElementById('badgeSettings');
     vPause.hexToRgb = function(hex) {
         // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -144,9 +149,12 @@
                             if( maybeInput.type.toLowerCase() === 'checkbox' ) {
                                 maybeInput.checked = items[setting];
 
-                                maybeHideBadgeSettings(maybeInput);
+                                maybeHideSettings(maybeInput, vPause.elements[maybeInput.dataset.toggles]);
+
                             } else if( maybeInput.type.toLowerCase() === 'color' ) {
                                 maybeInput.value = vPause.rgbToHex(items[setting][0], items[setting][1], items[setting][2]);
+                            } else if( maybeInput.nodeName.toLowerCase() === 'textarea' ) {
+                                maybeInput.value = items[setting].join('\n');
                             } else {
                                 maybeInput.value = items[setting];
                             }
@@ -179,7 +187,7 @@
                 if( e.target.type.toLowerCase() === 'checkbox' ) {
                     settings[e.target.id] = e.target.checked;
 
-                    maybeHideBadgeSettings(e.target);
+                    maybeHideSettings(e.target, vPause.elements[e.target.dataset.toggles]);
 
                     saveSettings(settings);
                 }
@@ -202,7 +210,25 @@
             }
         });
 
-        vPause.saveButton.addEventListener('click', function(){
+        vPause.elements.hotkeysExcludedFrom.addEventListener('input', function(e){
+            vPause.waitForFinalEvent(function(){
+                var value = e.target.value;
+
+                if( value ) {
+                    var exclusionArray = value.split('\n');
+
+                    settings[e.target.id] = exclusionArray.filter(function(site){
+                        return site !== "";
+                    });
+
+                    vPause.elements.saveButton.disabled = false;
+                } else {
+                    vPause.elements.saveButton.disabled = true;
+                }
+            }, 500, 'hotkeys-exclusion-timer');
+        });
+
+        vPause.elements.saveButton.addEventListener('click', function(){
             $hotkeyInputs.forEach(function(input){
                 settings[input.id] = input.value;
             });
@@ -221,15 +247,15 @@
 
             updateHotKeys(hotkeys);
 
-            vPause.saveButton.disabled = true;
+            vPause.elements.saveButton.disabled = true;
         });
     }
 
-    function maybeHideBadgeSettings(checkbox) {
+    function maybeHideSettings(checkbox, block) {
         if( checkbox.checked ) {
-            vPause.badgeSettings.style.display = 'block';
+            block.style.display = 'block';
         } else {
-            vPause.badgeSettings.style.display = 'none';
+            block.style.display = 'none';
         }
     }
 
@@ -311,7 +337,7 @@
 
                     el.value = val;
 
-                    vPause.saveButton.removeAttribute('disabled');
+                    vPause.elements.saveButton.removeAttribute('disabled');
 
                     return false;
                 }
