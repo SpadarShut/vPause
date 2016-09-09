@@ -241,21 +241,24 @@
     function handlePortDisconnect(port){
         delete ports[port._vpausePortID];
 
+        var portKeys = getVpausePorts(),
+            icon = 'idle',
+            title = chrome.i18n.getMessage("openVK");
+
         players = players.filter(function(item){
             return item !== port._vpausePortID
         });
 
         if( players.length > 0 ) {
-            button.setIcon(latestEvent);
-            button.setTitle('vPause');
-        } else if( Object.keys(ports).length > 0 ) {
-            button.setIcon('play');
-            button.setTitle('vPause');
-        } else {
-            button.setIcon('idle');
-            button.setTitle(chrome.i18n.getMessage("openVK"));
+            icon = latestEvent;
+            title = 'vPause';
+        } else if( portKeys.length > 0 ) {
+            icon = 'play';
+            title = 'vPause';
         }
 
+        button.setIcon(icon);
+        button.setTitle(title);
         button.setBadgeText('');
     }
 
@@ -328,12 +331,13 @@
     }
 
     function handleFocusMessage(){
-        var tabId = 0;
+        var tabId = 0,
+            portKeys = getVpausePorts();
 
         if( players.length > 0 ) {
             tabId = Number(players[0].split('-')[1])
-        } else if ( Object.keys(ports).length > 0 ) {
-            tabId = Number(Object.keys(ports)[Object.keys(ports).length - 1].split('-')[1])
+        } else if ( portKeys.length > 0 ) {
+            tabId = Number(portKeys[portKeys.length - 1].split('-')[1])
         }
 
         if( tabId > 0 ) {
@@ -346,6 +350,8 @@
     }
 
     function handleConnectionMessage(song) {
+        var portKeys = getVpausePorts();
+
         if( song.length > 0 ) {
             knowsWhatWeDidLastSummer = true;
         }
@@ -353,7 +359,7 @@
         if( players[0] && latestEvent !== 'pause' ) {
             button.setIcon('play');
             button.setTitle(formatSongTitle(song));
-        } else if( Object.keys(ports).length > 0 && song.length > 0 && players.length == 0 ) {
+        } else if( portKeys.length > 0 && song.length > 0 && players.length == 0 ) {
             button.setIcon('play');
             button.setTitle(formatSongTitle(song));
         }
@@ -501,20 +507,16 @@
         if( 'focusPlayerTab' === settings.dblClickAction ) {
             handleFocusMessage();
         } else {
-            if( players.length > 0 ) {
-                ports[players[0]].postMessage({
-                    origin: 'vpause-button-event',
-                    event: 'double-click',
-                    action: settings.dblClickAction
-                });
-            } else {
-                guessWhatTheUserWants();
-            }
+            ports[players[0]].postMessage({
+                origin: 'vpause-button-event',
+                event: 'double-click',
+                action: settings.dblClickAction
+            });
         }
     }
 
     function guessWhatTheUserWants() {
-        var portsIDs = Object.keys(ports);
+        var portsIDs = getVpausePorts();
 
         if( portsIDs.length === 0 ) {
             chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
@@ -539,6 +541,10 @@
                 action: 'startTheParty'
             });
         }
+    }
+
+    function getVpausePorts() {
+        return Object.keys(ports);
     }
 
     utils.formatTime = typeof window.formatTime === 'function' ? window.formatTime : function (t, forceHours) {
