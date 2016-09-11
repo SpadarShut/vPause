@@ -1,0 +1,29 @@
+{
+  "locale": {"message": "en"}
+  ,"extensionDecription": {"message": "Control vk.com (vkontakte) audioplayer form any tab: hotkeys, toolbar button"}
+  ,"headerHotkeys": {"message": "Hotkeys"}
+  ,"hotkeysHint": {"message": ""}
+  ,"labelHotkeyPlayPause": {"message": "Play/pause"}
+  ,"labelHotkeyNextTrack": {"message": "Next track"}
+  ,"labelHotkeyPrevTrack": {"message": "Previous track"}
+  ,"labelHotkeyVolUp": {"message": "Volume up"}
+  ,"labelHotkeyVolDown": {"message": "Volume down"}
+  ,"labelHotkeyRepeat": {"message": "Toggle repeat"}
+  ,"labelClickHereHotkey": {"message": "Click here and press your hotkey"}
+  ,"saveHotkeys": {"message": "Save hotkeys"}
+  ,"labelAddSong": {"message": "Add to my music"}
+  ,"headerDblClick": {"message": "Double click action"}
+  ,"labelToggleRepeat": {"message": "Toggle repeat"}
+  ,"labelToggleShuffle": {"message": "Toggle shuffle"}
+  ,"labelToggleMute": {"message": "Toggle mute"}
+  ,"labelPlayNext": {"message": "Play next track"}
+  ,"labelPlayPrev": {"message": "Play previous track"}
+  ,"labelFocusPlayerTab": {"message": "Focus player tab"}
+  ,"labelHotkeysExcludedFrom": {"message": "Exclude hotkeys from these sites"}
+  ,"labelUseHotkeys": {"message": "Use hotkeys"}
+  ,"headerButtonBadge": {"message": "Button badge"}
+  ,"labelShowBadge": {"message": "Show button badge"}
+  ,"labelBadgeOpacity": {"message": "Badge opacity"}
+  ,"openVK": {"message": "vPause – open vk.com"}
+  ,"startPlaying": {"message": "vPause – start playing"}
+}
