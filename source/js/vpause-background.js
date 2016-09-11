@@ -342,11 +342,9 @@
 
         if( tabId > 0 ) {
             focusTab(tabId);
-        } else {
-            guessWhatTheUserWants();
-        }
 
-        button.setIcon('tab', true);
+            button.setIcon('tab', true);
+        }
     }
 
     function handleConnectionMessage(song) {
