@@ -367,9 +367,9 @@
         reverse = reverse || false;
 
         if( ! reverse ) {
-            button.setIcon('repeat_dis', true);
+            button.setIcon('shuffle_dis', true);
         } else {
-            button.setIcon('repeat', true);
+            button.setIcon('shuffle', true);
         }
     }
 
