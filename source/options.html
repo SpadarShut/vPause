@@ -7,9 +7,9 @@
 <body>
 
 <header>
-    <img src="img/icon.png" class="logo"/>
+    <img src="img/icon_128.png" class="logo" width="64"/>
     <div class="header-txt">
-        <h1 class="page-title">vPause 3.0</h1>
+        <h1 class="page-title">vPause 4.0</h1>
         <p class="header__subtitle"><a href="https://vk.com/vpause">vk.com/vpause</a></p>
     </div>
 </header>
@@ -17,7 +17,7 @@
 <section><h2 data-i18n="headerHotkeys"></h2>
     <p>
         <label>
-            <input id="useHotkeys" name="useHotkeys" type="checkbox" checked data-toggles="hotkeysSettings" />
+            <input id="useHotkeys" name="useHotkeys" type="checkbox" checked data-toggles="hotkeysSettings"/>
             <span data-i18n="labelUseHotkeys"></span>
         </label>
     </p>
@@ -58,15 +58,21 @@
                 </li>
                 <li>
                     <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
+                      id="hotkey-toggleMute"
+                      name="hotkey-toggleMute"/>
+                    <label data-i18n="labelToggleMute" for="hotkey-toggleMute"></label>
+                </li>
+                <li>
+                    <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
                            id="hotkey-toggleRepeat"
                            name="hotkey-toggleRepeat"/>
                     <label data-i18n="labelHotkeyRepeat" for="hotkey-toggleRepeat"></label>
                 </li>
                 <li>
                     <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
-                           id="hotkey-focusPlayerTab"
-                           name="hotkey-focusPlayerTab"/>
-                    <label data-i18n="labelFocusPlayerTab" for="hotkey-focusPlayerTab"></label>
+                      id="hotkey-toggleShuffle"
+                      name="hotkey-toggleShuffle"/>
+                    <label data-i18n="labelToggleShuffle" for="hotkey-toggleShuffle"></label>
                 </li>
                 <li>
                     <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
@@ -76,15 +82,9 @@
                 </li>
                 <li>
                     <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
-                           id="hotkey-toggleMute"
-                           name="hotkey-toggleMute"/>
-                    <label data-i18n="labelToggleMute" for="hotkey-toggleMute"></label>
-                </li>
-                <li>
-                    <input data-i18n="[placeholder]labelClickHereHotkey" spellcheck="false"
-                           id="hotkey-toggleShuffle"
-                           name="hotkey-toggleShuffle"/>
-                    <label data-i18n="labelToggleShuffle" for="hotkey-toggleShuffle"></label>
+                      id="hotkey-focusPlayerTab"
+                      name="hotkey-focusPlayerTab"/>
+                    <label data-i18n="labelFocusPlayerTab" for="hotkey-focusPlayerTab"></label>
                 </li>
                 <li>
                     <label for="hotkeysExcludedFrom"  data-i18n="labelHotkeysExcludedFrom"></label>

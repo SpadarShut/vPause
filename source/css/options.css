@@ -1,8 +1,3 @@
-
-@-webkit-keyframes fadein {
-	from { opacity: 0 }
-	to   { opacity: 1 }
-}
 @keyframes fadein {
 	from { opacity: 0 }
 	to   { opacity: 1 }
@@ -10,7 +5,7 @@
 
 html {
     background: #eee;
-/*linear-gradient(#f6f9fb, #fff);*/
+    overflow-y: scroll;
 }
 
 body {
@@ -21,14 +16,20 @@ body {
     background: #fff;
     margin: 15px auto;
     border: 1px solid rgba(0,0,0,.20);
-    -box-shadow: 0 0 10px #c7c7c7;
+    box-shadow: 0 0 10px #c7c7c7;
     border-radius: 3px;
-    -webkit-animation: fadein 200ms 150ms both;
     animation: fadein 200ms 150ms both;
 }
 a {
     color: #0d2f52;
     text-decoration: underline;
+}
+
+select {
+    padding: .3em;
+}
+select, input, textarea, button, select {
+    font-size: inherit;
 }
 header {
   display: block;
@@ -137,10 +138,14 @@ fieldset *:disabled {
     float: right;
     box-sizing: border-box;
     border: 1px solid rgba(160, 160, 160, 0.6);
-    padding: .5em .5em .5em 30px;
+    padding: .4em .5em .4em 30px;
 	vertical-align: middle;
     border-radius: 3px;
+}
+
+.fset-hotkeys input {
     background: #fff no-repeat 6px 50%;
+    background-size: 16px 16px;
 }
 
 .fset-hotkeys textarea {
@@ -149,39 +154,21 @@ fieldset *:disabled {
     padding-left: .8em;
 }
 
-select {
-    padding: .3em;
-}
-select, input {
-    font-size: inherit;
-}
-
 
 #hotkey-togglePlay { background-image: url(../img/btn_play.png)}
 #hotkey-nextTrack { background-image: url(../img/btn_next.png)}
 #hotkey-prevTrack { background-image: url(../img/btn_prev.png)}
 #hotkey-volUp { background-image: url(../img/btn_vol_4.png)}
 #hotkey-volDown { background-image: url(../img/btn_vol_1.png)}
-#hotkey-toggleRepeat { background-image: url(../img/btn_repeat.png)}
-#hotkey-addSong { background-image: url(../img/btn_plus.png)}
+#hotkey-toggleMute { background-image: url(../img/btn_vol_0.png)}
+#hotkey-addSong { background-image: url(../img/btn_add.png)}
 #hotkey-focusPlayerTab { background-image: url(../img/btn_tab.png)}
+#hotkey-toggleShuffle { background-image: url(../img/btn_shuffle.png)}
+#hotkey-toggleRepeat { background-image: url(../img/btn_repeat.png)}
 
 .action {
     text-align: center;
 }
-/*
-
-    fieldset button:hover {
-      background-color: #d3dbf5;
-      box-shadow: 0 1px 1px rgba(121,153,166,0.75), inset 0 1px rgba(255,255,255,0.25), inset 0 0 1px rgba(255,255,255,0.75);
-    }
-
-    fieldset button:active {
-      border-color: rgba(80,80,130,0.8);
-      box-shadow: 0 1px 2px rgba(121,153,166,1), inset 1px 1px 1px rgba(121,153,166,0.5);
-    }
-*/
-
 
 .msg {
     padding: .4em;
@@ -191,7 +178,6 @@ select, input {
 	font-weight: bold;
 	text-align: center;
 	color: rgba(0,0,0,0.6);
-	-webkit-transition: all .5s;
 	transition: all .5s;
 	}
 .msg.ok,
@@ -209,4 +195,4 @@ select, input {
 }
 .error {
 	background: #EDC7C7;
-	}
+}

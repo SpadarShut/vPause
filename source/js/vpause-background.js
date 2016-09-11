@@ -323,7 +323,7 @@
     }
 
     function handleSongRemovedMessage() {
-        button.setIcon('added', true); //todo: add the remove icon
+        button.setIcon('removed', true);
     }
 
     function handleProgressMessage(total, percent, reversed) {
@@ -448,13 +448,16 @@
             nextTrack: 'img/btn_next.png',
             repeat: 'img/btn_repeat.png',
             repeat_dis: 'img/btn_repeat_disabled.png',
+            shuffle: 'img/btn_shuffle.png',
+            shuffle_dis: 'img/btn_shuffle_disabled.png',
             vol_0: 'img/btn_vol_0.png',
             vol_1: 'img/btn_vol_1.png',
             vol_2: 'img/btn_vol_2.png',
             vol_3: 'img/btn_vol_3.png',
             vol_4: 'img/btn_vol_4.png',
             tab: 'img/btn_tab.png',
-            added: 'img/btn_plus.png'
+            added: 'img/btn_add.png',
+            removed: 'img/btn_remove.png'
         }
     };
 
