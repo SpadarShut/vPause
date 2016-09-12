@@ -11,7 +11,10 @@ const gulp = require('gulp'),
     cleanCSS = require('gulp-clean-css'),
     imagemin = require('gulp-imagemin'),
     htmlmin = require('gulp-htmlmin'),
-    manifest = require('./source/manifest.json');
+    manifest = require('./source/manifest.json'),
+    async = require('async'),
+    packageFile = require('./package.json'),
+    jetpack = require('fs-jetpack');
 
 let shouldCompress = args.z;
 
@@ -88,11 +91,36 @@ gulp.task('compress', gulpSequence(
 function calculateBuildTasks () {
     shouldCompress = shouldCompress || false;
 
+    syncVersion();
+
     if( shouldCompress ) {
         return gulpSequence('compress', 'archive');
     } else {
         return gulpSequence('compress');
     }
+}
+
+function syncVersion() {
+    async.map(['source/manifest.json', 'source/options.html'], changeFile, err => {
+        if( err ) console.error(err);
+    });
+}
+
+function changeFile(item, callback) {
+    let file = jetpack.read(item);
+
+    switch (item) {
+        case 'source/options.html' : file = file.replace(/<h1 class="page-title">(.*?)<\/h1>/, `<h1 class="page-title">vPause ${packageFile.version}<\/h1>`);
+        break;
+        case 'source/manifest.json' :
+            file = JSON.parse(file);
+            file.version = packageFile.version;
+        break;
+    }
+
+    jetpack.write(item, file);
+
+    callback(null); //no error handling, of course :)
 }
 
 gulp.task('build', calculateBuildTasks());
