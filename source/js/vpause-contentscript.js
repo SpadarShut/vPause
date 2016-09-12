@@ -1,7 +1,7 @@
 (function(window){
     if (window.self !== window.top) return; // ignore iframes
 
-    var fileRegexp = /\.(txt|pdf)$/i;
+    var fileRegexp = /\.(pdf)$/i;
 
     if( fileRegexp.test( window.location.pathname ) ) return; // not a file
 
