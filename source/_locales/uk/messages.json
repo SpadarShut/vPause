@@ -19,9 +19,12 @@
   ,"labelPlayNext": {"message": "Наступний запис"}
   ,"labelPlayPrev": {"message": "Попередній запис"}
   ,"labelFocusPlayerTab": {"message": "Переключитися на вкладку із плеєром"}
-  ,"headerButtonBadge": {"message": "Надпис на кнопці"}
-  ,"labelShowBadge": {"message": "Показувати надписи на кнопці"}
-  ,"labelBadgeOpacity": {"message": "Badge opacity"}
+  ,"labelHotkeysExcludedFrom": {"message": "Відключити гарячі клавіші на наступних сайтах"}
+  ,"labelOneWebsitePerLine": {"message": "По одному сайту на рядок"}
+  ,"labelUseHotkeys": {"message": "Використати гарячі клавіші"}
+  ,"headerButtonBadge": {"message": "Напис на кнопці"}
+  ,"labelShowBadge": {"message": "Показувати написи на кнопці"}
+  ,"labelBadgeOpacity": {"message": "Прозорість напису"}
   ,"openVK": {"message": "vPause – відкрити vk.com"}
   ,"startPlaying": {"message": "vPause – запустити плеєр"}
 }

@@ -289,8 +289,7 @@
                     var attr = hash[1];
                     var val = chrome.i18n.getMessage(hash[2]);
 
-                    //console.log(prop, msg);
-                    if (val === undefined) {
+                    if (val !== undefined) {
                         el[attr] = val;
                     }
                     else {
