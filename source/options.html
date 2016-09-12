@@ -23,7 +23,7 @@
     </p>
 
     <div id="hotkeysSettings">
-        <fieldset class="fset-hotkeys">
+        <div class="fset-hotkeys">
             <p data-i18n="hotkeysHint"></p>
             <ul>
                 <li>
@@ -87,14 +87,15 @@
                     <label data-i18n="labelFocusPlayerTab" for="hotkey-focusPlayerTab"></label>
                 </li>
                 <li>
-                    <label for="hotkeysExcludedFrom"  data-i18n="labelHotkeysExcludedFrom"></label>
-                    <textarea name="hotkeysExcludedFrom" id="hotkeysExcludedFrom" placeholder="One website per line"></textarea>
+                    <label for="hotkeysExcludedFrom" data-i18n="labelHotkeysExcludedFrom"></label>
+                    <textarea name="hotkeysExcludedFrom" id="hotkeysExcludedFrom"
+                      data-i18n="[placeholder]labelOneWebsitePerLine"></textarea>
                 </li>
             </ul>
             <p class="action">
                 <button data-i18n="saveHotkeys" disabled id="save-hotkeys"></button>
             </p>
-        </fieldset>
+        </div>
     </div>
 
     <h2 data-i18n="headerDblClick" id="hdr-headerDblClick"></h2>

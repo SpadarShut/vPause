@@ -2,16 +2,14 @@
 	from { opacity: 0 }
 	to   { opacity: 1 }
 }
-
 html {
     background: #eee;
     overflow-y: scroll;
 }
-
 body {
     font: 15px/24px sans-serif;
     color: #1e3853;
-    max-width: 700px;
+    max-width: 776px;
     overflow-x: hidden;
     background: #fff;
     margin: 15px auto;
@@ -24,7 +22,9 @@ a {
     color: #0d2f52;
     text-decoration: underline;
 }
-
+p {
+    margin: 0 0 1rem;
+}
 select {
     padding: .3em;
 }
@@ -32,12 +32,12 @@ select, input, textarea, button, select {
     font-size: inherit;
 }
 header {
-  display: block;
-  overflow: hidden;
-  padding: 24px 0;
-  margin: 0 50px 3rem;
-  border-bottom: 1px solid rgba(0,0,0,0.15);
-  box-shadow: 0 1px #fff;
+    display: block;
+    overflow: hidden;
+    padding: 24px 0;
+    margin: 0 50px 3rem;
+    border-bottom: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 0 1px #fff;
 }
 .logo {
     float: left;
@@ -57,12 +57,10 @@ header {
 .header__subtitle a {
     color: #888;
 }
-
 section {
   display: block;
   padding: 0 50px;
 }
-
 footer {
   display: block;
   text-align: center;
@@ -71,67 +69,61 @@ footer {
   border-top: 1px solid #fff;
   box-shadow: 0 -1px rgba(0,0,0,0.15);
 }
-
 h1 {
   margin: 0;
   font-size: 24px;
   font-weight: normal;
 }
-
 h2 {
   font-weight: normal;
   font-size: 1.5rem;
   margin: 2rem 0 1.3rem;
 }
-
 h3 {
     font-size: 1.2rem;
     margin: 2rem 0 .5rem;
-
 }
-
+.fset-hotkeys,
 fieldset {
     padding: 0;
     border: 0;
     margin-bottom: 3rem;
 }
-
-fieldset button {
+.fset-hotkeys button {
     transition: 0.25s;
     line-height: 22px;
     padding: .3em 25px;
 }
-
-fieldset *:disabled {
+.fset-hotkeys *:disabled {
   opacity: 0.5;
 }
-
 .fset-hotkeys ul {
 	padding: 0;
 	margin: 0;
     list-style: none;
+}
+.fset-hotkeys li {
+    margin-bottom: 1rem;
 }
 .fset-hotkeys li:after {
     content: '';
     display: table;
     width: 100%;
 }
-
 .fset-hotkeys li > label {
     float: left;
     width: 57%;
     box-sizing: border-box;
     padding-right: 1em;
-    margin: 0 0 1em;
+    margin: 0;
     padding-top: .5em;
     overflow: hidden;
     white-space: nowrap;
 }
-    .fset-hotkeys li > label:after {
-        content: ' . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .';
-        color: #ddd;
-    }
-
+.fset-hotkeys li > label:after {
+    content: ' . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .';
+    color: #ddd;
+}
 .fset-hotkeys input,
 .fset-hotkeys textarea {
     width: 40%;
@@ -142,18 +134,15 @@ fieldset *:disabled {
 	vertical-align: middle;
     border-radius: 3px;
 }
-
 .fset-hotkeys input {
     background: #fff no-repeat 6px 50%;
     background-size: 16px 16px;
 }
-
 .fset-hotkeys textarea {
     resize: vertical;
     min-height: 100px;
     padding-left: .8em;
 }
-
 
 #hotkey-togglePlay { background-image: url(../img/btn_play.png)}
 #hotkey-nextTrack { background-image: url(../img/btn_next.png)}
@@ -168,8 +157,8 @@ fieldset *:disabled {
 
 .action {
     text-align: center;
+    margin: 2em 0;
 }
-
 .msg {
     padding: .4em;
     border: 1px solid rgba(0,0,0,0.15);
@@ -179,14 +168,13 @@ fieldset *:disabled {
 	text-align: center;
 	color: rgba(0,0,0,0.6);
 	transition: all .5s;
-	}
+}
 .msg.ok,
 .msg.warning,
 .msg.error {
 	display: block;
 	opacity: 1;
-	}
-
+}
 .ok {
 	background: #D1EDC8;
 }

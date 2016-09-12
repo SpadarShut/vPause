@@ -19,6 +19,9 @@
   ,"labelPlayNext": {"message": "Наступны запіс"}
   ,"labelPlayPrev": {"message": "Папярэдні запіс"}
   ,"labelFocusPlayerTab": {"message": "Пераключыцца на ўкладку з плэерам"}
+  ,"labelHotkeysExcludedFrom": {"message": "Адключыць гарачыя клавішы на наступных сайтах"}
+  ,"labelOneWebsitePerLine": {"message": "Па адным сайце на радок"}
+  ,"labelUseHotkeys": {"message": "Выкарыстоўваць гарачыя клавішы"}
   ,"headerButtonBadge": {"message": "Надпіс на кнопцы"}
   ,"labelShowBadge": {"message": "Паказваць надпісы на кнопцы"}
   ,"labelBadgeOpacity": {"message": "Празрыстасць надпісу"}

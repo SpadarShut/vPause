@@ -19,6 +19,9 @@
   ,"labelPlayNext": {"message": "Следующая запись"}
   ,"labelPlayPrev": {"message": "Предыдущая запись"}
   ,"labelFocusPlayerTab": {"message": "Переключиться на вкладку с плеером"}
+  ,"labelHotkeysExcludedFrom": {"message": "Отключить горячие клавиши на следующих сайтах"}
+  ,"labelOneWebsitePerLine": {"message": "По одному сайту на строку"}
+  ,"labelUseHotkeys": {"message": "Использовать горячие клавиши"}
   ,"headerButtonBadge": {"message": "Надпись на кнопке"}
   ,"labelShowBadge": {"message": "Показывать надписи на кнопке"}
   ,"labelBadgeOpacity": {"message": "Прозрачность надписи"}
