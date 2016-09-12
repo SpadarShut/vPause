@@ -1,6 +1,10 @@
 (function(window){
     if (window.self !== window.top) return; // ignore iframes
 
+    var fileRegexp = /\.(txt|pdf)$/i;
+
+    if( fileRegexp.test( window.location.pathname ) ) return; // not a file
+
     var port;
 
     port = chrome.runtime.connect({ name: "vpause-contentscript" });
