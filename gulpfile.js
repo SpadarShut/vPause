@@ -110,7 +110,8 @@ function changeFile(item, callback) {
     let file = jetpack.read(item);
 
     switch (item) {
-        case 'source/options.html' : file = file.replace(/<h1 class="page-title">(.*?)<\/h1>/, `<h1 class="page-title">vPause ${packageFile.version}<\/h1>`);
+        case 'source/options.html' :
+            file = file.replace(/<h1 class="page-title">(.*?)<\/h1>/, `<h1 class="page-title">vPause ${packageFile.version}<\/h1>`);
         break;
         case 'source/manifest.json' :
             file = JSON.parse(file);
