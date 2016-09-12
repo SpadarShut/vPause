@@ -16,7 +16,7 @@ Features
 [*] Due to the limited possibilities of extensions hotkeys will only work from inside Opera,
  and only from webpages, and not from internal Opera tabs, like mail, opera:config or similar.
 
-Ask questions at [vk.com/vpause](http://vk.com/vpause/)
+Ask questions at [vk.com/vpause](https://vk.com/vpause/)
 
 
 vPause (ru)
@@ -38,4 +38,4 @@ vPause (ru)
 [*]  В связи с ограниченными возможностями расширений, горячие клавиши работают только из браузера и только
 из веб-страниц, но не из внутреннних страниц Opera, таких как почта, opera:config и прочих.
 
-Вопросы и предложения пишите на [vk.com/vpause](http://vk.com/vpause/)
+Вопросы и предложения пишите на [vk.com/vpause](https://vk.com/vpause/)
