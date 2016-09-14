@@ -11,7 +11,6 @@ const gulp = require('gulp'),
     cleanCSS = require('gulp-clean-css'),
     imagemin = require('gulp-imagemin'),
     htmlmin = require('gulp-htmlmin'),
-    manifest = require('./source/manifest.json'),
     async = require('async'),
     path = require('path'),
     packageFile = require('./package.json'),
@@ -68,12 +67,14 @@ gulp.task('minify:html', cb => {
 });
 
 gulp.task('clean', cb => {
-    del(['build/unpacked/**', 'build/*.zip']).then(() => {
+    del(['build/unpacked/**', 'build/*.zip', 'build/*.nex']).then(() => {
         cb();
     });
 });
 
 gulp.task('archive', cb => {
+    var manifest = require('./source/manifest.json');
+
     pump([
         gulp.src('**', { cwd: path.join(process.cwd(), '/build/unpacked/') }),
         zip('vPause-' + manifest.version + '.zip'),
@@ -82,6 +83,8 @@ gulp.task('archive', cb => {
 });
 
 gulp.task('archive:opera', cb => {
+    var manifest = require('./source/manifest.json');
+
     pump([
         gulp.src('**', { cwd: path.join(process.cwd(), '/source/') }),
         zip('vPause-' + manifest.version + '.nex'),
