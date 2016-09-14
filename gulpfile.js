@@ -13,6 +13,7 @@ const gulp = require('gulp'),
     htmlmin = require('gulp-htmlmin'),
     manifest = require('./source/manifest.json'),
     async = require('async'),
+    path = require('path'),
     packageFile = require('./package.json'),
     jetpack = require('fs-jetpack');
 
@@ -20,52 +21,50 @@ let shouldCompress = args.z;
 
 gulp.task('uglify:js', cb => {
     pump([
-            gulp.src('source/js/*.js'),
-            uglify(),
-            gulp.dest('build/unpacked/js')
-        ],
-        cb
-    );
+        gulp.src('source/js/*.js'),
+        uglify(),
+        gulp.dest('build/unpacked/js')
+    ], cb);
 });
 
 gulp.task('uglify:json', cb => {
-    gulp.src('source/_locales/**/*.json')
-        .pipe(jsonMinify())
-        .pipe(gulp.dest('build/unpacked/_locales'));
-
-    cb();
+    pump([
+        gulp.src('source/_locales/**/*.json'),
+        jsonMinify(),
+        gulp.dest('build/unpacked/_locales')
+    ], cb);
 });
 
 gulp.task('uglify:manifest', cb => {
-    gulp.src('source/*.json')
-        .pipe(jsonMinify())
-        .pipe(gulp.dest('build/unpacked'));
-
-    cb();
+    pump([
+        gulp.src('source/*.json'),
+        jsonMinify(),
+        gulp.dest('build/unpacked')
+    ], cb);
 });
 
 gulp.task('minify:css', cb => {
-    gulp.src('source/css/*.css')
-        .pipe(cleanCSS())
-        .pipe(gulp.dest('build/unpacked/css'));
-
-    cb();
+    pump([
+        gulp.src('source/css/*.css'),
+        cleanCSS(),
+        gulp.dest('build/unpacked/css')
+    ], cb);
 });
 
 gulp.task('minify:images', cb => {
-    gulp.src('source/img/*')
-        .pipe(imagemin())
-        .pipe(gulp.dest('build/unpacked/img'));
-
-    cb();
+    pump([
+        gulp.src('source/img/*'),
+        imagemin(),
+        gulp.dest('build/unpacked/img')
+    ], cb);
 });
 
 gulp.task('minify:html', cb => {
-    gulp.src('source/*.html')
-        .pipe(htmlmin({ collapseWhitespace: true }))
-        .pipe(gulp.dest('build/unpacked'));
-
-    cb();
+    pump([
+        gulp.src('source/*.html'),
+        htmlmin({ collapseWhitespace: true }),
+        gulp.dest('build/unpacked')
+    ], cb);
 });
 
 gulp.task('clean', cb => {
@@ -75,11 +74,19 @@ gulp.task('clean', cb => {
 });
 
 gulp.task('archive', cb => {
-    gulp.src('build/unpacked/*')
-        .pipe(zip('vPause-' + manifest.version + '.zip'))
-        .pipe(gulp.dest('build'));
+    pump([
+        gulp.src('**', { cwd: path.join(process.cwd(), '/build/unpacked/') }),
+        zip('vPause-' + manifest.version + '.zip'),
+        gulp.dest('build')
+    ], cb);
+});
 
-    cb();
+gulp.task('archive:opera', cb => {
+    pump([
+        gulp.src('**', { cwd: path.join(process.cwd(), '/source/') }),
+        zip('vPause-' + manifest.version + '.nex'),
+        gulp.dest('build')
+    ], cb);
 });
 
 gulp.task('compress', gulpSequence(
@@ -94,7 +101,7 @@ function calculateBuildTasks () {
     syncVersion();
 
     if( shouldCompress ) {
-        return gulpSequence('compress', 'archive');
+        return gulpSequence('compress', ['archive', 'archive:opera']);
     } else {
         return gulpSequence('compress');
     }
@@ -112,11 +119,11 @@ function changeFile(item, callback) {
     switch (item) {
         case 'source/options.html' :
             file = file.replace(/<h1 class="page-title">(.*?)<\/h1>/, `<h1 class="page-title">vPause ${packageFile.version}<\/h1>`);
-        break;
+            break;
         case 'source/manifest.json' :
             file = JSON.parse(file);
             file.version = packageFile.version;
-        break;
+            break;
     }
 
     jetpack.write(item, file);
