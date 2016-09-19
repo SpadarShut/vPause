@@ -1,6 +1,5 @@
 (function(){
     var latestEvent = "idle",
-        song = {},
         players = [],
         ports = {},
         utils = {},
@@ -21,6 +20,8 @@
             'hotkey-focusPlayerTab': 'T',
             'hotkey-toggleRepeat': 'R',
             'hotkey-toggleMute': 'M',
+            'hotkey-seekForward': 'Ctrl+Alt+Shift+Right',
+            'hotkey-seekBack': 'Ctrl+Alt+Shift+Left',
             'hotkey-toggleShuffle': 'S'
         },
         knowsWhatWeDidLastSummer = false;
@@ -140,7 +141,6 @@
 
         switch ( msg.event ) {
             case 'play' :
-                song = msg.song;
                 handlePlayMessage(msg.song);
                 maybeAddPlayerID(port._vpausePortID);
             break;
@@ -173,6 +173,9 @@
             break;
             case 'shuffle' :
                 handleShuffleMessage(msg.reversed);
+            break;
+            case 'seek' :
+                handleSeekMessage(msg.forward);
             break;
             case 'repeat' :
                 handleRepeatMessage(msg.reversed);
@@ -383,6 +386,16 @@
         }
     }
 
+    function handleSeekMessage(forward) {
+        forward = forward || false;
+
+        if( ! forward ) {
+            button.setIcon('seekBack', true);
+        } else {
+            button.setIcon('seekForward', true);
+        }
+    }
+
     function handleRepeatMessage(reverse) {
         reverse = reverse || false;
 
@@ -456,6 +469,8 @@
             nextTrack: 'img/btn_next.png',
             repeat: 'img/btn_repeat.png',
             repeat_dis: 'img/btn_repeat_disabled.png',
+            seekForward: 'img/btn_repeat.png',
+            seekBack: 'img/btn_repeat_disabled.png',
             shuffle: 'img/btn_shuffle.png',
             shuffle_dis: 'img/btn_shuffle_disabled.png',
             vol_0: 'img/btn_vol_0.png',

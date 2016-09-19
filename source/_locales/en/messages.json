@@ -17,6 +17,8 @@
   ,"labelToggleShuffle": {"message": "Toggle shuffle"}
   ,"labelToggleMute": {"message": "Toggle mute"}
   ,"labelPlayNext": {"message": "Play next track"}
+  ,"labelSeekForward": {"message": "Seek 10 sec forward"}
+  ,"labelSeekBack": {"message": "Seek 10 sec back"}
   ,"labelPlayPrev": {"message": "Play previous track"}
   ,"labelFocusPlayerTab": {"message": "Focus player tab"}
   ,"labelHotkeysExcludedFrom": {"message": "Disable hotkeys on following websites"}

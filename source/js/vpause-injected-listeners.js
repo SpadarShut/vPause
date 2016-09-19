@@ -117,6 +117,24 @@
             });
         };
 
+        vPause.seekForward = function () {
+            player.seekCurrentAudio(true);
+
+            notifyContentScript({
+                event: "seek",
+                forward: true
+            });
+        };
+
+        vPause.seekBack = function () {
+            player.seekCurrentAudio();
+
+            notifyContentScript({
+                event: "seek",
+                forward: false
+            });
+        };
+
         vPause.setVolume = function(volume){
             player.setVolume(volume);
         };
