@@ -1,5 +1,6 @@
 (function(){
     var latestEvent = "idle",
+        song = {},
         players = [],
         ports = {},
         utils = {},
@@ -49,7 +50,7 @@
                             keys: settings
                         });
                     } else if( msg.origin == 'vpause-options' ) {
-                        sendHotkeyToListeners(msg.action);
+                        sendActionToListeners(msg.action);
                     }
                 });
             }
@@ -90,6 +91,7 @@
         });
 
         initBrowserAction();
+        handleCommands();
     });
 
     function kindlyUpdateHotkeys(hotkeys) {
@@ -135,8 +137,10 @@
     }
 
     function handleMessage (msg, port) {
+
         switch ( msg.event ) {
             case 'play' :
+                song = msg.song;
                 handlePlayMessage(msg.song);
                 maybeAddPlayerID(port._vpausePortID);
             break;
@@ -180,10 +184,16 @@
                 sendHotkeys(port);
             break;
             case 'hotkey' :
-                sendHotkeyToListeners(msg.action);
+                sendActionToListeners(msg.action);
             break;
             default : break;
         }
+    }
+
+    function handleCommands () {
+        chrome.commands.onCommand.addListener(function(command) {
+            sendActionToListeners(command);
+        });
     }
 
     function sendHotkeys(port) {
@@ -226,7 +236,7 @@
         return settings;
     }
 
-    function sendHotkeyToListeners(action) {
+    function sendActionToListeners(action) {
         if( 'focusPlayerTab' === action ) {
             handleFocusMessage();
         } else if( players.length > 0 ) {

@@ -48,5 +48,43 @@
     "*://*/*",
     "storage",
     "http://*/*"
-  ]
+  ],
+  "commands": {
+    "togglePlay": {
+      "description": "__MSG_labelHotkeyPlayPause__",
+      "global": true
+    },
+    "prevTrack": {
+      "description": "__MSG_labelHotkeyPrevTrack__",
+      "global": true
+    },
+    "nextTrack": {
+      "description": "__MSG_labelHotkeyNextTrack__",
+      "global": true
+    },
+    "makeItLouder": {
+      "description": "__MSG_labelHotkeyVolUp__",
+      "global": true
+    },
+    "makeItQuieter": {
+      "description": "__MSG_labelHotkeyVolDown__",
+      "global": true
+    },
+    "toggleRepeat": {
+      "description": "__MSG_labelToggleRepeat__",
+      "global": true
+    },
+    "toggleMute": {
+      "description": "__MSG_labelToggleMute__",
+      "global": true
+    },
+    "toggleShuffle": {
+      "description": "__MSG_labelToggleShuffle__",
+      "global": true
+    },
+    "addToMyMusic": {
+      "description": "__MSG_labelAddSong__",
+      "global": true
+    }
+  }
 }

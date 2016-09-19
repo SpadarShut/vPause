@@ -2,7 +2,7 @@
   "locale": {"message": "en"}
   ,"extensionDecription": {"message": "Control vk.com (vkontakte) audioplayer form any tab: hotkeys, toolbar button"}
   ,"headerHotkeys": {"message": "Hotkeys"}
-  ,"hotkeysHint": {"message": ""}
+,"hotkeysHint": {"message": "Гэтыя камбінацыі клавішаў працуюць толькі калі вы знаходзіцеся ў браўзары. Вы таксама можаце выставіць <a href='chrome://extensions/configureCommands' target='_blank'>глабальныя гарачыя клавішы</a>"}
   ,"labelHotkeyPlayPause": {"message": "Play/pause"}
   ,"labelHotkeyNextTrack": {"message": "Next track"}
   ,"labelHotkeyPrevTrack": {"message": "Previous track"}
