@@ -85,6 +85,14 @@
     "addToMyMusic": {
       "description": "__MSG_labelAddSong__",
       "global": true
+    },
+    "seekForward": {
+      "description": "__MSG_labelSeekForward__",
+      "global": true
+    },
+    "seekBack": {
+      "description": "__MSG_labelSeekBack__",
+      "global": true
     }
   }
 }
