@@ -11,7 +11,7 @@
   ,"labelHotkeyRepeat": {"message": "Вкл/выкл повтор"}
   ,"labelClickHereHotkey": {"message": "Нажмите здесь желаемые клавиши"}
   ,"saveHotkeys": {"message": "Сохранить грячие клавиши"}
-  ,"labelAddSong": {"message": "Добавть в мои аудиозаписи"}
+  ,"labelAddSong": {"message": "Добавить в мои аудиозаписи"}
   ,"headerDblClick": {"message": "Действие по двойному нажатию кнопки"}
   ,"labelToggleRepeat": {"message": "Вкл/выкл повтор"}
   ,"labelToggleShuffle": {"message": "Вкл/выкл рандомайзер"}
