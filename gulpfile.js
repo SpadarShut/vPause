@@ -16,14 +16,21 @@ const gulp = require('gulp'),
     packageFile = require('./package.json'),
     jetpack = require('fs-jetpack');
 
-let shouldCompress = args.z;
+let shouldCompress = args.z,
+    shouldMinify = args.mini;
 
 gulp.task('uglify:js', cb => {
-    pump([
-        gulp.src('source/js/*.js'),
-        uglify(),
-        gulp.dest('build/unpacked/js')
-    ], cb);
+    let pipes = [];
+
+    pipes.push(gulp.src('source/js/*.js'));
+
+    if( shouldMinify ) {
+        pipes.push(uglify());
+    }
+
+    pipes.push(gulp.dest('build/unpacked/js'));
+
+    pump(pipes, cb);
 });
 
 gulp.task('uglify:json', cb => {
