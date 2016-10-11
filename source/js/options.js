@@ -1,6 +1,11 @@
 (function(window, document){
     var vPause = {};
 
+    const BROWSERS = {
+        CHROME: 'chrome',
+        OPERA: 'opera'
+    };
+
     vPause.KeyCode = window.KeyCode.no_conflict();
 
     vPause.shortcut = {
@@ -127,6 +132,7 @@
 
     localize();
     getSavedSettings();
+    setupDOMListeners();
     listenForChanges();
 
     function getSavedSettings() {
@@ -311,6 +317,21 @@
         }
     }
 
+    function setupDOMListeners () {
+
+        document.querySelector('#hotkeys-tab').addEventListener('click', function (e) {
+            const urls = {
+              [BROWSERS.OPERA]: 'opera://settings/configureCommands',
+              [BROWSERS.CHROME]: 'chrome://extensions/configureCommands',
+            };
+            chrome.tabs.create({
+                url: urls[getBrowser()],
+                active: true,
+            })
+        }, false);
+
+    }
+
     function listenSetHotkeys(inputs) {
         inputs.forEach(function(el){
             el.addEventListener('keydown', function(e) {
@@ -398,5 +419,14 @@
         msg.origin = 'vpause-options';
 
         port.postMessage(msg);
+    }
+
+    function getBrowser() {
+        if (navigator.userAgent.indexOf("OPR") > -1) {
+            return BROWSERS.OPERA
+        }
+        else {
+            return BROWSERS.CHROME
+        }
     }
 })(window, document);

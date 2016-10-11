@@ -2,7 +2,7 @@
   "locale": {"message": "ru"}
   ,"extensionDecription": {"message": "Управление аудиоплеером vk.com (vkontakte) с любой вкладки"}
   ,"headerHotkeys": {"message": "Горячие клавиши"}
-  ,"hotkeysHint": {"message": ""}
+  ,"hotkeysHint": {"message": "Эти комбинации клавиш работают только кагда вы находитесь в браўзере. Вы также можете установить <a id='hotkeys-tab' target='_blank'>глобальные горячие клавиши</a>"}
   ,"labelHotkeyPlayPause": {"message": "Воспроизведение/пауза"}
   ,"labelHotkeyNextTrack": {"message": "Следующая запись"}
   ,"labelHotkeyPrevTrack": {"message": "Предыдущая запись"}
@@ -18,6 +18,8 @@
   ,"labelToggleMute": {"message": "Вкл/выкл звук"}
   ,"labelPlayNext": {"message": "Следующая запись"}
   ,"labelPlayPrev": {"message": "Предыдущая запись"}
+  ,"labelSeekForward": {"message": "Перемотать на 10 секунд вперед"}
+  ,"labelSeekBack": {"message": "Перемотать на 10 секунд назад"}
   ,"labelFocusPlayerTab": {"message": "Переключиться на вкладку с плеером"}
   ,"labelHotkeysExcludedFrom": {"message": "Отключить горячие клавиши на следующих сайтах"}
   ,"labelOneWebsitePerLine": {"message": "По одному сайту на строку"}

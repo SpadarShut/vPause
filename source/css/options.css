@@ -21,6 +21,7 @@ body {
 a {
     color: #0d2f52;
     text-decoration: underline;
+    cursor: pointer;
 }
 p {
     margin: 0 0 1rem;
@@ -154,6 +155,8 @@ fieldset {
 #hotkey-focusPlayerTab { background-image: url(../img/btn_tab.png)}
 #hotkey-toggleShuffle { background-image: url(../img/btn_shuffle.png)}
 #hotkey-toggleRepeat { background-image: url(../img/btn_repeat.png)}
+#hotkey-seekForward { background-image: url(../img/btn_seek_fwd.png)}
+#hotkey-seekBack { background-image: url(../img/btn_seek_back.png)}
 
 .action {
     text-align: center;

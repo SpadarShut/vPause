@@ -2,7 +2,7 @@
   "locale": {"message": "en"}
   ,"extensionDecription": {"message": "Control vk.com (vkontakte) audioplayer form any tab: hotkeys, toolbar button"}
   ,"headerHotkeys": {"message": "Hotkeys"}
-,"hotkeysHint": {"message": "Гэтыя камбінацыі клавішаў працуюць толькі калі вы знаходзіцеся ў браўзары. Вы таксама можаце выставіць <a href='chrome://extensions/configureCommands' target='_blank'>глабальныя гарачыя клавішы</a>"}
+  ,"hotkeysHint": {"message": "These hotkeys only work while you are in the browser. You can also set up <a id='hotkeys-tab' target='_blank'>global hotkeys</a>"}
   ,"labelHotkeyPlayPause": {"message": "Play/pause"}
   ,"labelHotkeyNextTrack": {"message": "Next track"}
   ,"labelHotkeyPrevTrack": {"message": "Previous track"}
@@ -17,9 +17,9 @@
   ,"labelToggleShuffle": {"message": "Toggle shuffle"}
   ,"labelToggleMute": {"message": "Toggle mute"}
   ,"labelPlayNext": {"message": "Play next track"}
+  ,"labelPlayPrev": {"message": "Play previous track"}
   ,"labelSeekForward": {"message": "Seek 10 sec forward"}
   ,"labelSeekBack": {"message": "Seek 10 sec back"}
-  ,"labelPlayPrev": {"message": "Play previous track"}
   ,"labelFocusPlayerTab": {"message": "Focus player tab"}
   ,"labelHotkeysExcludedFrom": {"message": "Disable hotkeys on following websites"}
   ,"labelOneWebsitePerLine": {"message": "One website per line"}

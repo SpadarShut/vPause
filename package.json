@@ -1,6 +1,6 @@
 {
   "name": "vPause",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Opera and Chrome extension to control vk.com player from any tab",
   "main": "index.js",
   "scripts": {

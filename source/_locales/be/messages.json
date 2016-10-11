@@ -2,7 +2,7 @@
   "locale": {"message": "be"}
   ,"extensionDecription": {"message": "Кіраванне аўдыёплэерам vk.com з любой уклдадкі"}
   ,"headerHotkeys": {"message": "Гарачыя клавішы"}
-  ,"hotkeysHint": {"message": "Гэтыя камбінацыі клавішаў працуюць толькі калі вы знаходзіцеся ў браўзары. Вы таксама можаце выставіць <a href='chrome://extensions/configureCommands'>глабальныя гарачыя клавішы</a>"}
+  ,"hotkeysHint": {"message": "Гэтыя камбінацыі клавішаў працуюць толькі калі вы знаходзіцеся ў браўзары. Вы таксама можаце выставіць <a id='hotkeys-tab' target='_blank'>глабальныя гарачыя клавішы</a>"}
   ,"labelHotkeyPlayPause": {"message": "Прайграванне/паўза"}
   ,"labelHotkeyNextTrack": {"message": "Наступны запіс"}
   ,"labelHotkeyPrevTrack": {"message": "Папярэдні запіс"}
@@ -18,6 +18,8 @@
   ,"labelToggleMute": {"message": "Укл/выкл гук"}
   ,"labelPlayNext": {"message": "Наступны запіс"}
   ,"labelPlayPrev": {"message": "Папярэдні запіс"}
+  ,"labelSeekForward": {"message": "Пераматаць на 10 секунд наперад"}
+  ,"labelSeekBack": {"message": "Пераматаць на 10 секунд назад"}
   ,"labelFocusPlayerTab": {"message": "Пераключыцца на ўкладку з плэерам"}
   ,"labelHotkeysExcludedFrom": {"message": "Адключыць гарачыя клавішы на наступных сайтах"}
   ,"labelOneWebsitePerLine": {"message": "Па адным сайце на радок"}
