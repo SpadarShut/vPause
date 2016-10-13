@@ -2,7 +2,7 @@
   "locale": {"message": "ru"}
   ,"extensionDecription": {"message": "Управление аудиоплеером vk.com (vkontakte) с любой вкладки"}
   ,"headerHotkeys": {"message": "Горячие клавиши"}
-  ,"hotkeysHint": {"message": ""}
+  ,"hotkeysHint": {"message": "Эти комбинации клавиш работают только кагда вы находитесь в браўзере. Вы также можете установить <a id='hotkeys-tab' target='_blank'>глобальные горячие клавиши</a>"}
   ,"labelHotkeyPlayPause": {"message": "Воспроизведение/пауза"}
   ,"labelHotkeyNextTrack": {"message": "Следующая запись"}
   ,"labelHotkeyPrevTrack": {"message": "Предыдущая запись"}
@@ -11,13 +11,15 @@
   ,"labelHotkeyRepeat": {"message": "Вкл/выкл повтор"}
   ,"labelClickHereHotkey": {"message": "Нажмите здесь желаемые клавиши"}
   ,"saveHotkeys": {"message": "Сохранить грячие клавиши"}
-  ,"labelAddSong": {"message": "Добавть в мои аудиозаписи"}
+  ,"labelAddSong": {"message": "Добавить в мои аудиозаписи"}
   ,"headerDblClick": {"message": "Действие по двойному нажатию кнопки"}
   ,"labelToggleRepeat": {"message": "Вкл/выкл повтор"}
   ,"labelToggleShuffle": {"message": "Вкл/выкл рандомайзер"}
   ,"labelToggleMute": {"message": "Вкл/выкл звук"}
   ,"labelPlayNext": {"message": "Следующая запись"}
   ,"labelPlayPrev": {"message": "Предыдущая запись"}
+  ,"labelSeekForward": {"message": "Перемотать на 10 секунд вперед"}
+  ,"labelSeekBack": {"message": "Перемотать на 10 секунд назад"}
   ,"labelFocusPlayerTab": {"message": "Переключиться на вкладку с плеером"}
   ,"labelHotkeysExcludedFrom": {"message": "Отключить горячие клавиши на следующих сайтах"}
   ,"labelOneWebsitePerLine": {"message": "По одному сайту на строку"}

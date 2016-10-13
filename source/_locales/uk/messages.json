@@ -2,7 +2,7 @@
   "locale": {"message": "uk"}
   ,"extensionDecription": {"message": "Керування аудіоплеєром vk.com із любої вкладки"}
   ,"headerHotkeys": {"message": "Гарячі клавіші"}
-  ,"hotkeysHint": {"message": ""}
+  ,"hotkeysHint": {"message": "Ці комбінації клавіш працюють лише коли ви знаходитеся в браузері. Ви також можете встановити <a id='hotkeys-tab' target='_blank'>глобальні гарячі клавіші</a>"}
   ,"labelHotkeyPlayPause": {"message": "Відтворення/пауза"}
   ,"labelHotkeyNextTrack": {"message": "Наступний запис"}
   ,"labelHotkeyPrevTrack": {"message": "Попередній запис"}
@@ -18,6 +18,8 @@
   ,"labelToggleMute": {"message": "Вкл/викл гук"}
   ,"labelPlayNext": {"message": "Наступний запис"}
   ,"labelPlayPrev": {"message": "Попередній запис"}
+  ,"labelSeekForward": {"message": "Перемотати на 10 секунд вперед"}
+  ,"labelSeekBack": {"message": "Перемотати на 10 секунд назад"}
   ,"labelFocusPlayerTab": {"message": "Переключитися на вкладку із плеєром"}
   ,"labelHotkeysExcludedFrom": {"message": "Відключити гарячі клавіші на наступних сайтах"}
   ,"labelOneWebsitePerLine": {"message": "По одному сайту на рядок"}

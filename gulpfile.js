@@ -16,8 +16,8 @@ const gulp = require('gulp'),
     packageFile = require('./package.json'),
     jetpack = require('fs-jetpack');
 
-let shouldCompress = args.z,
-    shouldMinify = args.mini;
+let shouldArchive = args.z;
+let shouldMinify = args.mini;
 
 gulp.task('uglify:js', cb => {
     let pipes = [];
@@ -99,21 +99,20 @@ gulp.task('archive:opera', cb => {
     ], cb);
 });
 
-gulp.task('compress', gulpSequence(
-    'clean',
+gulp.task('minify', gulpSequence(
     ['uglify:js', 'uglify:json', 'uglify:manifest'],
     ['minify:css','minify:images', 'minify:html']
 ));
 
 function calculateBuildTasks () {
-    shouldCompress = shouldCompress || false;
+    shouldArchive = shouldArchive || false;
 
     syncVersion();
 
-    if( shouldCompress ) {
-        return gulpSequence('compress', ['archive', 'archive:opera']);
+    if( shouldArchive ) {
+        return gulpSequence('clean', 'minify', ['archive', 'archive:opera']);
     } else {
-        return gulpSequence('compress');
+        return gulpSequence('clean', 'minify');
     }
 }
 
