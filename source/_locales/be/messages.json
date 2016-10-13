@@ -2,7 +2,7 @@
   "locale": {"message": "be"}
   ,"extensionDecription": {"message": "Кіраванне аўдыёплэерам vk.com з любой уклдадкі"}
   ,"headerHotkeys": {"message": "Гарачыя клавішы"}
-  ,"hotkeysHint": {"message": "Гэтыя камбінацыі клавішаў працуюць толькі калі вы знаходзіцеся ў браўзары. Вы таксама можаце выставіць <a id='hotkeys-tab' target='_blank'>глабальныя гарачыя клавішы</a>"}
+  ,"hotkeysHint": {"message": "Гэтыя камбінацыі клавішаў працуюць толькі калі вы знаходзіцеся ў браўзары. Вы таксама можаце выставіць <a id='hotkeys-tab' target='_blank'>глабальныя гарачыя клавішы</a>."}
   ,"labelHotkeyPlayPause": {"message": "Прайграванне/паўза"}
   ,"labelHotkeyNextTrack": {"message": "Наступны запіс"}
   ,"labelHotkeyPrevTrack": {"message": "Папярэдні запіс"}

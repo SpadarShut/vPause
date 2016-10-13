@@ -2,7 +2,7 @@
   "locale": {"message": "ru"}
   ,"extensionDecription": {"message": "Управление аудиоплеером vk.com (vkontakte) с любой вкладки"}
   ,"headerHotkeys": {"message": "Горячие клавиши"}
-  ,"hotkeysHint": {"message": "Эти комбинации клавиш работают только кагда вы находитесь в браўзере. Вы также можете установить <a id='hotkeys-tab' target='_blank'>глобальные горячие клавиши</a>"}
+  ,"hotkeysHint": {"message": "Эти комбинации клавиш работают только кагда вы находитесь в браўзере. Вы также можете установить <a id='hotkeys-tab' target='_blank'>глобальные горячие клавиши</a>."}
   ,"labelHotkeyPlayPause": {"message": "Воспроизведение/пауза"}
   ,"labelHotkeyNextTrack": {"message": "Следующая запись"}
   ,"labelHotkeyPrevTrack": {"message": "Предыдущая запись"}

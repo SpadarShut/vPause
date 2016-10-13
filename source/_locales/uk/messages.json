@@ -2,7 +2,7 @@
   "locale": {"message": "uk"}
   ,"extensionDecription": {"message": "Керування аудіоплеєром vk.com із любої вкладки"}
   ,"headerHotkeys": {"message": "Гарячі клавіші"}
-  ,"hotkeysHint": {"message": "Ці комбінації клавіш працюють лише коли ви знаходитеся в браузері. Ви також можете встановити <a id='hotkeys-tab' target='_blank'>глобальні гарячі клавіші</a>"}
+  ,"hotkeysHint": {"message": "Ці комбінації клавіш працюють лише коли ви знаходитеся в браузері. Ви також можете встановити <a id='hotkeys-tab' target='_blank'>глобальні гарячі клавіші</a>."}
   ,"labelHotkeyPlayPause": {"message": "Відтворення/пауза"}
   ,"labelHotkeyNextTrack": {"message": "Наступний запис"}
   ,"labelHotkeyPrevTrack": {"message": "Попередній запис"}

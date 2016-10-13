@@ -2,7 +2,7 @@
   "locale": {"message": "en"}
   ,"extensionDecription": {"message": "Control vk.com (vkontakte) audioplayer form any tab: hotkeys, toolbar button"}
   ,"headerHotkeys": {"message": "Hotkeys"}
-  ,"hotkeysHint": {"message": "These hotkeys only work while you are in the browser. You can also set up <a id='hotkeys-tab' target='_blank'>global hotkeys</a>"}
+  ,"hotkeysHint": {"message": "These hotkeys only work while you are in the browser. You can also set up <a id='hotkeys-tab' target='_blank'>global hotkeys</a>."}
   ,"labelHotkeyPlayPause": {"message": "Play/pause"}
   ,"labelHotkeyNextTrack": {"message": "Next track"}
   ,"labelHotkeyPrevTrack": {"message": "Previous track"}
