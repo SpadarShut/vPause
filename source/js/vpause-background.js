@@ -220,7 +220,8 @@
     }
 
     function mergeSettings(saved, defaults) {
-        var settings = {};
+        var settings = {},
+            settingsKeys;
 
         for( var option in saved ) {
             if( saved.hasOwnProperty(option) ) {
@@ -228,9 +229,11 @@
             }
         }
 
+        settingsKeys = Object.keys(settings);
+
         for( var defaultOption in defaults ) {
             if( defaults.hasOwnProperty(defaultOption) ) {
-                if( ! settings[defaultOption] ) {
+                if( settingsKeys.indexOf(defaultOption) === -1 ) {
                     settings[defaultOption] = defaults[defaultOption];
                 }
             }
