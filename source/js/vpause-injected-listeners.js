@@ -279,7 +279,7 @@
             event: "progress",
             song: song,
             progressData: eventData,
-            reversed: player.getDurationType()
+            reversed: AudioPlayer.getDurationType()
         });
     }
 
@@ -305,7 +305,7 @@
 
     function tweakSongShell(song) {
         vPause.songShell.innerHTML = "";
-        vPause.songShell.innerHTML = "<div class='audio_row _audio_row' data-audio='" + JSON.stringify(song) + "' data-is-current='1'><div class='audio_act' id='add' onclick='return addAudio(this, event)'></div></div>";
+        vPause.songShell.innerHTML = "<div class='audio_row _audio_row' data-audio='" + JSON.stringify(song) + "' data-is-current='1'><div class='audio_act' id='add' onclick='AudioUtils.addAudio(this)'></div></div>";
     }
 
     function notifyContentScript (msg) {
