@@ -1,6 +1,6 @@
 {
   "name": "vPause",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "Opera and Chrome extension to control vk.com player from any tab",
   "main": "index.js",
   "scripts": {
@@ -36,5 +36,8 @@
   },
   "author": "Pavel Shut",
   "license": "BSD",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "natives": "^1.1.6"
+  }
 }
