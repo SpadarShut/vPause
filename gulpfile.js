@@ -93,7 +93,7 @@ gulp.task('archive:opera', cb => {
     var manifest = require('./source/manifest.json');
 
     pump([
-        gulp.src('**', { cwd: path.join(process.cwd(), '/source/') }),
+        gulp.src('**', { cwd: path.join(process.cwd(), '/build/unpacked/') }),
         zip('vPause-' + manifest.version + '.nex'),
         gulp.dest('build')
     ], cb);
