@@ -12,6 +12,8 @@
         partyStarted: false
     };
 
+    var logBase = 35;
+
     //todo: maybe utilise the AudioPlayer function to search for events
     var events = {
         'play': 'start',
@@ -165,7 +167,7 @@
         };
 
         vPause.makeItLouder = function(){
-            var volume = player.getVolume();
+            var volume = delogarithmifyVolume(player.getVolume());
 
             volume += .1;
 
@@ -173,11 +175,11 @@
                 volume = 1;
             }
 
-            player.setVolume(volume);
+            player.setVolume(logarithmifyVolume(volume));
         };
 
         vPause.makeItQuieter = function() {
-            var volume = player.getVolume();
+            var volume = delogarithmifyVolume(player.getVolume());
 
             volume -= .1;
 
@@ -185,7 +187,7 @@
                 volume = 0;
             }
 
-            player.setVolume(volume);
+            player.setVolume(logarithmifyVolume(volume));
         };
 
         vPause.toggleShuffle = function(){
@@ -312,5 +314,15 @@
         msg.origin = 'vpause-injected-listeners';
 
         window.postMessage(msg, window.location.href );
+    }
+
+    function logarithmifyVolume(val) {
+        return (Math.pow(logBase, val) - 1) / (logBase - 1);
+    }
+
+    function delogarithmifyVolume (val) {
+        var t, i, s = logBase;
+
+        return t = s, i = 1 + val * (s - 1), Math.log(i) / Math.log(t);
     }
 })(window);
