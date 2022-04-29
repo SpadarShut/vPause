@@ -17,7 +17,7 @@
     "vk.com"
   ],
   "devDependencies": {
-    "async": "^2.0.1",
+    "async": "^2.6.4",
     "del": "^2.2.0",
     "fs-jetpack": "^0.9.2",
     "gulp": "^3.9.1",
